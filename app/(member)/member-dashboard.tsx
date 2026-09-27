@@ -8,7 +8,7 @@ export default function MemberDashboard() {
       <View style={memberDashboardStyles.header}>
         <View>
           <Text style={memberDashboardStyles.greeting}>
-            Good afternoon 👋
+            Good afternoon 
           </Text>
 
           <Text style={memberDashboardStyles.subtitle}>
@@ -18,7 +18,7 @@ export default function MemberDashboard() {
 
         <Pressable style={memberDashboardStyles.notificationButton}>
           <Text style={memberDashboardStyles.notificationIcon}>
-            🔔
+            
           </Text>
         </Pressable>
       </View>
