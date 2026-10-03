@@ -24,6 +24,10 @@ export default function AuthLayout() {
             name="new-password"
             options={{ headerShown: false }}
           />
+        
+
+
+  
     </Stack>
     
   );

@@ -4,44 +4,47 @@ import { StyleSheet } from 'react-native';
 export const loginStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     backgroundColor: colors.background,
+  },
+
+  content: {
+    flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 70,
+    paddingTop: 40,
+    paddingBottom: 30,
   },
 
-  pageHeader: {
-    marginBottom: 28,
+  backButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 75,
   },
 
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.primaryDark,
-    marginBottom: 6,
-  },
-
-  pageSubtitle: {
-    fontSize: 14,
+  backText: {
+    fontSize: 12,
     color: colors.textSecondary,
   },
 
-  card: {
-    width: '100%',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 28,
-    paddingHorizontal: 24,
-    paddingVertical: 30,
+  logo: {
+    width: 110,
+    height: 82,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
 
-  cardTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.primaryDark,
+  title: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.textPrimary,
     textAlign: 'center',
-    marginBottom: 28,
+  },
+
+  subtitle: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 5,
+    marginBottom: 22,
   },
 
   form: {
@@ -49,73 +52,101 @@ export const loginStyles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     color: colors.textPrimary,
-    marginBottom: 7,
+    marginBottom: 6,
   },
 
   input: {
-    height: 50,
+    height: 46,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 9,
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: 14,
-    fontSize: 14,
+    borderRadius: 8,
+    backgroundColor: colors.white,
+    paddingHorizontal: 13,
+    fontSize: 13,
     color: colors.textPrimary,
-    marginBottom: 20,
+    marginBottom: 13,
+  },
+
+  passwordContainer: {
+    position: 'relative',
+    marginBottom: 13,
+  },
+
+  passwordInput: {
+    height: 46,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    backgroundColor: colors.white,
+    paddingHorizontal: 13,
+    paddingRight: 60,
+    fontSize: 13,
+    color: colors.textPrimary,
+  },
+
+  eyeButton: {
+    position: 'absolute',
+    right: 13,
+    top: 0,
+    height: 46,
+    justifyContent: 'center',
+  },
+
+  eyeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.primary,
   },
 
   forgotButton: {
-    alignItems: 'flex-end',
-    marginTop: -5,
-    marginBottom: 20,
+    alignSelf: 'flex-end',
+    marginTop: -2,
+    marginBottom: 18,
   },
 
   forgotPassword: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '600',
     color: colors.primary,
   },
 
   loginButton: {
-    height: 50,
-    borderRadius: 9,
+    height: 48,
     backgroundColor: colors.primary,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  loginButtonText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '700',
+  loginButtonDisabled: {
+    opacity: 0.6,
   },
 
-  errorText: {
-    fontSize: 12,
-    color: colors.error,
-    textAlign: 'center',
-    marginTop: 18,
+  loginButtonText: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '700',
   },
 
   registerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 20,
   },
 
   registerText: {
-    fontSize: 14,
+    fontSize: 12,
     color: colors.textSecondary,
   },
 
   registerLink: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
     color: colors.primary,
-    marginLeft: 4,
+    marginLeft: 5,
   },
 });

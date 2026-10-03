@@ -1,113 +1,93 @@
- import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const welcomeStyles = StyleSheet.create({
-   container: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
     backgroundColor: colors.background,
-    paddingHorizontal: 24,
-    paddingTop: 70,
   },
 
-  card: {
-    width: '100%',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 28,
-    paddingHorizontal: 24,
-    paddingVertical: 30,
-  },
   content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingHorizontal: 32,
+  paddingTop: 20,
+  paddingBottom: 60,
+},
 
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.primaryDark,
-    textAlign: 'center',
+  logo: {
+    width: 125,
+    height: 48,
     marginBottom: 8,
   },
 
-  subtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 42,
+  illustration: {
+    width: '100%',
+    height: 220,
+    marginBottom: 8,
   },
 
-  actionGrid: {
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.primary,
+    textAlign: 'center',
+    lineHeight: 28,
+  },
+
+  titleAccent: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.accent,
+    textAlign: 'center',
+    lineHeight: 28,
+    marginBottom: 9,
+  },
+
+  description: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    maxWidth: 310,
+    marginBottom: 22,
+  },
+
+  actions: {
     width: '100%',
-    maxWidth: 520,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: 14,
+    gap: 9,
   },
 
   primaryButton: {
-    width: '48%',
-    height: 56,
-    borderRadius: 10,
+    width: '100%',
+    height: 48,
     backgroundColor: colors.primary,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   primaryButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
     color: colors.white,
+    fontSize: 13,
+    fontWeight: '700',
   },
 
   secondaryButton: {
-    width: '48%',
-    height: 56,
-    borderRadius: 10,
-    backgroundColor: colors.white,
+    width: '100%',
+    height: 48,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.primary,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.background,
   },
 
   secondaryButtonText: {
-    fontSize: 15,
+    color: colors.primary,
+    fontSize: 13,
     fontWeight: '700',
-    color: colors.primaryDark,
-  },
-
-  organizerButton: {
-    width: '48%',
-    height: 56,
-    borderRadius: 10,
-    backgroundColor: colors.primaryDark,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  organizerButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.white,
-  },
-
-  memberButton: {
-    width: '48%',
-    height: 56,
-    borderRadius: 10,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  memberButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.primaryDark,
   },
 });

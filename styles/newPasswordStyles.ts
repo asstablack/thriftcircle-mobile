@@ -4,89 +4,114 @@ import { colors } from '@/constants/color';
 export const newPasswordStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     backgroundColor: colors.background,
+  },
+
+  content: {
+    flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 70,
-  },
-
-  pageHeader: {
-    marginBottom: 28,
-  },
-
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.primaryDark,
-    marginBottom: 6,
-  },
-
-  pageSubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-
-  card: {
-    width: '100%',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 28,
-    paddingHorizontal: 24,
-    paddingVertical: 30,
-  },
-
-  cardTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.primaryDark,
-    textAlign: 'center',
-    marginBottom: 28,
-  },
-
-  label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: 8,
-  },
-
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 9,
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: 14,
-    fontSize: 14,
-    color: colors.textPrimary,
-    marginBottom: 20,
-  },
-
-  resetButton: {
-    height: 50,
-    borderRadius: 9,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 2,
-    marginBottom: 20,
-  },
-
-  resetButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.white,
+    paddingTop: 30,
+    paddingBottom: 30,
+   
   },
 
   backButton: {
-    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 10,
   },
 
-  backButtonText: {
-    fontSize: 14,
+  backText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+
+  logo: {
+    width: 110,
+    height: 82,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+
+  title: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    textAlign: 'center',
+  },
+
+  subtitle: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 5,
+    marginBottom: 22,
+  },
+
+  form: {
+    width: '100%',
+  },
+
+  label: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginBottom: 6,
+  },
+
+  passwordContainer: {
+    position: 'relative',
+    marginBottom: 6,
+  },
+
+  passwordInput: {
+    height: 46,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    backgroundColor: colors.white,
+    paddingHorizontal: 13,
+    paddingRight: 60,
+    fontSize: 13,
+    color: colors.textPrimary,
+  },
+
+  eyeButton: {
+    position: 'absolute',
+    right: 13,
+    top: 0,
+    height: 46,
+    justifyContent: 'center',
+  },
+
+  eyeText: {
+    fontSize: 11,
     fontWeight: '600',
     color: colors.primary,
+  },
+
+  helperText: {
+    fontSize: 10,
+    color: colors.textSecondary,
+    marginBottom: 16,
+  },
+
+  resetButton: {
+    height: 48,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+
+  resetButtonDisabled: {
+    opacity: 0.6,
+  },
+
+  resetButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.white,
   },
 });

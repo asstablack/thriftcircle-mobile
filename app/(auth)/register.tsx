@@ -1,64 +1,268 @@
-import { Text, TextInput, View, Pressable } from 'react-native';
-import { registerStyles } from '@/styles/registerStyles';
+import { useState } from 'react';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { registerStyles as styles } from '@/styles/registerStyles';
+import { signup } from '@/services/authApi';
 
 export default function RegisterScreen() {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] =
+    useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  const handleSignup = async () => {
+    if (
+      !fullName.trim() ||
+      !email.trim() ||
+      !phoneNumber.trim() ||
+      !password ||
+      !confirmPassword
+    ) {
+      Alert.alert(
+        'Required fields',
+        'Please fill in all fields.',
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert(
+        'Password mismatch',
+        'Passwords do not match.',
+      );
+      return;
+    }
+
+    if (!acceptedTerms) {
+      Alert.alert(
+        'Terms required',
+        'Please agree to the Terms of Service and Privacy Policy.',
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await signup({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phoneNumber: phoneNumber.trim(),
+        password,
+        confirmPassword,
+      });
+
+      Alert.alert(
+        'Account Created',
+        'Your account has been created successfully.',
+        [
+          {
+            text: 'Continue',
+            onPress: () => router.replace('/login'),
+          },
+        ],
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong. Please try again.';
+
+      Alert.alert('Signup failed', message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <View style={registerStyles.container}>
-      <Text style={registerStyles.title}>Create An Account</Text>
-
-      <TextInput
-        style={registerStyles.input}
-        placeholder="Enter your full name"
-        placeholderTextColor={registerStyles.placeholder.color}
-      />
-
-      <TextInput
-        style={registerStyles.input}
-        placeholder="Enter your email"
-        placeholderTextColor={registerStyles.placeholder.color}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-
-      <TextInput
-        style={registerStyles.input}
-        placeholder="Enter your phone number"
-        placeholderTextColor={registerStyles.placeholder.color}
-        keyboardType="phone-pad"
-      />
-
-      <TextInput
-        style={registerStyles.input}
-        placeholder="Enter your password"
-        placeholderTextColor={registerStyles.placeholder.color}
-        secureTextEntry
-      />
-
-      <TextInput
-        style={registerStyles.input}
-        placeholder="Confirm password"
-        placeholderTextColor={registerStyles.placeholder.color}
-        secureTextEntry
-      />
-
-      <Pressable style={registerStyles.registerButton}>
-        <Text style={registerStyles.registerButtonText}>
-          Create Account
-        </Text>
-      </Pressable>
-
-      <View style={registerStyles.loginRow}>
-        <Text style={registerStyles.loginText}>
-          Already have an account?
-        </Text>
-
-        <Pressable onPress={() => router.back()}>
-          <Text style={registerStyles.loginLink}>
-            Login
-          </Text>
+    <View style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Pressable
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.backText}>‹ Back</Text>
         </Pressable>
-      </View>
+
+        <Image
+          source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+          style={styles.logo}
+          contentFit="contain"
+        />
+
+        <Text style={styles.title}>
+          Create your account
+        </Text>
+
+        <Text style={styles.subtitle}>
+          Set up your ThriftCircle account to get started.
+        </Text>
+
+        <View style={styles.form}>
+          <Text style={styles.label}>Full Name</Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your full name"
+            placeholderTextColor={styles.placeholder.color}
+            value={fullName}
+            onChangeText={setFullName}
+            autoCapitalize="words"
+          />
+
+          <Text style={styles.label}>Email</Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            placeholderTextColor={styles.placeholder.color}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <Text style={styles.label}>Phone Number</Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your phone number"
+            placeholderTextColor={styles.placeholder.color}
+            keyboardType="phone-pad"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+          />
+
+          <Text style={styles.label}>Password</Text>
+
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Create a password"
+              placeholderTextColor={styles.placeholder.color}
+              secureTextEntry={!passwordVisible}
+              value={password}
+              onChangeText={setPassword}
+            />
+
+            <Pressable
+              style={styles.eyeButton}
+              onPress={() =>
+                setPasswordVisible(!passwordVisible)
+              }
+            >
+              <Text style={styles.eyeText}>
+                {passwordVisible ? 'Hide' : 'Show'}
+              </Text>
+            </Pressable>
+          </View>
+
+          <Text style={styles.label}>
+            Confirm Password
+          </Text>
+
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Confirm your password"
+              placeholderTextColor={styles.placeholder.color}
+              secureTextEntry={!confirmPasswordVisible}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+
+            <Pressable
+              style={styles.eyeButton}
+              onPress={() =>
+                setConfirmPasswordVisible(
+                  !confirmPasswordVisible,
+                )
+              }
+            >
+              <Text style={styles.eyeText}>
+                {confirmPasswordVisible ? 'Hide' : 'Show'}
+              </Text>
+            </Pressable>
+          </View>
+
+          <Pressable
+            style={styles.termsRow}
+            onPress={() =>
+              setAcceptedTerms(!acceptedTerms)
+            }
+          >
+            <View
+              style={[
+                styles.checkbox,
+                acceptedTerms && styles.checkboxChecked,
+              ]}
+            >
+              {acceptedTerms && (
+                <Text style={styles.checkmark}>✓</Text>
+              )}
+            </View>
+
+            <Text style={styles.termsText}>
+              I agree to the{' '}
+              <Text style={styles.termsLink}>
+                Terms of Service
+              </Text>{' '}
+              and{' '}
+              <Text style={styles.termsLink}>
+                Privacy Policy
+              </Text>
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.registerButton,
+              loading && styles.registerButtonDisabled,
+            ]}
+            onPress={handleSignup}
+            disabled={loading}
+          >
+            <Text style={styles.registerButtonText}>
+              {loading
+                ? 'Creating Account...'
+                : 'Create Account'}
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.loginRow}>
+          <Text style={styles.loginText}>
+            Already have an account?
+          </Text>
+
+          <Pressable
+            onPress={() => router.replace('/login')}
+          >
+            <Text style={styles.loginLink}>
+              Log In
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </View>
   );
 }
