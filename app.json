@@ -28,12 +28,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/thrift-circle-logo-stacked.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#0F5A43",
           "dark": {
-            "backgroundColor": "#000000"
+            "image": "./assets/images/thrift-circle-logo-stacked.png",
+            "backgroundColor": "#0F5A43"
           }
         }
       ],

@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -8,13 +9,16 @@ export const welcomeStyles = StyleSheet.create({
   },
 
   content: {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingHorizontal: 32,
-  paddingTop: 20,
-  paddingBottom: 60,
-},
+    flexGrow: 1,
+    width: '100%',
+    maxWidth: 460,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 22,
+    paddingTop: 20,
+    paddingBottom: 32,
+  },
 
   logo: {
     width: 125,
@@ -24,30 +28,31 @@ export const welcomeStyles = StyleSheet.create({
 
   illustration: {
     width: '100%',
-    height: 220,
+    height: 300,
     marginBottom: 8,
   },
 
   title: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: colors.primary,
+    fontSize: 36,
+    fontFamily: fonts.extraBold,
+    color: colors.textPrimary,
     textAlign: 'center',
-    lineHeight: 28,
+    lineHeight: 44,
   },
 
   titleAccent: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 36,
+    fontFamily: fonts.extraBold,
     color: colors.accent,
     textAlign: 'center',
-    lineHeight: 28,
+    lineHeight: 44,
     marginBottom: 9,
   },
 
   description: {
-    fontSize: 12,
-    lineHeight: 17,
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    lineHeight: 21,
     color: colors.textSecondary,
     textAlign: 'center',
     maxWidth: 310,
@@ -71,7 +76,7 @@ export const welcomeStyles = StyleSheet.create({
   primaryButtonText: {
     color: colors.white,
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   secondaryButton: {
@@ -88,6 +93,6 @@ export const welcomeStyles = StyleSheet.create({
   secondaryButtonText: {
     color: colors.primary,
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 });

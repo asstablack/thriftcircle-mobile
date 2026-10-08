@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -36,13 +37,13 @@ export const membersStyles = StyleSheet.create({
   logoText: {
     color: colors.white,
     fontSize: 16,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
 
   logoName: {
     color: colors.primary,
     fontSize: 16,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
 
   headerActions: {
@@ -52,6 +53,7 @@ export const membersStyles = StyleSheet.create({
   },
 
   headerIcon: {
+    fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.textSecondary,
   },
@@ -66,12 +68,13 @@ export const membersStyles = StyleSheet.create({
   },
 
   profileText: {
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: 13,
+    fontFamily: fonts.extraBold,
     color: colors.white,
   },
 
   chevron: {
+    fontFamily: fonts.regular,
     fontSize: 18,
     color: colors.textSecondary,
   },
@@ -88,12 +91,13 @@ export const membersStyles = StyleSheet.create({
 
   pageTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.white,
   },
 
   pageSubtitle: {
-    fontSize: 10,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.white,
     opacity: 0.9,
     marginTop: 4,
@@ -114,12 +118,13 @@ export const membersStyles = StyleSheet.create({
 
   groupName: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   groupDetails: {
-    fontSize: 9,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.textSecondary,
     marginTop: 4,
   },
@@ -132,9 +137,9 @@ export const membersStyles = StyleSheet.create({
   },
 
   activeBadgeText: {
-    fontSize: 8,
+    fontSize: 13,
     color: colors.primary,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
 
   statsRow: {
@@ -156,12 +161,13 @@ export const membersStyles = StyleSheet.create({
 
   statValue: {
     fontSize: 16,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.textPrimary,
   },
 
   statLabel: {
-    fontSize: 8,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.textSecondary,
     marginTop: 3,
   },
@@ -180,13 +186,17 @@ export const membersStyles = StyleSheet.create({
   },
 
   searchIcon: {
+    fontFamily: fonts.regular,
     fontSize: 19,
     color: colors.textSecondary,
     marginRight: 8,
   },
 
   searchText: {
-    fontSize: 11,
+    flex: 1,
+    padding: 10,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.textSecondary,
   },
 
@@ -201,12 +211,13 @@ export const membersStyles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   memberCount: {
-    fontSize: 9,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.textSecondary,
   },
 
@@ -232,8 +243,8 @@ export const membersStyles = StyleSheet.create({
   },
 
   avatarText: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 13,
+    fontFamily: fonts.extraBold,
     color: colors.primary,
   },
 
@@ -243,13 +254,14 @@ export const membersStyles = StyleSheet.create({
   },
 
   memberName: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   memberAmount: {
-    fontSize: 9,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.textSecondary,
     marginTop: 3,
   },
@@ -273,11 +285,12 @@ export const membersStyles = StyleSheet.create({
   },
 
   statusText: {
-    fontSize: 7,
-    fontWeight: '700',
+    fontSize: 13,
+    fontFamily: fonts.bold,
   },
 
   paidText: {
+    fontFamily: fonts.regular,
     color: colors.primary,
   },
 
@@ -290,6 +303,7 @@ export const membersStyles = StyleSheet.create({
   },
 
   arrow: {
+    fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.textSecondary,
     marginLeft: 7,
@@ -318,19 +332,21 @@ export const membersStyles = StyleSheet.create({
   },
 
   navIcon: {
+    fontFamily: fonts.regular,
     fontSize: 16,
     color: colors.textSecondary,
     marginBottom: 2,
   },
 
   navText: {
-    fontSize: 9,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.textSecondary,
   },
 
   navTextActive: {
-    fontSize: 9,
+    fontSize: 13,
     color: colors.primary,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 });

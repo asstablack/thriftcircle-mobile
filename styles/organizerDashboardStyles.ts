@@ -1,7 +1,71 @@
-import { StyleSheet } from 'react-native';
+import { fonts } from '@/constants/fonts';
+import { StyleSheet, type ViewStyle } from 'react-native';
 import { colors } from '@/constants/color';
 
+export const dashboardProgressStyle = (
+  progress: number,
+): ViewStyle => ({
+  width: `${Math.max(0, Math.min(progress, 100))}%`,
+});
+
 export const organizerDashboardStyles = StyleSheet.create({
+  confirmedText: {
+    color: colors.primary,
+  },
+  pendingText: {
+    color: '#8B581C',
+  },
+  overdueText: {
+    color: '#AD3045',
+  },
+  membersText: {
+    color: '#2458B5',
+  },
+  attentionHeader: {
+    marginHorizontal: 18,
+    marginBottom: 0,
+    padding: 10,
+    backgroundColor: '#FFFAE8',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  skeletonSummary: {
+    marginHorizontal: 18,
+    marginBottom: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    backgroundColor: colors.white,
+  },
+  skeletonLine: {
+    height: 10,
+    width: '90%',
+    borderRadius: 6,
+    marginVertical: 7,
+    backgroundColor: colors.border,
+  },
+  skeletonShortLine: {
+    height: 10,
+    width: '55%',
+    borderRadius: 6,
+    marginVertical: 7,
+    backgroundColor: colors.border,
+  },
+  skeletonButton: {
+    height: 42,
+    marginTop: 20,
+    backgroundColor: colors.border,
+    borderRadius: 6,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  skeletonTextBlock: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -41,6 +105,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   headerIcon: {
+    fontFamily: fonts.regular,
     fontSize: 21,
     color: colors.textSecondary,
   },
@@ -56,11 +121,12 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   profileText: {
     fontSize: 9,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.white,
   },
 
   chevron: {
+    fontFamily: fonts.regular,
     fontSize: 18,
     color: colors.textSecondary,
   },
@@ -70,7 +136,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   ========================= */
 
   scrollContent: {
-    paddingBottom: 90,
+    paddingBottom: 24,
   },
 
   welcomeBanner: {
@@ -81,12 +147,13 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   greeting: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.white,
     marginBottom: 4,
   },
 
   welcomeText: {
+    fontFamily: fonts.regular,
     fontSize: 11,
     color: colors.white,
     opacity: 0.9,
@@ -106,6 +173,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   cycleDate: {
+    fontFamily: fonts.regular,
     fontSize: 11,
     color: colors.textSecondary,
     marginBottom: 3,
@@ -113,7 +181,7 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   cycleTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
@@ -127,7 +195,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   activeBadgeText: {
     color: colors.primary,
     fontSize: 9,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
 
   /* =========================
@@ -144,25 +212,32 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   summaryLabel: {
+    fontSize: 15,
+    fontFamily: fonts.bold,
+    color: colors.textPrimary,
+    marginBottom: 6,
+  },
+  summaryCount: {
+    fontFamily: fonts.regular,
     fontSize: 12,
-    fontWeight: '600',
     color: colors.textSecondary,
-    marginBottom: 8,
+    marginBottom: 16,
   },
 
   summaryAmount: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: colors.textPrimary,
+    fontSize: 16,
+    fontFamily: fonts.bold,
+    color: colors.primary,
   },
 
   summaryTarget: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     color: colors.textSecondary,
   },
 
   confirmedLabel: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
     marginTop: 3,
@@ -183,6 +258,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   progressText: {
+    fontFamily: fonts.regular,
     fontSize: 11,
     color: colors.textSecondary,
     textAlign: 'right',
@@ -191,31 +267,46 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   summaryStats: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 12,
+    gap: 8,
+    marginVertical: 14,
   },
 
   summaryStat: {
-    width: '50%',
-    paddingVertical: 8,
+    flex: 1,
+    padding: 8,
+    borderRadius: 4,
+  },
+  confirmedStat: {
+    backgroundColor: colors.primaryLight,
+  },
+  pendingStat: {
+    backgroundColor: '#FFFAE8',
+  },
+  overdueStat: {
+    backgroundColor: '#FFF0F2',
+  },
+  membersStat: {
+    backgroundColor: '#EFF6FF',
   },
 
   summaryStatValue: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   summaryStatLabel: {
-    fontSize: 10,
-    color: colors.textSecondary,
+    fontFamily: fonts.regular,
+    fontSize: 9,
+    color: colors.textDark,
     marginTop: 2,
   },
 
   viewButton: {
     backgroundColor: colors.primary,
-    borderRadius: 9,
-    paddingVertical: 10,
+    borderRadius: 10,
+    minHeight: 48,
+    justifyContent: 'center',
     alignItems: 'center',
     marginTop: 8,
   },
@@ -223,7 +314,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   viewButtonText: {
     color: colors.white,
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   /* =========================
@@ -241,13 +332,13 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   sectionHeaderTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     paddingHorizontal: 18,
     marginTop: 22,
@@ -255,6 +346,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   sectionArrow: {
+    fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.primary,
     paddingRight: 18,
@@ -263,7 +355,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   viewAll: {
     fontSize: 11,
     color: colors.primary,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
 
   /* =========================
@@ -295,17 +387,19 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   listTitle: {
     fontSize: 11,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
 
   listSubtitle: {
+    fontFamily: fonts.regular,
     fontSize: 9,
     color: colors.textSecondary,
     marginTop: 3,
   },
 
   rowArrow: {
+    fontFamily: fonts.regular,
     fontSize: 19,
     color: colors.textSecondary,
     marginLeft: 8,
@@ -313,6 +407,7 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   emptyListText: {
     padding: 16,
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
     textAlign: 'center',
@@ -340,7 +435,7 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   statusIconText: {
     fontSize: 12,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.primary,
   },
 
@@ -367,7 +462,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   todayText: {
     fontSize: 9,
     color: colors.textSecondary,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
 
   /* =========================
@@ -394,7 +489,7 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   memberAvatarText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primary,
   },
 
@@ -403,13 +498,11 @@ export const organizerDashboardStyles = StyleSheet.create({
   ========================= */
 
   noCycleCard: {
-    marginHorizontal: 18,
-    marginTop: 18,
+    marginHorizontal: 20,
+    marginTop: 80,
     padding: 20,
     backgroundColor: colors.white,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
     alignItems: 'center',
   },
 
@@ -424,18 +517,20 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   noCycleIconText: {
+    fontFamily: fonts.regular,
     fontSize: 18,
     color: colors.primary,
   },
 
   noCycleTitle: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 6,
   },
 
   noCycleText: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     lineHeight: 15,
     color: colors.textSecondary,
@@ -447,18 +542,20 @@ export const organizerDashboardStyles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.primary,
     borderRadius: 8,
-    paddingVertical: 11,
+    minHeight: 48,
+    justifyContent: 'center',
     alignItems: 'center',
   },
 
   createCycleButtonText: {
     color: colors.white,
     fontSize: 11,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   quickActionIcon: {
     width: 30,
+    fontFamily: fonts.regular,
     fontSize: 17,
     color: colors.primary,
   },
@@ -489,10 +586,11 @@ export const organizerDashboardStyles = StyleSheet.create({
   quickActionTitle: {
     fontSize: 13,
     color: colors.textPrimary,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
 
   quickActionArrow: {
+    fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.textSecondary,
   },
@@ -521,17 +619,19 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   memberName: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   reviewDetails: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
     marginTop: 3,
   },
 
   reviewArrow: {
+    fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.textSecondary,
   },
@@ -568,10 +668,11 @@ export const organizerDashboardStyles = StyleSheet.create({
   activityTitle: {
     fontSize: 12,
     color: colors.textPrimary,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
 
   activityTime: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
     marginTop: 3,
@@ -593,6 +694,8 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   navItem: {
     flex: 1,
+    minHeight: 52,
+    gap: 5,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -604,19 +707,21 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   navIcon: {
+    fontFamily: fonts.regular,
     fontSize: 16,
     color: colors.textSecondary,
     marginBottom: 2,
   },
 
   navText: {
-    fontSize: 9,
+    fontFamily: fonts.regular,
+    fontSize: 10,
     color: colors.textSecondary,
   },
 
   navTextActive: {
     color: colors.primary,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   /* =========================
@@ -632,6 +737,7 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   loadingText: {
     marginTop: 12,
+    fontFamily: fonts.regular,
     fontSize: 14,
     color: colors.textSecondary,
   },
@@ -707,12 +813,13 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   emptyStateTitle: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 5,
   },
 
   emptyStateText: {
+    fontFamily: fonts.regular,
     fontSize: 11,
     color: colors.textSecondary,
     textAlign: 'center',

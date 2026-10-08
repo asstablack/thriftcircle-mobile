@@ -1,6 +1,9 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GroupScreenHeader } from '@/components/group-screen-header';
 import { useState } from 'react';
 import {
   Alert,
+  ScrollView,
   Pressable,
   Text,
   TextInput,
@@ -32,8 +35,8 @@ export default function JoinGroupScreen() {
       });
 
       Alert.alert(
-        'Group Joined',
-        'You have successfully joined the savings group.',
+        'Request sent',
+        'Your request is awaiting organizer approval. The group will appear in My Groups once approved.',
         [
           {
             text: 'Continue',
@@ -54,18 +57,15 @@ export default function JoinGroupScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Pressable onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
-        </Pressable>
-
-        <Text style={styles.title}>Join a Group</Text>
-
-        <Text style={styles.subtitle}>
-          Enter the invite code shared with you to join a savings group.
-        </Text>
-
+    <SafeAreaView style={styles.container}>
+      <GroupScreenHeader
+        title="Join a Group"
+        subtitle="Enter the invite code shared by your organizer."
+      />
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.form}>
           <Text style={styles.label}>Invite Code</Text>
 
@@ -88,11 +88,11 @@ export default function JoinGroupScreen() {
             disabled={loading}
           >
             <Text style={styles.joinButtonText}>
-              {loading ? 'Joining...' : 'Join Group'}
+              {loading ? 'Sending request...' : 'Request to join'}
             </Text>
           </Pressable>
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

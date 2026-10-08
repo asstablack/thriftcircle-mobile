@@ -4,13 +4,13 @@ import { colors } from '@/constants/color';
 export const splashStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   logo: {
-    width: 190,
-    height: 190,
+    width: 200,
+    height: 200,
   },
 });

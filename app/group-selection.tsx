@@ -1,9 +1,17 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GroupScreenHeader } from '@/components/group-screen-header';
 import { getMyGroups } from '@/services/groupApi';
 import { useAuthStore } from '@/store/authStore';
 import { groupSelectionStyles as styles } from '@/styles/groupSelectionStyles';
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View, } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 type Group = {
   _id: string;
@@ -20,58 +28,75 @@ type Group = {
 
 export default function GroupSelectionScreen() {
   const [groups, setGroups] = useState<Group[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const requestVersion = useRef(0);
   const [loading, setLoading] = useState(true);
   const { setSelectedGroup } = useAuthStore();
 
-  const loadGroups = async () => {
+  const loadGroups = useCallback(async () => {
+    const version = ++requestVersion.current;
     try {
       setLoading(true);
+      setError(null);
 
       const result = await getMyGroups();
+      if (version !== requestVersion.current) return;
 
       setGroups(result);
     } catch (error) {
+      if (version !== requestVersion.current) return;
       const message =
         error instanceof Error
           ? error.message
           : 'Failed to load your groups.';
 
-      Alert.alert('Unable to load groups', message);
+      setError(message);
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadGroups();
+      return () => {
+        requestVersion.current++;
+      };
+    }, [loadGroups]),
+  );
+
+  const handleGroupPress = (group: Group) => {
+    setSelectedGroup({
+      id: group._id,
+      groupName: group.groupName,
+      role: group.role,
+    });
+
+    if (group.role === 'organizer') {
+      router.replace('/organizer-dashboard');
+    } else if (group.role === 'member') {
+      router.replace('/member-dashboard');
     }
   };
 
-  useEffect(() => {
-    loadGroups();
-  }, []);
-
-const handleGroupPress = (group: Group) => {
-  setSelectedGroup({
-    id: group._id,
-    groupName: group.groupName,
-    role: group.role,
-  });
-
-  if (group.role === 'organizer') {
-    router.replace('/organizer-dashboard');
-  } else if (group.role === 'member') {
-    router.replace('/member-dashboard');
-  }
-};
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <GroupScreenHeader
+        title="My Groups"
+        subtitle="Select a group to continue."
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <Text style={styles.title}>My Groups</Text>
-
-        <Text style={styles.subtitle}>
-          Select a group to continue
-        </Text>
-
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push('/profile')}
+        >
+          <Text style={styles.emptyTitle}>
+            My profile and logout
+          </Text>
+        </Pressable>
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator
@@ -83,15 +108,25 @@ const handleGroupPress = (group: Group) => {
               Loading your groups...
             </Text>
           </View>
+        ) : error ? (
+          <View style={styles.emptyContainer}>
+            <Text
+              accessibilityRole="alert"
+              style={styles.emptyText}
+            >
+              {error}
+            </Text>
+            <Pressable onPress={() => void loadGroups()}>
+              <Text style={styles.emptyTitle}>Try Again</Text>
+            </Pressable>
+          </View>
         ) : groups.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>
-              No groups yet
-            </Text>
+            <Text style={styles.emptyTitle}>No groups yet</Text>
 
             <Text style={styles.emptyText}>
-              You don't belong to any groups yet. Create a group
-              or join one using an invite code.
+              You don&apos;t belong to any groups yet. Create a
+              group or join one using an invite code.
             </Text>
           </View>
         ) : (
@@ -108,8 +143,8 @@ const handleGroupPress = (group: Group) => {
                   </Text>
 
                   <Text style={styles.groupDetails}>
-                    ₦{group.contributionAmount.toLocaleString()} •{' '}
-                    {group.frequency}
+                    ₦{group.contributionAmount.toLocaleString()}{' '}
+                    • {group.frequency}
                   </Text>
                 </View>
 
@@ -158,15 +193,15 @@ const handleGroupPress = (group: Group) => {
             </Text>
           </Pressable>
           <Pressable
-  style={styles.inviteButton}
-  onPress={() => router.push('/invite-members')}
->
-  <Text style={styles.inviteButtonText}>
-    Invite Members
-  </Text>
-</Pressable>
+            style={styles.inviteButton}
+            onPress={() => router.push('/invite-members')}
+          >
+            <Text style={styles.inviteButtonText}>
+              Invite Members
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

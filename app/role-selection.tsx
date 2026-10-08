@@ -1,5 +1,8 @@
+import { Feather } from '@expo/vector-icons';
+import { colors } from '@/constants/color';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { roleSelectionStyles as styles } from '@/styles/roleSelectionStyles';
@@ -9,9 +12,7 @@ export default function RoleSelectionScreen() {
     (state) => state.selectedRole,
   );
 
-  const setRole = useAuthStore(
-    (state) => state.setRole,
-  );
+  const setRole = useAuthStore((state) => state.setRole);
 
   const handleContinue = () => {
     if (!selectedRole) {
@@ -22,8 +23,11 @@ export default function RoleSelectionScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <Pressable
           style={styles.backButton}
           onPress={() => router.back()}
@@ -37,9 +41,7 @@ export default function RoleSelectionScreen() {
           contentFit="contain"
         />
 
-        <Text style={styles.title}>
-          Choose a role
-        </Text>
+        <Text style={styles.title}>Choose a role</Text>
 
         <Text style={styles.subtitle}>
           Select how you want to use ThriftCircle.
@@ -52,16 +54,22 @@ export default function RoleSelectionScreen() {
             selectedRole === 'organizer' &&
               styles.roleCardSelected,
           ]}
+          accessibilityRole="radio"
+          accessibilityState={{
+            checked: selectedRole === 'organizer',
+          }}
           onPress={() => setRole('organizer')}
         >
           <View style={styles.roleIcon}>
-            <Text style={styles.roleIconText}>♙</Text>
+            <Feather
+              name="users"
+              size={26}
+              color={colors.primary}
+            />
           </View>
 
           <View style={styles.roleInfo}>
-            <Text style={styles.roleTitle}>
-              Organizer
-            </Text>
+            <Text style={styles.roleTitle}>Organizer</Text>
 
             <Text style={styles.roleDescription}>
               Create and manage savings groups, invite members,
@@ -86,31 +94,35 @@ export default function RoleSelectionScreen() {
         <Pressable
           style={[
             styles.roleCard,
-            selectedRole === 'member' &&
-              styles.roleCardSelected,
+            selectedRole === 'member' && styles.roleCardSelected,
           ]}
+          accessibilityRole="radio"
+          accessibilityState={{
+            checked: selectedRole === 'member',
+          }}
           onPress={() => setRole('member')}
         >
           <View style={styles.roleIcon}>
-            <Text style={styles.roleIconText}>♙</Text>
+            <Feather
+              name="user"
+              size={26}
+              color={colors.primary}
+            />
           </View>
 
           <View style={styles.roleInfo}>
-            <Text style={styles.roleTitle}>
-              Member
-            </Text>
+            <Text style={styles.roleTitle}>Member</Text>
 
             <Text style={styles.roleDescription}>
-              Join a savings group, make contributions,
-              and track your progress.
+              Join a savings group, make contributions, and track
+              your progress.
             </Text>
           </View>
 
           <View
             style={[
               styles.radio,
-              selectedRole === 'member' &&
-                styles.radioSelected,
+              selectedRole === 'member' && styles.radioSelected,
             ]}
           >
             {selectedRole === 'member' && (
@@ -122,17 +134,14 @@ export default function RoleSelectionScreen() {
         <Pressable
           style={[
             styles.continueButton,
-            !selectedRole &&
-              styles.continueButtonDisabled,
+            !selectedRole && styles.continueButtonDisabled,
           ]}
           onPress={handleContinue}
           disabled={!selectedRole}
         >
-          <Text style={styles.continueText}>
-            Continue
-          </Text>
+          <Text style={styles.continueText}>Continue</Text>
         </Pressable>
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

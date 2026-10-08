@@ -1,22 +1,33 @@
 import {
+  getOrganizerDashboard,
+  type OrganizerDashboardData,
+} from '@/services/dashboardApi';
+import {
   getCurrentCycle,
   getGroupContributions,
   getGroupDetails,
 } from '@/services/groupApi';
 import { useAuthStore } from '@/store/authStore';
-import { organizerDashboardStyles as styles } from '@/styles/organizerDashboardStyles';
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import {
+  organizerDashboardStyles as styles,
+  dashboardProgressStyle,
+} from '@/styles/organizerDashboardStyles';
+import { router, useFocusEffect } from 'expo-router';
+import {
+  OrganizerHeader,
+  OrganizerBottomNavigation,
+} from '@/components/organizer-chrome';
+import { Feather } from '@expo/vector-icons';
+import { colors } from '@/constants/color';
+import { useCallback, useRef, useState } from 'react';
 import {
   Alert,
-  Image,
   Pressable,
   ScrollView,
   Text,
-  View
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 
 type Contribution = {
   _id: string;
@@ -25,11 +36,7 @@ type Contribution = {
   dueDate: string;
   cycleNumber: number;
   status:
-    | 'DUE'
-    | 'PENDING_REVIEW'
-    | 'CONFIRMED'
-    | 'ISSUE'
-    | 'OVERDUE';
+    'DUE' | 'PENDING_REVIEW' | 'CONFIRMED' | 'ISSUE' | 'OVERDUE';
   submittedAt: string | null;
   confirmedAt: string | null;
 };
@@ -55,27 +62,35 @@ type GroupDetails = {
 
 type Cycle = {
   cycleNumber: number;
-  status: 'ACTIVE' | 'COMPLETED';
+  status: 'ACTIVE' | 'PAYOUT_PHASE' | 'COMPLETED';
   openedAt: string;
   closedAt: string | null;
 };
 
 export default function OrganizerDashboard() {
   const user = useAuthStore((state) => state.user);
-  const selectedGroup = useAuthStore((state) => state.selectedGroup);
+  const selectedGroup = useAuthStore(
+    (state) => state.selectedGroup,
+  );
 
   const [groupDetails, setGroupDetails] =
     useState<GroupDetails | null>(null);
 
-  const [contributions, setContributions] =
-    useState<Contribution[]>([]);
+  const [contributions, setContributions] = useState<
+    Contribution[]
+  >([]);
 
-  const [currentCycle, setCurrentCycle] =
-    useState<Cycle | null>(null);
+  const [currentCycle, setCurrentCycle] = useState<Cycle | null>(
+    null,
+  );
 
+  const [summary, setSummary] =
+    useState<OrganizerDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const requestVersion = useRef(0);
 
-  const loadDashboard = async () => {
+  const loadDashboard = useCallback(async () => {
+    const version = ++requestVersion.current;
     if (!selectedGroup?.id) {
       Alert.alert(
         'No group selected',
@@ -88,31 +103,41 @@ export default function OrganizerDashboard() {
     try {
       setLoading(true);
 
-      const [details, contributionData, cycle] =
+      const [details, contributionData, cycle, dashboard] =
         await Promise.all([
           getGroupDetails(selectedGroup.id),
           getGroupContributions(selectedGroup.id),
-          getCurrentCycle(selectedGroup.id).catch(() => null),
+          getCurrentCycle(selectedGroup.id),
+          getOrganizerDashboard(selectedGroup.id),
         ]);
 
+      if (version !== requestVersion.current) return;
       setGroupDetails(details);
       setContributions(contributionData);
       setCurrentCycle(cycle);
+      setSummary(dashboard);
     } catch (error) {
+      if (version !== requestVersion.current) return;
       const message =
         error instanceof Error
           ? error.message
           : 'Failed to load dashboard data.';
 
+      setGroupDetails(null);
       Alert.alert('Unable to load dashboard', message);
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
     }
-  };
+  }, [selectedGroup]);
 
-  useEffect(() => {
-    loadDashboard();
-  }, [selectedGroup?.id]);
+  useFocusEffect(
+    useCallback(() => {
+      void loadDashboard();
+      return () => {
+        requestVersion.current++;
+      };
+    }, [loadDashboard]),
+  );
 
   const getInitials = (name: string) => {
     return name
@@ -143,18 +168,7 @@ export default function OrganizerDashboard() {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.topHeader}>
-          <Image
-  source={require('@/assets/images/thrift-circle-logo.png')}
-  style={styles.headerLogo}
-  resizeMode="contain"
-/>
-
-          <View style={styles.headerActions}>
-            <View style={styles.skeletonCircle} />
-            <View style={styles.skeletonProfile} />
-          </View>
-        </View>
+        <OrganizerHeader />
 
         <View style={styles.welcomeBanner}>
           <View style={styles.skeletonWelcomeLine} />
@@ -166,12 +180,40 @@ export default function OrganizerDashboard() {
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.skeletonCycle} />
-          <View style={styles.skeletonCard} />
-          <View style={styles.skeletonCardSmall} />
-          <View style={styles.skeletonCardSmall} />
+          <View
+            style={styles.skeletonSummary}
+            accessible
+            accessibilityLabel="Loading dashboard"
+            accessibilityState={{ busy: true }}
+          >
+            <View style={styles.skeletonLine} />
+            <View style={styles.skeletonShortLine} />
+            <View style={styles.skeletonLine} />
+            <View style={styles.skeletonButton} />
+          </View>
+          {[0, 1].map((key) => (
+            <View
+              key={key}
+              style={styles.skeletonSummary}
+            >
+              <View style={styles.skeletonShortLine} />
+              {[0, 1].map((row) => (
+                <View
+                  key={row}
+                  style={styles.skeletonRow}
+                >
+                  <View style={styles.skeletonCircle} />
+                  <View style={styles.skeletonTextBlock}>
+                    <View style={styles.skeletonShortLine} />
+                    <View style={styles.skeletonLine} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          ))}
         </ScrollView>
 
-        <BottomNavigation />
+        <OrganizerBottomNavigation />
       </SafeAreaView>
     );
   }
@@ -192,9 +234,7 @@ export default function OrganizerDashboard() {
             style={styles.viewButton}
             onPress={loadDashboard}
           >
-            <Text style={styles.viewButtonText}>
-              Try Again
-            </Text>
+            <Text style={styles.viewButtonText}>Try Again</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -203,8 +243,7 @@ export default function OrganizerDashboard() {
 
   const currentCycleContributions = currentCycle
     ? contributions.filter(
-        (item) =>
-          item.cycleNumber === currentCycle.cycleNumber,
+        (item) => item.cycleNumber === currentCycle.cycleNumber,
       )
     : [];
 
@@ -213,45 +252,40 @@ export default function OrganizerDashboard() {
       (item) => item.status === 'CONFIRMED',
     );
 
-  const pendingContributions =
-    currentCycleContributions.filter(
-      (item) => item.status === 'PENDING_REVIEW',
-    );
+  const pendingContributions = currentCycleContributions.filter(
+    (item) => item.status === 'PENDING_REVIEW',
+  );
 
-  const overdueContributions =
-    currentCycleContributions.filter(
-      (item) => item.status === 'OVERDUE',
-    );
+  const overdueContributions = currentCycleContributions.filter(
+    (item) => item.status === 'OVERDUE',
+  );
 
-  const totalAmount =
-    currentCycleContributions.reduce(
-      (total, item) => total + item.amount,
-      0,
-    );
+  const totalAmount = currentCycleContributions.reduce(
+    (total, item) => total + item.amount,
+    0,
+  );
 
-  const confirmedAmount =
-    confirmedContributions.reduce(
-      (total, item) => total + item.amount,
-      0,
-    );
+  const confirmedAmount = confirmedContributions.reduce(
+    (total, item) => total + item.amount,
+    0,
+  );
 
   const progress =
     totalAmount > 0
-      ? Math.min(
-          (confirmedAmount / totalAmount) * 100,
-          100,
-        )
+      ? Math.min((confirmedAmount / totalAmount) * 100, 100)
       : 0;
 
   const attentionItems = [
     ...pendingContributions.map((item) => ({
       id: `pending-${item._id}`,
+      memberId: item.memberId,
       title: 'Payment awaiting review',
       subtitle: `₦${item.amount.toLocaleString()}`,
       type: 'pending',
     })),
     ...overdueContributions.map((item) => ({
       id: `overdue-${item._id}`,
+      memberId: item.memberId,
       title: 'Overdue contribution',
       subtitle: `₦${item.amount.toLocaleString()}`,
       type: 'overdue',
@@ -261,8 +295,7 @@ export default function OrganizerDashboard() {
   const upcomingDeadlines = [...currentCycleContributions]
     .filter(
       (item) =>
-        item.status === 'DUE' ||
-        item.status === 'OVERDUE',
+        item.status === 'DUE' || item.status === 'OVERDUE',
     )
     .sort(
       (a, b) =>
@@ -276,9 +309,7 @@ export default function OrganizerDashboard() {
       .filter((item) => item.submittedAt)
       .map((item) => ({
         id: `submitted-${item._id}`,
-        initials: getInitials(
-          getMemberName(item.memberId),
-        ),
+        initials: getInitials(getMemberName(item.memberId)),
         text: `${getMemberName(item.memberId)} submitted payment evidence`,
         date: item.submittedAt as string,
       })),
@@ -286,77 +317,92 @@ export default function OrganizerDashboard() {
       .filter((item) => item.confirmedAt)
       .map((item) => ({
         id: `confirmed-${item._id}`,
-        initials: getInitials(
-          getMemberName(item.memberId),
-        ),
+        initials: getInitials(getMemberName(item.memberId)),
         text: `${getMemberName(item.memberId)}'s payment was confirmed`,
         date: item.confirmedAt as string,
       })),
   ]
     .sort(
       (a, b) =>
-        new Date(b.date).getTime() -
-        new Date(a.date).getTime(),
+        new Date(b.date).getTime() - new Date(a.date).getTime(),
     )
     .slice(0, 3);
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.topHeader}>
-       <Image
-  source={require('@/assets/images/thrift-circle-logo.png')}
-  style={styles.headerLogo}
-  resizeMode="contain"
-/>
+      <OrganizerHeader />
+      {/* Welcome */}
+      <View style={styles.welcomeBanner}>
+        <Text style={styles.greeting}>
+          Good morning,{' '}
+          {user?.fullName?.split(' ')[0] || 'Organizer'}
+        </Text>
 
-        <View style={styles.headerActions}>
-          <Pressable style={styles.notificationButton}>
-            <Text style={styles.headerIcon}>♧</Text>
-          </Pressable>
-
-          <View style={styles.profileCircle}>
-            <Text style={styles.profileText}>
-              {getInitials(user?.fullName || 'Organizer')}
-            </Text>
-          </View>
-
-          <Text style={styles.chevron}>⌄</Text>
-        </View>
+        <Text style={styles.welcomeText}>
+          Here is what’s happening with your savings group.
+        </Text>
       </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Welcome */}
-        <View style={styles.welcomeBanner}>
-          <Text style={styles.greeting}>
-            Good morning, {user?.fullName?.split(' ')[0] || 'Organizer'}
+        <Pressable
+          accessibilityRole="button"
+          style={styles.viewButton}
+          onPress={() => router.push('/payouts')}
+        >
+          <Text style={styles.viewButtonText}>
+            View payout order and history
           </Text>
-
-          <Text style={styles.welcomeText}>
-            Here is what’s happening with your savings group.
-          </Text>
-        </View>
-
+        </Pressable>
+        {summary && (
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryLabel}>
+              Across all cycles
+            </Text>
+            <Text style={styles.emptyStateText}>
+              {summary.memberCount} active members ·{' '}
+              {summary.confirmedContributions} confirmed
+            </Text>
+            <Text style={styles.emptyStateText}>
+              {summary.outstandingContributions} outstanding ·{' '}
+              {summary.awaitingVerification} awaiting
+              verification · {summary.paymentIssues} payment
+              issues
+            </Text>
+            {summary.currentCycle && (
+              <Text style={styles.emptyStateText}>
+                Current recipient:{' '}
+                {getMemberName(summary.currentCycle.recipientId)}
+              </Text>
+            )}
+          </View>
+        )}
         {/* Active Cycle */}
         {currentCycle ? (
           <>
             <View style={styles.cycleHeader}>
               <View>
                 <Text style={styles.cycleDate}>
-                  Cycle {currentCycle.cycleNumber}
+                  Current Cycle
                 </Text>
 
                 <Text style={styles.cycleTitle}>
-                  {formatDate(currentCycle.openedAt)} Cycle
+                  {new Date(
+                    currentCycle.openedAt,
+                  ).toLocaleDateString('en-NG', {
+                    month: 'long',
+                    year: 'numeric',
+                  })}{' '}
+                  Cycle
                 </Text>
               </View>
 
               <View style={styles.activeBadge}>
                 <Text style={styles.activeBadgeText}>
-                  • Active Cycle
+                  {currentCycle.status === 'PAYOUT_PHASE'
+                    ? '• Payout Phase'
+                    : '• Active Cycle'}
                 </Text>
               </View>
             </View>
@@ -367,10 +413,17 @@ export default function OrganizerDashboard() {
                 Contribution Summary
               </Text>
 
+              <Text style={styles.summaryCount}>
+                {confirmedContributions.length} of{' '}
+                {currentCycleContributions.length} contributions
+                confirmed
+              </Text>
+
               <Text style={styles.summaryAmount}>
                 ₦{confirmedAmount.toLocaleString()}
                 <Text style={styles.summaryTarget}>
-                  {' '}/ ₦{totalAmount.toLocaleString()}
+                  {' '}
+                  / ₦{totalAmount.toLocaleString()}
                 </Text>
               </Text>
 
@@ -382,7 +435,7 @@ export default function OrganizerDashboard() {
                 <View
                   style={[
                     styles.progressFill,
-                    { width: `${progress}%` },
+                    dashboardProgressStyle(progress),
                   ]}
                 />
               </View>
@@ -392,8 +445,18 @@ export default function OrganizerDashboard() {
               </Text>
 
               <View style={styles.summaryStats}>
-                <View style={styles.summaryStat}>
-                  <Text style={styles.summaryStatValue}>
+                <View
+                  style={[
+                    styles.summaryStat,
+                    styles.confirmedStat,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.summaryStatValue,
+                      styles.confirmedText,
+                    ]}
+                  >
                     {confirmedContributions.length}
                   </Text>
                   <Text style={styles.summaryStatLabel}>
@@ -401,8 +464,18 @@ export default function OrganizerDashboard() {
                   </Text>
                 </View>
 
-                <View style={styles.summaryStat}>
-                  <Text style={styles.summaryStatValue}>
+                <View
+                  style={[
+                    styles.summaryStat,
+                    styles.pendingStat,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.summaryStatValue,
+                      styles.pendingText,
+                    ]}
+                  >
                     {pendingContributions.length}
                   </Text>
                   <Text style={styles.summaryStatLabel}>
@@ -410,8 +483,18 @@ export default function OrganizerDashboard() {
                   </Text>
                 </View>
 
-                <View style={styles.summaryStat}>
-                  <Text style={styles.summaryStatValue}>
+                <View
+                  style={[
+                    styles.summaryStat,
+                    styles.overdueStat,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.summaryStatValue,
+                      styles.overdueText,
+                    ]}
+                  >
                     {overdueContributions.length}
                   </Text>
                   <Text style={styles.summaryStatLabel}>
@@ -419,8 +502,18 @@ export default function OrganizerDashboard() {
                   </Text>
                 </View>
 
-                <View style={styles.summaryStat}>
-                  <Text style={styles.summaryStatValue}>
+                <View
+                  style={[
+                    styles.summaryStat,
+                    styles.membersStat,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.summaryStatValue,
+                      styles.membersText,
+                    ]}
+                  >
                     {groupDetails.members.length}
                   </Text>
                   <Text style={styles.summaryStatLabel}>
@@ -431,9 +524,7 @@ export default function OrganizerDashboard() {
 
               <Pressable
                 style={styles.viewButton}
-                onPress={() =>
-                  router.push('/contributions')
-                }
+                onPress={() => router.push('/contributions')}
               >
                 <Text style={styles.viewButtonText}>
                   View Contributions
@@ -442,7 +533,12 @@ export default function OrganizerDashboard() {
             </View>
 
             {/* Needs Your Attention */}
-            <View style={styles.sectionHeader}>
+            <View
+              style={[
+                styles.sectionHeader,
+                styles.attentionHeader,
+              ]}
+            >
               <Text style={styles.sectionHeaderTitle}>
                 Needs your attention
               </Text>
@@ -461,7 +557,10 @@ export default function OrganizerDashboard() {
                     key={item.id}
                     style={styles.listRow}
                     onPress={() =>
-                      router.push('/contributions')
+                      router.push({
+                        pathname: '/contributions',
+                        params: { memberId: item.memberId },
+                      })
                     }
                   >
                     <View
@@ -473,9 +572,7 @@ export default function OrganizerDashboard() {
                       ]}
                     >
                       <Text style={styles.statusIconText}>
-                        {item.type === 'overdue'
-                          ? '!'
-                          : '✓'}
+                        {item.type === 'overdue' ? '!' : '✓'}
                       </Text>
                     </View>
 
@@ -501,13 +598,9 @@ export default function OrganizerDashboard() {
               </Text>
 
               <Pressable
-                onPress={() =>
-                  router.push('/contributions')
-                }
+                onPress={() => router.push('/contributions')}
               >
-                <Text style={styles.viewAll}>
-                  View all ›
-                </Text>
+                <Text style={styles.viewAll}>View all ›</Text>
               </Pressable>
             </View>
 
@@ -522,12 +615,22 @@ export default function OrganizerDashboard() {
                     key={item._id}
                     style={styles.deadlineRow}
                     onPress={() =>
-                      router.push('/contributions')
+                      router.push({
+                        pathname: '/contributions',
+                        params: { memberId: item.memberId },
+                      })
                     }
                   >
                     <View style={styles.todayBadge}>
                       <Text style={styles.todayText}>
-                        Today
+                        {new Date(
+                          item.dueDate,
+                        ).toDateString() ===
+                        new Date().toDateString()
+                          ? 'Today'
+                          : item.status === 'OVERDUE'
+                            ? 'Overdue'
+                            : 'Due'}
                       </Text>
                     </View>
 
@@ -555,9 +658,11 @@ export default function OrganizerDashboard() {
                 Recent Activities
               </Text>
 
-              <Text style={styles.viewAll}>
-                View all ›
-              </Text>
+              <Pressable
+                onPress={() => router.push('/notifications')}
+              >
+                <Text style={styles.viewAll}>View all ›</Text>
+              </Pressable>
             </View>
 
             <View style={styles.listCard}>
@@ -596,9 +701,11 @@ export default function OrganizerDashboard() {
             {/* No Active Cycle */}
             <View style={styles.noCycleCard}>
               <View style={styles.noCycleIcon}>
-                <Text style={styles.noCycleIconText}>
-                  ◫
-                </Text>
+                <Feather
+                  name="calendar"
+                  size={22}
+                  color={colors.primary}
+                />
               </View>
 
               <Text style={styles.noCycleTitle}>
@@ -606,22 +713,17 @@ export default function OrganizerDashboard() {
               </Text>
 
               <Text style={styles.noCycleText}>
-                You don't have an active cycle right now.
-                You can create one to start collecting
-                contributions.
+                There is no active cycle right now. New cycles
+                follow the group schedule. You can still view
+                contributions and recorded payouts.
               </Text>
 
               <Pressable
                 style={styles.createCycleButton}
-                onPress={() =>
-                  Alert.alert(
-                    'Create New Cycle',
-                    'Cycle creation will be connected when the cycle creation API is available.',
-                  )
-                }
+                onPress={() => router.push('/payouts')}
               >
                 <Text style={styles.createCycleButtonText}>
-                  Create new cycle
+                  View payouts
                 </Text>
               </Pressable>
             </View>
@@ -636,13 +738,9 @@ export default function OrganizerDashboard() {
             <View style={styles.listCard}>
               <Pressable
                 style={styles.listRow}
-                onPress={() =>
-                  router.push('/members')
-                }
+                onPress={() => router.push('/members')}
               >
-                <Text style={styles.quickActionIcon}>
-                  ♙
-                </Text>
+                <Text style={styles.quickActionIcon}>♙</Text>
 
                 <Text style={styles.listTitle}>
                   Manage Members
@@ -653,25 +751,17 @@ export default function OrganizerDashboard() {
 
               <Pressable
                 style={styles.listRow}
-                onPress={() =>
-                  router.push('/group-selection')
-                }
+                onPress={() => router.push('/group-selection')}
               >
-                <Text style={styles.quickActionIcon}>
-                  ▦
-                </Text>
+                <Text style={styles.quickActionIcon}>▦</Text>
 
-                <Text style={styles.listTitle}>
-                  View Groups
-                </Text>
+                <Text style={styles.listTitle}>View Groups</Text>
 
                 <Text style={styles.rowArrow}>›</Text>
               </Pressable>
 
               <View style={styles.listRow}>
-                <Text style={styles.quickActionIcon}>
-                  ⚙
-                </Text>
+                <Text style={styles.quickActionIcon}>⚙</Text>
 
                 <Text style={styles.listTitle}>
                   Group Settings
@@ -684,62 +774,7 @@ export default function OrganizerDashboard() {
         )}
       </ScrollView>
 
-      <BottomNavigation />
+      <OrganizerBottomNavigation />
     </SafeAreaView>
-  );
-}
-
-function BottomNavigation() {
-  return (
-    <View style={styles.bottomNav}>
-      <View
-        style={[
-          styles.navItem,
-          styles.navItemActive,
-        ]}
-      >
-        <Text style={styles.navIcon}>⌂</Text>
-        <Text
-          style={[
-            styles.navText,
-            styles.navTextActive,
-          ]}
-        >
-          Home
-        </Text>
-      </View>
-
-      <Pressable
-        style={styles.navItem}
-        onPress={() =>
-          router.push('/group-selection')
-        }
-      >
-        <Text style={styles.navIcon}>♙</Text>
-        <Text style={styles.navText}>Groups</Text>
-      </Pressable>
-
-      <Pressable
-        style={styles.navItem}
-        onPress={() =>
-          router.push('/contributions')
-        }
-      >
-        <Text style={styles.navIcon}>▣</Text>
-        <Text style={styles.navText}>
-          Contributions
-        </Text>
-      </Pressable>
-
-      <View style={styles.navItem}>
-        <Text style={styles.navIcon}>◷</Text>
-        <Text style={styles.navText}>Activity</Text>
-      </View>
-
-      <View style={styles.navItem}>
-        <Text style={styles.navIcon}>○</Text>
-        <Text style={styles.navText}>Profile</Text>
-      </View>
-    </View>
   );
 }

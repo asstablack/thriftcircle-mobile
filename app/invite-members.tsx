@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GroupScreenHeader } from '@/components/group-screen-header';
+import { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -8,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { getMyGroups } from '@/services/groupApi';
 import { inviteMembersStyles as styles } from '@/styles/inviteMembersStyles';
 import { colors } from '@/constants/color';
@@ -24,14 +26,20 @@ type Group = {
 
 export default function InviteMembersScreen() {
   const [groups, setGroups] = useState<Group[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedGroup, setSelectedGroup] =
+    useState<Group | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const requestVersion = useRef(0);
   const [loading, setLoading] = useState(true);
 
-  const loadGroups = async () => {
+  const loadGroups = useCallback(async () => {
+    const version = ++requestVersion.current;
     try {
       setLoading(true);
+      setError(null);
 
       const result = await getMyGroups();
+      if (version !== requestVersion.current) return;
 
       const organizerGroups = result.filter(
         (group: Group) => group.role === 'organizer',
@@ -39,24 +47,36 @@ export default function InviteMembersScreen() {
 
       setGroups(organizerGroups);
 
-      if (organizerGroups.length === 1) {
-        setSelectedGroup(organizerGroups[0]);
-      }
+      setSelectedGroup(
+        (previous) =>
+          organizerGroups.find(
+            (group: Group) => group._id === previous?._id,
+          ) ||
+          (organizerGroups.length === 1
+            ? organizerGroups[0]
+            : null),
+      );
     } catch (error) {
+      if (version !== requestVersion.current) return;
       const message =
         error instanceof Error
           ? error.message
           : 'Failed to load your groups.';
 
-      Alert.alert('Unable to load groups', message);
+      setError(message);
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadGroups();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadGroups();
+      return () => {
+        requestVersion.current++;
+      };
+    }, [loadGroups]),
+  );
 
   const handleCopyCode = async () => {
     if (!selectedGroup) return;
@@ -70,21 +90,15 @@ export default function InviteMembersScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <GroupScreenHeader
+        title="Invite Members"
+        subtitle="Share your group code with the people you want to invite."
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <Pressable onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
-        </Pressable>
-
-        <Text style={styles.title}>Invite Members</Text>
-
-        <Text style={styles.subtitle}>
-          Share your group invite code with people you want to add.
-        </Text>
-
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator
@@ -96,6 +110,18 @@ export default function InviteMembersScreen() {
               Loading your groups...
             </Text>
           </View>
+        ) : error ? (
+          <View style={styles.emptyContainer}>
+            <Text
+              accessibilityRole="alert"
+              style={styles.emptyText}
+            >
+              {error}
+            </Text>
+            <Pressable onPress={() => void loadGroups()}>
+              <Text style={styles.emptyTitle}>Try Again</Text>
+            </Pressable>
+          </View>
         ) : groups.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyTitle}>
@@ -103,7 +129,8 @@ export default function InviteMembersScreen() {
             </Text>
 
             <Text style={styles.emptyText}>
-              You need to create a group before you can invite members.
+              You need to create a group before you can invite
+              members.
             </Text>
 
             <Pressable
@@ -137,8 +164,8 @@ export default function InviteMembersScreen() {
                   </Text>
 
                   <Text style={styles.groupDetails}>
-                    ₦{group.contributionAmount.toLocaleString()} •{' '}
-                    {group.frequency}
+                    ₦{group.contributionAmount.toLocaleString()}{' '}
+                    • {group.frequency}
                   </Text>
                 </View>
 
@@ -178,6 +205,6 @@ export default function InviteMembersScreen() {
           </>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

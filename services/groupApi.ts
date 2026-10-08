@@ -19,7 +19,9 @@ export async function getMyGroups() {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || 'Failed to load your groups.');
+    throw new Error(
+      result.message || 'Failed to load your groups.',
+    );
   }
 
   return result;
@@ -56,9 +58,7 @@ export async function createGroup(data: {
   return result;
 }
 
-export async function joinGroup(data: {
-  inviteCode: string;
-}) {
+export async function joinGroup(data: { inviteCode: string }) {
   const { accessToken } = await getTokens();
 
   if (!accessToken) {
@@ -161,6 +161,9 @@ export async function getCurrentCycle(groupId: string) {
 
   const result = await response.json();
 
+  // The backend uses 404 specifically when this group has no active cycle.
+  if (response.status === 404) return null;
+
   if (!response.ok) {
     throw new Error(
       result.message || 'Failed to load current cycle.',
@@ -168,7 +171,6 @@ export async function getCurrentCycle(groupId: string) {
   }
 
   return result;
-  
 }
 
 export async function getContributionDetails(

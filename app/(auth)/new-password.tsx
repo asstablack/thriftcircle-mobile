@@ -1,34 +1,33 @@
-import { useState } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   Alert,
   Pressable,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from 'react';
+
 import { Image } from 'expo-image';
-import {
-  router,
-  useLocalSearchParams,
-} from 'expo-router';
-import {
-  newPasswordStyles as styles,
-} from '@/styles/newPasswordStyles';
+import { router, useLocalSearchParams } from 'expo-router';
+import { newPasswordStyles as styles } from '@/styles/newPasswordStyles';
 import { colors } from '@/constants/color';
 import { resetPassword } from '@/services/authApi';
 
 export default function NewPassword() {
-  const { identifier, code } =
-    useLocalSearchParams<{
-      identifier?: string;
-      code?: string;
-    }>();
+  const { identifier, code } = useLocalSearchParams<{
+    identifier?: string;
+    code?: string;
+  }>();
 
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] =
-    useState('');
-  const [passwordVisible, setPasswordVisible] =
-    useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] =
     useState(false);
   const [loading, setLoading] = useState(false);
@@ -101,117 +100,126 @@ export default function NewPassword() {
           ? error.message
           : 'Something went wrong. Please try again.';
 
-      Alert.alert(
-        'Reset failed',
-        message,
-      );
+      Alert.alert('Reset failed', message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => router.back()}
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.backText}>‹ Back</Text>
-        </Pressable>
-
-        <Image
-          source={require('@/assets/images/thrift-circle-logo-stacked.png')}
-          style={styles.logo}
-          contentFit="contain"
-        />
-
-        <Text style={styles.title}>
-          Reset Password
-        </Text>
-
-        <Text style={styles.subtitle}>
-          Create a new password for your ThriftCircle
-          account.
-        </Text>
-
-        <View style={styles.form}>
-          <Text style={styles.label}>
-            New Password
-          </Text>
-
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Enter your new password"
-              placeholderTextColor={colors.textSecondary}
-              secureTextEntry={!passwordVisible}
-              value={password}
-              onChangeText={setPassword}
-            />
-
-            <Pressable
-              style={styles.eyeButton}
-              onPress={() =>
-                setPasswordVisible(!passwordVisible)
-              }
-            >
-              <Text style={styles.eyeText}>
-                {passwordVisible ? 'Hide' : 'Show'}
-              </Text>
-            </Pressable>
-          </View>
-
-          <Text style={styles.helperText}>
-            Use at least 8 characters
-          </Text>
-
-          <Text style={styles.label}>
-            Confirm New Password
-          </Text>
-
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Confirm your new password"
-              placeholderTextColor={colors.textSecondary}
-              secureTextEntry={!confirmPasswordVisible}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-            />
-
-            <Pressable
-              style={styles.eyeButton}
-              onPress={() =>
-                setConfirmPasswordVisible(
-                  !confirmPasswordVisible,
-                )
-              }
-            >
-              <Text style={styles.eyeText}>
-                {confirmPasswordVisible
-                  ? 'Hide'
-                  : 'Show'}
-              </Text>
-            </Pressable>
-          </View>
-
           <Pressable
-            style={[
-              styles.resetButton,
-              loading && styles.resetButtonDisabled,
-            ]}
-            onPress={handleResetPassword}
-            disabled={loading}
+            style={styles.backButton}
+            onPress={() => router.back()}
           >
-            <Text style={styles.resetButtonText}>
-              {loading
-                ? 'Resetting...'
-                : 'Reset Password'}
-            </Text>
+            <Text style={styles.backText}>‹ Back</Text>
           </Pressable>
-        </View>
-      </View>
-    </View>
+
+          <Image
+            source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+            style={styles.logo}
+            contentFit="contain"
+          />
+
+          <Text style={styles.title}>Reset Password</Text>
+
+          <Text style={styles.subtitle}>
+            Create a new password for your ThriftCircle account.
+          </Text>
+
+          <View style={styles.form}>
+            <Text style={styles.label}>New Password</Text>
+
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Enter your new password"
+                placeholderTextColor={colors.textSecondary}
+                secureTextEntry={!passwordVisible}
+                value={password}
+                onChangeText={setPassword}
+              />
+
+              <Pressable
+                style={styles.eyeButton}
+                accessibilityRole="button"
+                accessibilityLabel="Toggle password visibility"
+                hitSlop={10}
+                onPress={() =>
+                  setPasswordVisible(!passwordVisible)
+                }
+              >
+                <Feather
+                  name={passwordVisible ? 'eye-off' : 'eye'}
+                  size={19}
+                  color={colors.textSecondary}
+                />
+              </Pressable>
+            </View>
+
+            <Text style={styles.helperText}>
+              Use at least 8 characters
+            </Text>
+
+            <Text style={styles.label}>
+              Confirm New Password
+            </Text>
+
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Confirm your new password"
+                placeholderTextColor={colors.textSecondary}
+                secureTextEntry={!confirmPasswordVisible}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+
+              <Pressable
+                style={styles.eyeButton}
+                accessibilityRole="button"
+                accessibilityLabel="Toggle password visibility"
+                hitSlop={10}
+                onPress={() =>
+                  setConfirmPasswordVisible(
+                    !confirmPasswordVisible,
+                  )
+                }
+              >
+                <Feather
+                  name={
+                    confirmPasswordVisible ? 'eye-off' : 'eye'
+                  }
+                  size={19}
+                  color={colors.textSecondary}
+                />
+              </Pressable>
+            </View>
+
+            <Pressable
+              style={[
+                styles.resetButton,
+                loading && styles.resetButtonDisabled,
+              ]}
+              onPress={handleResetPassword}
+              disabled={loading}
+            >
+              <Text style={styles.resetButtonText}>
+                {loading ? 'Resetting...' : 'Reset Password'}
+              </Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

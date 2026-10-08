@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { useEffect } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { splashStyles as styles } from '@/styles/splashStyles';
@@ -15,8 +16,9 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="light" />
       <Image
-        source={require('@/assets/images/thrift-circle-logo.png')}
+        source={require('@/assets/images/thrift-circle-logo-stacked.png')}
         style={styles.logo}
         contentFit="contain"
       />

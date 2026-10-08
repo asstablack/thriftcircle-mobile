@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -9,18 +10,19 @@ export const groupSelectionStyles = StyleSheet.create({
 
   content: {
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 24,
     paddingBottom: 40,
   },
 
   title: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
   subtitle: {
+    fontFamily: fonts.regular,
     fontSize: 15,
     color: colors.textSecondary,
     marginBottom: 24,
@@ -37,6 +39,7 @@ export const groupSelectionStyles = StyleSheet.create({
 
   loadingText: {
     marginTop: 12,
+    fontFamily: fonts.regular,
     fontSize: 14,
     color: colors.textSecondary,
   },
@@ -45,19 +48,20 @@ export const groupSelectionStyles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 14,
+    borderRadius: 8,
     padding: 24,
     alignItems: 'center',
   },
 
   emptyTitle: {
     fontSize: 17,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
   emptyText: {
+    fontFamily: fonts.regular,
     fontSize: 14,
     lineHeight: 21,
     color: colors.textSecondary,
@@ -68,7 +72,7 @@ export const groupSelectionStyles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 14,
+    borderRadius: 8,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
@@ -81,11 +85,12 @@ export const groupSelectionStyles = StyleSheet.create({
 
   groupName: {
     fontSize: 17,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   groupDetails: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
     marginTop: 6,
@@ -109,7 +114,7 @@ export const groupSelectionStyles = StyleSheet.create({
 
   roleText: {
     fontSize: 9,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     textTransform: 'capitalize',
   },
 
@@ -122,6 +127,7 @@ export const groupSelectionStyles = StyleSheet.create({
   },
 
   arrow: {
+    fontFamily: fonts.regular,
     fontSize: 22,
     color: colors.textSecondary,
   },
@@ -133,7 +139,7 @@ export const groupSelectionStyles = StyleSheet.create({
   createButton: {
     backgroundColor: colors.primary,
     paddingVertical: 15,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: 'center',
     marginBottom: 12,
   },
@@ -141,36 +147,36 @@ export const groupSelectionStyles = StyleSheet.create({
   createButtonText: {
     color: colors.white,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   joinButton: {
     borderWidth: 1,
     borderColor: colors.primary,
     paddingVertical: 15,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
 
   joinButtonText: {
     color: colors.primary,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   inviteButton: {
-  borderWidth: 1,
-  borderColor: colors.primary,
-  backgroundColor: colors.primaryLight,
-  paddingVertical: 15,
-  borderRadius: 12,
-  alignItems: 'center',
-  marginTop: 12,
-},
+    borderWidth: 1,
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 12,
+  },
 
-inviteButtonText: {
-  color: colors.primary,
-  fontSize: 16,
-  fontWeight: '700',
-},
+  inviteButtonText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontFamily: fonts.bold,
+  },
 });

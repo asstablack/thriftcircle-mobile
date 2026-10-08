@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -8,9 +9,12 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   content: {
-    flex: 1,
+    flexGrow: 1,
+    width: '100%',
+    maxWidth: 460,
+    alignSelf: 'center',
     paddingHorizontal: 24,
-    paddingTop: 42,
+    paddingTop: 20,
     paddingBottom: 28,
   },
 
@@ -20,6 +24,7 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   backText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
@@ -33,12 +38,13 @@ export const roleSelectionStyles = StyleSheet.create({
 
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.textPrimary,
     textAlign: 'center',
   },
 
   subtitle: {
+    fontFamily: fonts.regular,
     fontSize: 11,
     color: colors.textSecondary,
     textAlign: 'center',
@@ -47,17 +53,17 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   roleCard: {
-  minHeight: 104,
-  flexDirection: 'row',
-  alignItems: 'center',
-  backgroundColor: colors.white,
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: 10,
-  paddingHorizontal: 14,
-  paddingVertical: 14,
-  marginBottom: 14,
-},
+    minHeight: 150,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    marginBottom: 14,
+  },
 
   roleCardSelected: {
     borderColor: colors.primary,
@@ -65,17 +71,18 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   roleIcon: {
-  width: 42,
-  height: 42,
-  borderWidth: 1,
-  borderColor: colors.primary,
-  borderRadius: 9,
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: 13,
-},
+    width: 42,
+    height: 42,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 13,
+  },
 
   roleIconText: {
+    fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.primary,
   },
@@ -86,17 +93,18 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   roleTitle: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 18,
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 3,
   },
 
   roleDescription: {
-  fontSize: 10,
-  lineHeight: 15,
-  color: colors.textSecondary,
-},
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.textSecondary,
+  },
 
   radio: {
     width: 17,
@@ -120,13 +128,13 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   continueButton: {
-  height: 52,
-  backgroundColor: colors.primary,
-  borderRadius: 9,
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginTop: 6,
-},
+    height: 52,
+    backgroundColor: colors.primary,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
 
   continueButtonDisabled: {
     opacity: 0.45,
@@ -135,6 +143,6 @@ export const roleSelectionStyles = StyleSheet.create({
   continueText: {
     color: colors.white,
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 });

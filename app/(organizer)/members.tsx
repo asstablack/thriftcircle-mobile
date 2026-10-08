@@ -1,214 +1,293 @@
-import { ScrollView, Text, View, Pressable } from 'react-native';
-import { router } from 'expo-router';
+import { useCallback, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { router, Stack, useFocusEffect } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import {
+  OrganizerHeader,
+  OrganizerBottomNavigation,
+} from '@/components/organizer-chrome';
+import {
+  getGroupDetails,
+  getGroupContributions,
+  getCurrentCycle,
+} from '@/services/groupApi';
+import { useAuthStore } from '@/store/authStore';
 import { membersStyles as styles } from '@/styles/membersStyles';
+import { colors } from '@/constants/color';
 
-const members = [
-  {
-    id: '1',
-    name: 'Ada Okafor',
-    initials: 'AO',
-    status: 'Paid',
-    amount: '₦10,000',
-  },
-  {
-    id: '2',
-    name: 'Michael Yusuf',
-    initials: 'MY',
-    status: 'Paid',
-    amount: '₦10,000',
-  },
-  {
-    id: '3',
-    name: 'Tunde Yusuf',
-    initials: 'TY',
-    status: 'Pending',
-    amount: '₦10,000',
-  },
-  {
-    id: '4',
-    name: 'Amaka Okafor',
-    initials: 'AO',
-    status: 'Paid',
-    amount: '₦10,000',
-  },
-  {
-    id: '5',
-    name: 'David Ali',
-    initials: 'DA',
-    status: 'Overdue',
-    amount: '₦10,000',
-  },
-];
+type Member = {
+  userId: { _id: string; fullName: string };
+  payoutOrder?: number;
+  status: string;
+};
+type Details = {
+  group: {
+    groupName: string;
+    contributionAmount: number;
+    frequency: string;
+    status: string;
+  };
+  members: Member[];
+};
+type Contribution = {
+  memberId: string;
+  cycleNumber: number;
+  status: string;
+};
+const labels: Record<string, string> = {
+  CONFIRMED: 'Confirmed',
+  DUE: 'Due',
+  OVERDUE: 'Overdue',
+  PENDING_REVIEW: 'Under review',
+  ISSUE: 'Correction requested',
+};
 
 export default function MembersScreen() {
+  const group = useAuthStore((state) => state.selectedGroup);
+  const [details, setDetails] = useState<Details | null>(null);
+  const [records, setRecords] = useState<Contribution[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [reload, setReload] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      if (!group || group.role !== 'organizer') {
+        router.replace('/group-selection');
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      Promise.all([
+        getGroupDetails(group.id),
+        getGroupContributions(group.id),
+        getCurrentCycle(group.id),
+      ])
+        .then(
+          ([result, contributions, cycle]: [
+            Details,
+            Contribution[],
+            { cycleNumber: number } | null,
+          ]) => {
+            if (!active) return;
+            setDetails(result);
+            setRecords(
+              cycle
+                ? contributions.filter(
+                    (item) =>
+                      item.cycleNumber === cycle.cycleNumber,
+                  )
+                : [],
+            );
+          },
+        )
+        .catch((reason: unknown) => {
+          if (active)
+            setError(
+              reason instanceof Error
+                ? reason.message
+                : 'Unable to load members.',
+            );
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+      return () => {
+        active = false;
+      };
+      // Retry reloads the same selected group.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [group?.id, group?.role, reload]),
+  );
+  const members = (details?.members || []).filter((member) =>
+    member.userId?.fullName
+      .toLowerCase()
+      .includes(query.toLowerCase()),
+  );
   return (
-    <View style={styles.container}>
-      <View style={styles.topHeader}>
-        <View style={styles.logoRow}>
-          <View style={styles.logoCircle}>
-            <Text style={styles.logoText}>T</Text>
-          </View>
-
-          <Text style={styles.logoName}>ThriftCircle</Text>
-        </View>
-
-        <View style={styles.headerActions}>
-          <Text style={styles.headerIcon}>♧</Text>
-
-          <View style={styles.profileCircle}>
-            <Text style={styles.profileText}>OR</Text>
-          </View>
-
-          <Text style={styles.chevron}>⌄</Text>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <OrganizerHeader />
+      <View style={styles.pageHeader}>
+        <Text style={styles.pageTitle}>Members</Text>
+        <Text style={styles.pageSubtitle}>
+          Manage members and view their contribution status.
+        </Text>
       </View>
-
       <ScrollView
-        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.pageHeader}>
-          <Text style={styles.pageTitle}>Members</Text>
-
-          <Text style={styles.pageSubtitle}>
-            Manage members and view their contribution status.
-          </Text>
-        </View>
-
-        <View style={styles.groupCard}>
-          <View>
-            <Text style={styles.groupName}>
-              My Family Ajo
-            </Text>
-
-            <Text style={styles.groupDetails}>
-              10 members • Monthly • ₦10,000
-            </Text>
-          </View>
-
-          <View style={styles.activeBadge}>
-            <Text style={styles.activeBadgeText}>ACTIVE</Text>
-          </View>
-        </View>
-
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>10</Text>
-            <Text style={styles.statLabel}>Members</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>8</Text>
-            <Text style={styles.statLabel}>Paid</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>1</Text>
-            <Text style={styles.statLabel}>Pending</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>1</Text>
-            <Text style={styles.statLabel}>Overdue</Text>
-          </View>
-        </View>
-
-        <View style={styles.searchBox}>
-          <Text style={styles.searchIcon}>⌕</Text>
-
-          <Text style={styles.searchText}>
-            Search members
-          </Text>
-        </View>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>All Members</Text>
-
-          <Text style={styles.memberCount}>10 members</Text>
-        </View>
-
-        {members.map((member) => (
-          <Pressable
-            key={member.id}
-            style={styles.memberCard}
-            onPress={() =>
-              router.push({
-                pathname: '/member-detail',
-                params: { memberId: member.id },
-              })
-            }
-          >
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {member.initials}
-              </Text>
-            </View>
-
-            <View style={styles.memberInfo}>
-              <Text style={styles.memberName}>
-                {member.name}
-              </Text>
-
-              <Text style={styles.memberAmount}>
-                {member.amount} contribution
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.statusBadge,
-                member.status === 'Paid'
-                  ? styles.paidBadge
-                  : member.status === 'Pending'
-                    ? styles.pendingBadge
-                    : styles.overdueBadge,
-              ]}
+        <Pressable onPress={() => router.push('/join-requests')}>
+          <Text style={styles.paidText}>Review pending join requests</Text>
+        </Pressable>
+        {loading ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : error ? (
+          <View style={styles.groupCard}>
+            <Text style={styles.groupDetails}>{error}</Text>
+            <Pressable
+              onPress={() => setReload((value) => value + 1)}
             >
-              <Text
-                style={[
-                  styles.statusText,
-                  member.status === 'Paid'
-                    ? styles.paidText
-                    : member.status === 'Pending'
-                      ? styles.pendingText
-                      : styles.overdueText,
-                ]}
-              >
-                {member.status}
-              </Text>
+              <Text style={styles.paidText}>Try Again</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <>
+            <View style={styles.groupCard}>
+              <View>
+                <Text style={styles.groupName}>
+                  {details?.group.groupName}
+                </Text>
+                <Text style={styles.groupDetails}>
+                  {details?.members.length} members ·{' '}
+                  {details?.group.frequency} · ₦
+                  {details?.group.contributionAmount.toLocaleString(
+                    'en-NG',
+                  )}
+                </Text>
+              </View>
             </View>
-
-            <Text style={styles.arrow}>›</Text>
-          </Pressable>
-        ))}
+            <View style={styles.statsRow}>
+              {[
+                {
+                  label: 'Members',
+                  value: details?.members.length || 0,
+                },
+                {
+                  label: 'Confirmed',
+                  value: records.filter(
+                    (item) => item.status === 'CONFIRMED',
+                  ).length,
+                },
+                {
+                  label: 'Review',
+                  value: records.filter(
+                    (item) => item.status === 'PENDING_REVIEW',
+                  ).length,
+                },
+                {
+                  label: 'Overdue',
+                  value: records.filter(
+                    (item) => item.status === 'OVERDUE',
+                  ).length,
+                },
+              ].map((item) => (
+                <View
+                  key={item.label}
+                  style={styles.statCard}
+                >
+                  <Text style={styles.statValue}>
+                    {item.value}
+                  </Text>
+                  <Text style={styles.statLabel}>
+                    {item.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+            <View style={styles.searchBox}>
+              <Feather
+                name="search"
+                size={18}
+                color={colors.textSecondary}
+              />
+              <TextInput
+                style={styles.searchText}
+                accessibilityLabel="Search members"
+                placeholder="Search members"
+                value={query}
+                onChangeText={setQuery}
+              />
+            </View>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                All Members
+              </Text>
+              <Pressable
+                onPress={() => router.push('/invite-members')}
+              >
+                <Text style={styles.paidText}>
+                  Invite members
+                </Text>
+              </Pressable>
+            </View>
+            {!members.length && (
+              <Text style={styles.groupDetails}>
+                No matching members.
+              </Text>
+            )}
+            {members.map((member) => {
+              const record = records.find(
+                (item) => item.memberId === member.userId._id,
+              );
+              return (
+                <Pressable
+                  key={member.userId._id}
+                  style={styles.memberCard}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/member-detail',
+                      params: { memberId: member.userId._id },
+                    })
+                  }
+                >
+                  <View style={styles.avatar}>
+                    <Text style={styles.avatarText}>
+                      {member.userId.fullName
+                        .trim()
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((part) => part[0])
+                        .join('')}
+                    </Text>
+                  </View>
+                  <View style={styles.memberInfo}>
+                    <Text style={styles.memberName}>
+                      {member.userId.fullName}
+                    </Text>
+                    <Text style={styles.memberAmount}>
+                      {member.payoutOrder
+                        ? 'Position ' + member.payoutOrder
+                        : 'Position not assigned'}{' '}
+                      · {member.status}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      record?.status === 'CONFIRMED'
+                        ? styles.paidBadge
+                        : styles.pendingBadge,
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {record
+                        ? labels[record.status]
+                        : 'No obligation'}
+                    </Text>
+                  </View>
+                  <Feather
+                    name="chevron-right"
+                    size={18}
+                    color={colors.textSecondary}
+                  />
+                </Pressable>
+              );
+            })}
+          </>
+        )}
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>⌂</Text>
-          <Text style={styles.navText}>Home</Text>
-        </View>
-
-        <View style={[styles.navItem, styles.navItemActive]}>
-          <Text style={styles.navIcon}>▦</Text>
-          <Text style={styles.navTextActive}>Groups</Text>
-        </View>
-
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>▣</Text>
-          <Text style={styles.navText}>Contributions</Text>
-        </View>
-
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>◷</Text>
-          <Text style={styles.navText}>Activity</Text>
-        </View>
-
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>○</Text>
-          <Text style={styles.navText}>Profile</Text>
-        </View>
-      </View>
-    </View>
+      <OrganizerBottomNavigation active="Groups" />
+    </SafeAreaView>
   );
 }

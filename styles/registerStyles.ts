@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -8,18 +9,22 @@ export const registerStyles = StyleSheet.create({
   },
 
   content: {
+    width: '100%',
+    maxWidth: 460,
+    alignSelf: 'center',
     paddingHorizontal: 24,
-    
-    paddingTop: 40,
+
+    paddingTop: 20,
     paddingBottom: 30,
   },
 
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 50,
+    marginBottom: 40,
   },
 
   backText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
@@ -33,14 +38,15 @@ export const registerStyles = StyleSheet.create({
 
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.textPrimary,
     textAlign: 'center',
   },
 
   subtitle: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 5,
@@ -53,18 +59,19 @@ export const registerStyles = StyleSheet.create({
 
   label: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     marginBottom: 6,
   },
 
   input: {
-    height: 46,
+    height: 50,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 13,
+    fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.textPrimary,
     marginBottom: 13,
@@ -90,7 +97,7 @@ export const registerStyles = StyleSheet.create({
   registerButtonText: {
     color: colors.white,
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   loginRow: {
@@ -101,87 +108,90 @@ export const registerStyles = StyleSheet.create({
   },
 
   loginText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
 
   loginLink: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primary,
     marginLeft: 5,
   },
 
   passwordContainer: {
-  position: 'relative',
-  marginBottom: 13,
-},
+    position: 'relative',
+    marginBottom: 13,
+  },
 
-passwordInput: {
-  height: 46,
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: 8,
-  backgroundColor: colors.white,
-  paddingHorizontal: 13,
-  paddingRight: 60,
-  fontSize: 13,
-  color: colors.textPrimary,
-},
+  passwordInput: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    backgroundColor: colors.white,
+    paddingHorizontal: 13,
+    paddingRight: 60,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    color: colors.textPrimary,
+  },
 
-eyeButton: {
-  position: 'absolute',
-  right: 13,
-  top: 0,
-  height: 46,
-  justifyContent: 'center',
-},
+  eyeButton: {
+    position: 'absolute',
+    right: 13,
+    top: 0,
+    height: 50,
+    justifyContent: 'center',
+  },
 
-eyeText: {
-  fontSize: 11,
-  fontWeight: '600',
-  color: colors.primary,
-},
+  eyeText: {
+    fontSize: 13,
+    fontFamily: fonts.semiBold,
+    color: colors.primary,
+  },
 
-termsRow: {
-  flexDirection: 'row',
-  alignItems: 'flex-start',
-  marginTop: 4,
-  marginBottom: 18,
-},
+  termsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 4,
+    marginBottom: 18,
+  },
 
-checkbox: {
-  width: 18,
-  height: 18,
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: 4,
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: 8,
-  backgroundColor: colors.white,
-},
+  checkbox: {
+    width: 18,
+    height: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+    backgroundColor: colors.white,
+  },
 
-checkboxChecked: {
-  backgroundColor: colors.primary,
-  borderColor: colors.primary,
-},
+  checkboxChecked: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
 
-checkmark: {
-  color: colors.white,
-  fontSize: 12,
-  fontWeight: '700',
-},
+  checkmark: {
+    color: colors.white,
+    fontSize: 12,
+    fontFamily: fonts.bold,
+  },
 
-termsText: {
-  flex: 1,
-  fontSize: 10,
-  lineHeight: 15,
-  color: colors.textSecondary,
-},
+  termsText: {
+    flex: 1,
+    fontFamily: fonts.regular,
+    fontSize: 10,
+    lineHeight: 15,
+    color: colors.textSecondary,
+  },
 
-termsLink: {
-  color: colors.primary,
-  fontWeight: '600',
-},
+  termsLink: {
+    color: colors.primary,
+    fontFamily: fonts.semiBold,
+  },
 });

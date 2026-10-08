@@ -1,14 +1,18 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { welcomeStyles as styles } from '@/styles/welcomeStyles';
 
 export default function WelcomeScreen() {
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <Image
-          source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+          source={require('@/assets/images/thriftcirlce-official-logo.png')}
           style={styles.logo}
           contentFit="contain"
         />
@@ -19,13 +23,9 @@ export default function WelcomeScreen() {
           contentFit="contain"
         />
 
-        <Text style={styles.title}>
-          Save Together
-        </Text>
+        <Text style={styles.title}>Save Together</Text>
 
-        <Text style={styles.titleAccent}>
-          Grow Together
-        </Text>
+        <Text style={styles.titleAccent}>Grow Together</Text>
 
         <Text style={styles.description}>
           Create or join trusted savings groups, track
@@ -51,7 +51,7 @@ export default function WelcomeScreen() {
             </Text>
           </Pressable>
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

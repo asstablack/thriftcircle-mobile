@@ -1,276 +1,313 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const contributionReviewStyles = StyleSheet.create({
+  uploadBox: {
+    padding: 24,
+    marginVertical: 16,
+    gap: 10,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.border,
+    borderRadius: 12,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
   },
-
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 28,
   },
-
   header: {
-    height: 64,
+    minHeight: 64,
     backgroundColor: colors.white,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    paddingHorizontal: 12,
+    gap: 4,
   },
-
   backButton: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  backText: {
-    fontSize: 30,
-    color: colors.textPrimary,
-  },
-
   headerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 17,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
-
-  headerSpacer: {
-    width: 36,
+  banner: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
   },
-
-  summaryCard: {
-    marginHorizontal: 18,
-    marginTop: 18,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 16,
-  },
-
-  sectionLabel: {
-    fontSize: 11,
-    color: colors.textSecondary,
+  bannerDate: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.white,
     marginBottom: 6,
   },
-
   amount: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: colors.textPrimary,
-    marginBottom: 14,
+    fontSize: 16,
+    fontFamily: fonts.bold,
+    color: colors.white,
   },
-
+  statusBadge: {
+    overflow: 'hidden',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    fontFamily: fonts.regular,
+    fontSize: 11,
+  },
+  confirmed: {
+    backgroundColor: colors.primaryLight,
+    color: colors.primary,
+  },
+  pending: {
+    backgroundColor: '#FFFAE8',
+    color: '#8B581C',
+  },
+  issue: {
+    backgroundColor: '#FFF0F2',
+    color: '#AD3045',
+  },
+  detailsCard: {
+    margin: 20,
+    marginBottom: 0,
+    padding: 14,
+    backgroundColor: colors.primaryLight,
+    borderRadius: 6,
+  },
   detailRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+    justifyContent: 'space-between',
+    gap: 14,
+    paddingVertical: 10,
   },
-
   detailLabel: {
-    fontSize: 11,
+    fontFamily: fonts.regular,
+    fontSize: 12,
     color: colors.textSecondary,
   },
-
   detailValue: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.textPrimary,
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.textDark,
+    flexShrink: 1,
+    textAlign: 'right',
   },
-
-  statusBadge: {
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 10,
-  },
-
-  statusText: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: colors.primary,
-  },
-
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
-    marginHorizontal: 18,
-    marginTop: 22,
-    marginBottom: 10,
+    marginHorizontal: 20,
+    marginTop: 24,
+    marginBottom: 12,
   },
-
   evidenceCard: {
-    marginHorizontal: 18,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 12,
-  },
-
-  evidenceImage: {
-    width: '100%',
-    height: 280,
-    borderRadius: 8,
+    marginHorizontal: 20,
+    padding: 16,
     backgroundColor: colors.subtleBackground,
+    borderRadius: 7,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-
-  pdfButton: {
-    minHeight: 130,
-    backgroundColor: colors.primaryLight,
+  evidenceImage: {
+    width: 64,
+    height: 64,
     borderRadius: 8,
+    backgroundColor: colors.border,
+  },
+  fileIcon: {
+    width: 64,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  pdfIcon: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: colors.primary,
-    marginBottom: 8,
-  },
-
-  pdfText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-
-  noteBox: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: colors.subtleBackground,
+    backgroundColor: colors.primaryLight,
     borderRadius: 8,
   },
-
-  noteLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    marginBottom: 4,
-  },
-
-  noteText: {
-    fontSize: 11,
+  fileName: {
+    fontSize: 13,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
-    lineHeight: 16,
+    marginBottom: 6,
   },
-
+  noteBox: {
+    marginHorizontal: 20,
+    marginTop: 8,
+    padding: 16,
+    backgroundColor: colors.subtleBackground,
+    borderRadius: 6,
+    gap: 6,
+  },
+  noteLabel: {
+    fontSize: 12,
+    fontFamily: fonts.semiBold,
+    color: colors.textSecondary,
+  },
+  noteText: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    lineHeight: 19,
+    color: colors.textDark,
+  },
+  noteDate: {
+    fontFamily: fonts.regular,
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  confirmedBackground: {
+    backgroundColor: colors.primaryLight,
+  },
+  issueBackground: {
+    backgroundColor: '#FFF0F2',
+  },
   reviewInput: {
-    marginHorizontal: 18,
-    minHeight: 100,
+    marginHorizontal: 20,
+    minHeight: 120,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
+    borderRadius: 6,
     backgroundColor: colors.white,
     padding: 12,
-    fontSize: 12,
+    fontFamily: fonts.regular,
+    fontSize: 13,
     color: colors.textPrimary,
     textAlignVertical: 'top',
   },
-
-  primaryButton: {
-    marginHorizontal: 18,
-    marginTop: 14,
-    backgroundColor: colors.primary,
-    borderRadius: 9,
-    paddingVertical: 13,
-    alignItems: 'center',
+  shortInput: {
+    minHeight: 58,
   },
-
+  primaryButton: {
+    marginHorizontal: 20,
+    marginTop: 28,
+    minHeight: 48,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+  },
   primaryButtonText: {
     color: colors.white,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontFamily: fonts.semiBold,
   },
-
   secondaryButton: {
-    marginHorizontal: 18,
-    marginTop: 9,
+    marginHorizontal: 20,
+    marginTop: 10,
+    minHeight: 48,
     backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.error,
-    borderRadius: 9,
-    paddingVertical: 13,
+    borderColor: colors.primary,
+    borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-
   secondaryButtonText: {
-    color: colors.error,
-    fontSize: 12,
-    fontWeight: '700',
+    color: colors.primary,
+    fontFamily: fonts.regular,
+    fontSize: 13,
   },
-
   disabledButton: {
     opacity: 0.6,
   },
-
-  emptyCard: {
-    marginHorizontal: 18,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 20,
-    alignItems: 'center',
+  selectionCard: {
+    marginHorizontal: 20,
+    padding: 12,
+    backgroundColor: colors.subtleBackground,
+    borderRadius: 6,
   },
-
-  emptyTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: 5,
+  option: {
+    minHeight: 72,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    gap: 12,
   },
-
-  emptyText: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 16,
-  },
-
-  issueCard: {
-    marginHorizontal: 18,
-    marginTop: 20,
-    backgroundColor: '#FDE8E8',
-    borderRadius: 10,
-    padding: 14,
-  },
-
-  issueTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.error,
-    marginBottom: 5,
-  },
-
-  issueText: {
-    fontSize: 11,
-    color: colors.textPrimary,
-    lineHeight: 16,
-  },
-
-  loadingContainer: {
+  optionContent: {
     flex: 1,
-    backgroundColor: colors.background,
+  },
+  optionTitle: {
+    fontSize: 13,
+    fontFamily: fonts.medium,
+    color: colors.textPrimary,
+    marginBottom: 8,
+  },
+  optionText: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.textSecondary,
+  },
+  radio: {
+    width: 18,
+    height: 18,
+    borderWidth: 1,
+    borderColor: colors.disabled,
+    backgroundColor: colors.white,
+    borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
   },
-
-  loadingText: {
+  radioSelected: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+  },
+  errorText: {
+    marginHorizontal: 20,
     marginTop: 12,
+    fontFamily: fonts.regular,
     fontSize: 13,
+    lineHeight: 18,
+    color: '#AD3045',
+  },
+  stateCard: {
+    padding: 24,
+    minHeight: 350,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+  },
+  stateTitle: {
+    fontSize: 16,
+    fontFamily: fonts.semiBold,
+    color: colors.textPrimary,
+  },
+  stateText: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: 'center',
     color: colors.textSecondary,
+  },
+  skeletonBanner: {
+    height: 76,
+    backgroundColor: colors.primaryLight,
+  },
+  skeletonCard: {
+    height: 140,
+    margin: 20,
+    borderRadius: 8,
+    backgroundColor: colors.border,
+  },
+  skeletonLine: {
+    height: 48,
+    marginHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: colors.border,
   },
 });

@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -6,464 +7,266 @@ export const contributionsStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-
-  topHeader: {
-    height: 70,
+  scrollContent: {
+    paddingBottom: 24,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 20,
+    minHeight: 44,
+  },
+  secondaryText: {
+    fontFamily: fonts.regular,
+    fontSize: 11,
+    color: colors.textSecondary,
+    lineHeight: 16,
+  },
+  bodyText: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    color: colors.textPrimary,
+  },
+  banner: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  bannerTitle: {
+    fontSize: 16,
+    fontFamily: fonts.bold,
+    color: colors.white,
+    marginBottom: 4,
+  },
+  bannerText: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.white,
+    lineHeight: 17,
+  },
+  memberSummary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    gap: 10,
+  },
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    fontSize: 12,
+    fontFamily: fonts.semiBold,
+    color: colors.primary,
+  },
+  memberInfo: {
+    flex: 1,
+  },
+  memberName: {
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
+    color: colors.textPrimary,
+    marginBottom: 3,
+  },
+  memberPicker: {
+    marginHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
     backgroundColor: colors.white,
+  },
+  pickerRow: {
+    minHeight: 44,
+    padding: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
-
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  logoCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 7,
-  },
-
-  logoText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-
-  logoName: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-
-  headerIcon: {
-    fontSize: 20,
-    color: colors.textSecondary,
-  },
-
-  profileCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  profileText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: colors.white,
-  },
-
-  chevron: {
-    fontSize: 18,
-    color: colors.textSecondary,
-  },
-
-  scrollContent: {
-    paddingBottom: 30,
-  },
-
-  backButton: {
-    paddingHorizontal: 18,
-    paddingTop: 14,
-    paddingBottom: 10,
-    fontSize: 11,
-    color: colors.textSecondary,
-  },
-
-  greenHeader: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 18,
-    paddingVertical: 15,
-  },
-
-  pageTitle: {
-    color: colors.white,
-    fontSize: 17,
-    fontWeight: '700',
-  },
-
-  pageSubtitle: {
-    color: colors.white,
-    opacity: 0.9,
-    fontSize: 10,
-    marginTop: 4,
-  },
-
-  filterRow: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-  },
-
-  filterButton: {
-    flex: 1,
-    minHeight: 40,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 9,
-    backgroundColor: colors.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-
-  filterIcon: {
-    fontSize: 13,
-    color: colors.primary,
-    marginRight: 6,
-  },
-
-  filterText: {
-    flex: 1,
-    fontSize: 10,
-    color: colors.textDark,
-  },
-
-  filterArrow: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-
-  summaryCard: {
-    marginHorizontal: 18,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 13,
-    padding: 15,
-  },
-
-  summaryTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-
-  summarySubtext: {
-    fontSize: 9,
-    color: colors.textSecondary,
-    marginTop: 3,
-  },
-
-  summaryMain: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 15,
-  },
-
-  progressCircle: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    borderWidth: 7,
-    borderColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  progressValue: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: colors.primary,
-  },
-
-  amountSection: {
-    marginLeft: 15,
-  },
-
-  amount: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: colors.textPrimary,
-  },
-
-  expected: {
-    fontSize: 10,
-    color: colors.textSecondary,
-    marginTop: 3,
-  },
-
-  statusList: {
-    marginTop: 12,
-  },
-
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 5,
-  },
-
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 8,
-  },
-
-  confirmedDot: {
-    backgroundColor: colors.primary,
-  },
-
-  pendingDot: {
-    backgroundColor: colors.warning,
-  },
-
-  overdueDot: {
-    backgroundColor: colors.error,
-  },
-
-  memberDot: {
-    backgroundColor: colors.info,
-  },
-
-  statusLabel: {
-    flex: 1,
-    fontSize: 10,
-    color: colors.textSecondary,
-  },
-
-  statusValue: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 18,
-    marginTop: 10,
-  },
-
-  smallStatCard: {
-    width: '48%',
-    marginRight: '2%',
-    marginBottom: 8,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
-    padding: 11,
-  },
-
-  smallStatNumber: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: colors.textPrimary,
-  },
-
-  smallStatLabel: {
-    fontSize: 9,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-
   tabs: {
     flexDirection: 'row',
-    marginHorizontal: 18,
-    marginTop: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    marginHorizontal: 20,
+    justifyContent: 'space-between',
   },
-
   tab: {
-    paddingHorizontal: 9,
-    paddingVertical: 9,
-  },
-
-  activeTab: {
+    paddingVertical: 12,
+    minWidth: 70,
+    alignItems: 'center',
     borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  activeTab: {
     borderBottomColor: colors.primary,
   },
-
   tabText: {
-    fontSize: 9,
+    fontFamily: fonts.regular,
+    fontSize: 12,
     color: colors.textSecondary,
   },
-
   activeTabText: {
     color: colors.primary,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
-
+  stats: {
+    flexDirection: 'row',
+    gap: 8,
+    padding: 20,
+    marginTop: 8,
+  },
+  stat: {
+    flex: 1,
+  },
+  statValue: {
+    fontSize: 14,
+    fontFamily: fonts.bold,
+    color: colors.primary,
+    marginBottom: 5,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
+    color: colors.textPrimary,
+    marginHorizontal: 20,
+    marginVertical: 14,
+  },
+  historyCard: {
+    marginHorizontal: 20,
+    padding: 8,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+  },
   tableHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 9,
-    backgroundColor: colors.subtleBackground,
-  },
-
-  tableHeaderText: {
-    flex: 1,
-    fontSize: 8,
-    color: colors.textSecondary,
-    fontWeight: '700',
-  },
-
-  contributionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
+    minHeight: 38,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-
-  memberText: {
-    flex: 1,
-    fontSize: 9,
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-
-  rowText: {
-    flex: 1,
-    fontSize: 8,
-    color: colors.textSecondary,
-  },
-
-  statusBadge: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-
-  confirmedBadge: {
-    backgroundColor: colors.primaryLight,
-  },
-
-  pendingBadge: {
-    backgroundColor: '#FFF7D6',
-  },
-
-  overdueBadge: {
-    backgroundColor: '#FDECEC',
-  },
-
-  statusBadgeText: {
-    fontSize: 7,
-    fontWeight: '700',
-  },
-
-  confirmedText: {
-    color: colors.primary,
-  },
-
-  pendingText: {
-    color: colors.warning,
-  },
-
-  overdueText: {
-    color: colors.error,
-  },
-
-  bottomNav: {
-    height: 68,
-    backgroundColor: colors.white,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+  historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 5,
+    minHeight: 48,
+    gap: 3,
+    paddingVertical: 8,
   },
-
-  navItem: {
-    flex: 1,
+  amountColumn: {
+    flex: 0.9,
+    fontFamily: fonts.regular,
+    fontSize: 11,
+    color: colors.textDark,
+  },
+  dateColumn: {
+    flex: 1.1,
+    fontFamily: fonts.regular,
+    fontSize: 10,
+    color: colors.textSecondary,
+  },
+  statusColumn: {
+    flex: 1.25,
+    fontFamily: fonts.regular,
+    fontSize: 11,
+    color: colors.textDark,
+  },
+  chevronSpace: {
+    width: 17,
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    overflow: 'hidden',
+    borderRadius: 12,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    fontFamily: fonts.regular,
+    fontSize: 10,
+  },
+  confirmed: {
+    backgroundColor: colors.primaryLight,
+    color: colors.primary,
+  },
+  pending: {
+    backgroundColor: '#FFFAE8',
+    color: '#8B581C',
+  },
+  issue: {
+    backgroundColor: '#FFF0F2',
+    color: '#AD3045',
+  },
+  due: {
+    backgroundColor: colors.subtleBackground,
+    color: colors.textSecondary,
+  },
+  stateCard: {
+    padding: 24,
+    minHeight: 290,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 12,
   },
-
-  navItemActive: {
-    backgroundColor: colors.primaryLight,
-    borderRadius: 10,
-    paddingVertical: 5,
+  stateTitle: {
+    fontSize: 15,
+    fontFamily: fonts.bold,
+    color: colors.textPrimary,
+    textAlign: 'center',
   },
-
-  navIcon: {
-    fontSize: 16,
+  stateText: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    lineHeight: 18,
     color: colors.textSecondary,
-    marginBottom: 2,
+    textAlign: 'center',
   },
-
-  navText: {
-    fontSize: 9,
-    color: colors.textSecondary,
+  primaryButton: {
+    alignSelf: 'stretch',
+    backgroundColor: colors.primary,
+    minHeight: 46,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
   },
-
-  navTextActive: {
-    fontSize: 9,
-    color: colors.primary,
-    fontWeight: '700',
+  primaryButtonText: {
+    fontSize: 13,
+    fontFamily: fonts.semiBold,
+    color: colors.white,
   },
-  loadingContainer: {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: 20,
-},
-
-loadingText: {
-  marginTop: 12,
-  fontSize: 14,
-  color: colors.textSecondary,
-},
-
-retryButton: {
-  marginTop: 16,
-  backgroundColor: colors.primary,
-  paddingVertical: 12,
-  paddingHorizontal: 24,
-  borderRadius: 10,
-},
-
-retryButtonText: {
-  color: colors.white,
-  fontSize: 14,
-  fontWeight: '700',
-},
-
-emptyContainer: {
-  backgroundColor: colors.white,
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: 14,
-  padding: 24,
-  alignItems: 'center',
-  marginTop: 12,
-},
-
-emptyTitle: {
-  fontSize: 17,
-  fontWeight: '700',
-  color: colors.textPrimary,
-  marginBottom: 8,
-},
-
-emptyText: {
-  fontSize: 14,
-  lineHeight: 21,
-  color: colors.textSecondary,
-  textAlign: 'center',
-},
+  overviewText: {
+    padding: 12,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    color: colors.textDark,
+  },
+  activityRow: {
+    padding: 12,
+    gap: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  skeletonAvatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.border,
+  },
+  skeletonShort: {
+    width: '65%',
+    height: 10,
+    borderRadius: 6,
+    backgroundColor: colors.border,
+    marginVertical: 6,
+  },
+  skeletonLine: {
+    width: '95%',
+    height: 9,
+    borderRadius: 5,
+    backgroundColor: colors.border,
+    marginVertical: 5,
+  },
+  skeletonRow: {
+    padding: 8,
+    minHeight: 48,
+  },
 });

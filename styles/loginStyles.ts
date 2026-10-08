@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { colors } from '@/constants/color';
 import { StyleSheet } from 'react-native';
 
@@ -8,18 +9,22 @@ export const loginStyles = StyleSheet.create({
   },
 
   content: {
-    flex: 1,
+    width: '100%',
+    maxWidth: 460,
+    alignSelf: 'center',
+    flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingTop: 20,
     paddingBottom: 30,
   },
 
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 75,
+    marginBottom: 40,
   },
 
   backText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
@@ -33,14 +38,15 @@ export const loginStyles = StyleSheet.create({
 
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.textPrimary,
     textAlign: 'center',
   },
 
   subtitle: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 5,
@@ -53,18 +59,19 @@ export const loginStyles = StyleSheet.create({
 
   label: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     marginBottom: 6,
   },
 
   input: {
-    height: 46,
+    height: 50,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 13,
+    fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.textPrimary,
     marginBottom: 13,
@@ -76,13 +83,14 @@ export const loginStyles = StyleSheet.create({
   },
 
   passwordInput: {
-    height: 46,
+    height: 50,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 13,
     paddingRight: 60,
+    fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.textPrimary,
   },
@@ -91,13 +99,13 @@ export const loginStyles = StyleSheet.create({
     position: 'absolute',
     right: 13,
     top: 0,
-    height: 46,
+    height: 50,
     justifyContent: 'center',
   },
 
   eyeText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 13,
+    fontFamily: fonts.semiBold,
     color: colors.primary,
   },
 
@@ -108,8 +116,8 @@ export const loginStyles = StyleSheet.create({
   },
 
   forgotPassword: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 13,
+    fontFamily: fonts.semiBold,
     color: colors.primary,
   },
 
@@ -128,7 +136,7 @@ export const loginStyles = StyleSheet.create({
   loginButtonText: {
     color: colors.white,
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   registerRow: {
@@ -139,13 +147,14 @@ export const loginStyles = StyleSheet.create({
   },
 
   registerText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
 
   registerLink: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primary,
     marginLeft: 5,
   },

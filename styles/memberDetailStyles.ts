@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -36,13 +37,13 @@ export const memberDetailStyles = StyleSheet.create({
   logoText: {
     color: colors.white,
     fontSize: 16,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
 
   logoName: {
     color: colors.primary,
     fontSize: 16,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
 
   headerActions: {
@@ -52,6 +53,7 @@ export const memberDetailStyles = StyleSheet.create({
   },
 
   headerIcon: {
+    fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.textSecondary,
   },
@@ -67,11 +69,12 @@ export const memberDetailStyles = StyleSheet.create({
 
   profileText: {
     fontSize: 9,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.white,
   },
 
   chevron: {
+    fontFamily: fonts.regular,
     fontSize: 18,
     color: colors.textSecondary,
   },
@@ -84,6 +87,7 @@ export const memberDetailStyles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 15,
     paddingBottom: 10,
+    fontFamily: fonts.regular,
     fontSize: 11,
     color: colors.textSecondary,
   },
@@ -107,18 +111,19 @@ export const memberDetailStyles = StyleSheet.create({
 
   avatarText: {
     fontSize: 18,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.primary,
   },
 
   memberName: {
     fontSize: 20,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.textPrimary,
     marginTop: 10,
   },
 
   memberMeta: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
     marginTop: 4,
@@ -135,12 +140,12 @@ export const memberDetailStyles = StyleSheet.create({
   activeBadgeText: {
     fontSize: 8,
     color: colors.primary,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
 
   sectionTitle: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginHorizontal: 18,
     marginTop: 20,
@@ -165,19 +170,20 @@ export const memberDetailStyles = StyleSheet.create({
   },
 
   overviewLabel: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
   },
 
   overviewValue: {
     fontSize: 10,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
 
   confirmedText: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primary,
   },
 
@@ -196,13 +202,14 @@ export const memberDetailStyles = StyleSheet.create({
   },
 
   progressLabel: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
   },
 
   progressAmount: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
@@ -222,6 +229,7 @@ export const memberDetailStyles = StyleSheet.create({
   },
 
   progressPercentage: {
+    fontFamily: fonts.regular,
     fontSize: 9,
     color: colors.textSecondary,
     marginTop: 5,
@@ -248,7 +256,7 @@ export const memberDetailStyles = StyleSheet.create({
     flex: 1,
     fontSize: 9,
     color: colors.textSecondary,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   historyRow: {
@@ -262,6 +270,7 @@ export const memberDetailStyles = StyleSheet.create({
 
   historyText: {
     flex: 1,
+    fontFamily: fonts.regular,
     fontSize: 9,
     color: colors.textPrimary,
   },
@@ -276,7 +285,7 @@ export const memberDetailStyles = StyleSheet.create({
 
   confirmedBadgeText: {
     fontSize: 7,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primary,
   },
 
@@ -303,12 +312,14 @@ export const memberDetailStyles = StyleSheet.create({
   },
 
   navIcon: {
+    fontFamily: fonts.regular,
     fontSize: 16,
     color: colors.textSecondary,
     marginBottom: 2,
   },
 
   navText: {
+    fontFamily: fonts.regular,
     fontSize: 9,
     color: colors.textSecondary,
   },
@@ -316,6 +327,6 @@ export const memberDetailStyles = StyleSheet.create({
   navTextActive: {
     fontSize: 9,
     color: colors.primary,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 });

@@ -1,29 +1,28 @@
-import { useState } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   Alert,
   Pressable,
   Text,
   TextInput,
   View,
 } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from 'react';
+
 import { Image } from 'expo-image';
-import {
-  router,
-  useLocalSearchParams,
-} from 'expo-router';
-import {
-  resetVerificationStyles as styles,
-} from '@/styles/resetVerificationStyles';
+import { router, useLocalSearchParams } from 'expo-router';
+import { resetVerificationStyles as styles } from '@/styles/resetVerificationStyles';
 import { colors } from '@/constants/color';
 
 export default function ResetVerification() {
-  const { identifier } =
-    useLocalSearchParams<{
-      identifier?: string;
-    }>();
+  const { identifier } = useLocalSearchParams<{
+    identifier?: string;
+  }>();
 
-  const [verificationCode, setVerificationCode] =
-    useState('');
+  const [verificationCode, setVerificationCode] = useState('');
 
   const handleVerify = () => {
     if (!identifier) {
@@ -60,67 +59,68 @@ export default function ResetVerification() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => router.back()}
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.backText}>‹ Back</Text>
-        </Pressable>
+          <Pressable
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backText}>‹ Back</Text>
+          </Pressable>
 
-        <Image
-          source={require('@/assets/images/thrift-circle-logo-stacked.png')}
-          style={styles.logo}
-          contentFit="contain"
-        />
-
-        <Text style={styles.title}>
-          Check your email
-        </Text>
-
-        <Text style={styles.subtitle}>
-          Enter the verification code sent to your email
-          or phone number.
-        </Text>
-
-        <View style={styles.form}>
-          <Text style={styles.label}>
-            Verification Code
-          </Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Enter verification code"
-            placeholderTextColor={colors.textSecondary}
-            keyboardType="number-pad"
-            maxLength={6}
-            value={verificationCode}
-            onChangeText={setVerificationCode}
+          <Image
+            source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+            style={styles.logo}
+            contentFit="contain"
           />
 
-          <Pressable
-            style={styles.verifyButton}
-            onPress={handleVerify}
-          >
-            <Text style={styles.verifyButtonText}>
-              Verify
-            </Text>
-          </Pressable>
-        </View>
+          <Text style={styles.title}>Check your email</Text>
 
-        <View style={styles.resendRow}>
-          <Text style={styles.resendText}>
-            Didn't receive the code?
+          <Text style={styles.subtitle}>
+            Enter the verification code sent to your email or
+            phone number.
           </Text>
 
-          <Pressable>
-            <Text style={styles.resendLink}>
-              Resend
+          <View style={styles.form}>
+            <Text style={styles.label}>Verification Code</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Enter verification code"
+              placeholderTextColor={colors.textSecondary}
+              keyboardType="number-pad"
+              maxLength={6}
+              value={verificationCode}
+              onChangeText={setVerificationCode}
+            />
+
+            <Pressable
+              style={styles.verifyButton}
+              onPress={handleVerify}
+            >
+              <Text style={styles.verifyButtonText}>Verify</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.resendRow}>
+            <Text style={styles.resendText}>
+              Didn&apos;t receive the code?
             </Text>
-          </Pressable>
-        </View>
-      </View>
-    </View>
+
+            <Pressable>
+              <Text style={styles.resendLink}>Resend</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

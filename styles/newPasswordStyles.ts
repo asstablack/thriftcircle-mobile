@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -8,11 +9,13 @@ export const newPasswordStyles = StyleSheet.create({
   },
 
   content: {
-    flex: 1,
+    width: '100%',
+    maxWidth: 460,
+    alignSelf: 'center',
+    flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 30,
+    paddingTop: 20,
     paddingBottom: 30,
-   
   },
 
   backButton: {
@@ -21,6 +24,7 @@ export const newPasswordStyles = StyleSheet.create({
   },
 
   backText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
@@ -34,14 +38,15 @@ export const newPasswordStyles = StyleSheet.create({
 
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.textPrimary,
     textAlign: 'center',
   },
 
   subtitle: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 5,
@@ -54,7 +59,7 @@ export const newPasswordStyles = StyleSheet.create({
 
   label: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     marginBottom: 6,
   },
@@ -65,13 +70,14 @@ export const newPasswordStyles = StyleSheet.create({
   },
 
   passwordInput: {
-    height: 46,
+    height: 50,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 13,
     paddingRight: 60,
+    fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.textPrimary,
   },
@@ -80,17 +86,18 @@ export const newPasswordStyles = StyleSheet.create({
     position: 'absolute',
     right: 13,
     top: 0,
-    height: 46,
+    height: 50,
     justifyContent: 'center',
   },
 
   eyeText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 13,
+    fontFamily: fonts.semiBold,
     color: colors.primary,
   },
 
   helperText: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     color: colors.textSecondary,
     marginBottom: 16,
@@ -111,7 +118,7 @@ export const newPasswordStyles = StyleSheet.create({
 
   resetButtonText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.white,
   },
 });

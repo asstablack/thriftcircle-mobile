@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -8,26 +9,27 @@ export const joinGroupStyles = StyleSheet.create({
   },
 
   content: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
-    paddingTop: 55,
+    paddingTop: 24,
   },
 
   backButton: {
     fontSize: 16,
     color: colors.primary,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     marginBottom: 24,
   },
 
   title: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
   subtitle: {
+    fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 22,
     color: colors.textSecondary,
@@ -40,7 +42,7 @@ export const joinGroupStyles = StyleSheet.create({
 
   label: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textDark,
     marginTop: 12,
   },
@@ -49,16 +51,17 @@ export const joinGroupStyles = StyleSheet.create({
     height: 54,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 15,
+    fontFamily: fonts.regular,
     fontSize: 15,
     color: colors.textPrimary,
   },
 
   joinButton: {
     height: 54,
-    borderRadius: 12,
+    borderRadius: 8,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -68,10 +71,10 @@ export const joinGroupStyles = StyleSheet.create({
   joinButtonText: {
     color: colors.white,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   joinButtonDisabled: {
-  opacity: 0.6,
+    opacity: 0.6,
   },
 });

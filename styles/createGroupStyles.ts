@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -9,25 +10,26 @@ export const createGroupStyles = StyleSheet.create({
 
   content: {
     padding: 20,
-    paddingTop: 55,
+    paddingTop: 24,
     paddingBottom: 40,
   },
 
   backButton: {
     fontSize: 16,
     color: colors.primary,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     marginBottom: 24,
   },
 
   title: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
   subtitle: {
+    fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 22,
     color: colors.textSecondary,
@@ -40,7 +42,7 @@ export const createGroupStyles = StyleSheet.create({
 
   label: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textDark,
     marginTop: 12,
   },
@@ -49,9 +51,10 @@ export const createGroupStyles = StyleSheet.create({
     height: 52,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 15,
+    fontFamily: fonts.regular,
     fontSize: 15,
     color: colors.textPrimary,
   },
@@ -67,7 +70,7 @@ export const createGroupStyles = StyleSheet.create({
     height: 48,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: 8,
     backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
@@ -80,7 +83,7 @@ export const createGroupStyles = StyleSheet.create({
 
   frequencyText: {
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textSecondary,
   },
 
@@ -90,7 +93,7 @@ export const createGroupStyles = StyleSheet.create({
 
   createButton: {
     height: 54,
-    borderRadius: 12,
+    borderRadius: 8,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -100,16 +103,18 @@ export const createGroupStyles = StyleSheet.create({
   createButtonText: {
     color: colors.white,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   dateInputText: {
-  fontSize: 15,
-  color: colors.textPrimary,
-},
+    fontFamily: fonts.regular,
+    fontSize: 15,
+    color: colors.textPrimary,
+  },
 
-datePlaceholderText: {
-  fontSize: 15,
-  color: colors.textSecondary,
-},
+  datePlaceholderText: {
+    fontFamily: fonts.regular,
+    fontSize: 15,
+    color: colors.textSecondary,
+  },
 });

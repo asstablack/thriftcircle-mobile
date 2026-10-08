@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -9,25 +10,26 @@ export const inviteMembersStyles = StyleSheet.create({
 
   content: {
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 24,
     paddingBottom: 40,
   },
 
   backButton: {
     fontSize: 16,
     color: colors.primary,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     marginBottom: 24,
   },
 
   title: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
   subtitle: {
+    fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 22,
     color: colors.textSecondary,
@@ -41,6 +43,7 @@ export const inviteMembersStyles = StyleSheet.create({
 
   loadingText: {
     marginTop: 12,
+    fontFamily: fonts.regular,
     fontSize: 14,
     color: colors.textSecondary,
   },
@@ -49,19 +52,20 @@ export const inviteMembersStyles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 14,
+    borderRadius: 8,
     padding: 24,
     alignItems: 'center',
   },
 
   emptyTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
   emptyText: {
+    fontFamily: fonts.regular,
     fontSize: 14,
     lineHeight: 21,
     color: colors.textSecondary,
@@ -73,18 +77,18 @@ export const inviteMembersStyles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 8,
   },
 
   createButtonText: {
     color: colors.white,
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     marginBottom: 12,
   },
@@ -93,7 +97,7 @@ export const inviteMembersStyles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 14,
+    borderRadius: 8,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
@@ -111,11 +115,12 @@ export const inviteMembersStyles = StyleSheet.create({
 
   groupName: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   groupDetails: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
     marginTop: 6,
@@ -124,7 +129,7 @@ export const inviteMembersStyles = StyleSheet.create({
 
   checkmark: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primary,
   },
 
@@ -139,12 +144,13 @@ export const inviteMembersStyles = StyleSheet.create({
 
   inviteLabel: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.textSecondary,
     marginBottom: 6,
   },
 
   inviteDescription: {
+    fontFamily: fonts.regular,
     fontSize: 14,
     lineHeight: 20,
     color: colors.textSecondary,
@@ -153,7 +159,7 @@ export const inviteMembersStyles = StyleSheet.create({
 
   codeBox: {
     backgroundColor: colors.primaryLight,
-    borderRadius: 12,
+    borderRadius: 8,
     paddingVertical: 18,
     alignItems: 'center',
     marginBottom: 14,
@@ -161,7 +167,7 @@ export const inviteMembersStyles = StyleSheet.create({
 
   inviteCode: {
     fontSize: 26,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     letterSpacing: 4,
     color: colors.primary,
   },
@@ -169,13 +175,13 @@ export const inviteMembersStyles = StyleSheet.create({
   copyButton: {
     backgroundColor: colors.primary,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
 
   copyButtonText: {
     color: colors.white,
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 });

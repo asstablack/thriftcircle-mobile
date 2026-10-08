@@ -1,3 +1,5 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GroupScreenHeader } from '@/components/group-screen-header';
 import { useState } from 'react';
 import {
   Alert,
@@ -19,10 +21,12 @@ export default function CreateGroupScreen() {
   const [frequency, setFrequency] = useState('Monthly');
 
   const [startDate, setStartDate] = useState('');
-  const [contributionDeadline, setContributionDeadline] = useState('');
+  const [contributionDeadline, setContributionDeadline] =
+    useState('');
 
   const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showDeadlinePicker, setShowDeadlinePicker] = useState(false);
+  const [showDeadlinePicker, setShowDeadlinePicker] =
+    useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -73,7 +77,10 @@ export default function CreateGroupScreen() {
 
     const contributionAmount = Number(amount.replace(/,/g, ''));
 
-    if (Number.isNaN(contributionAmount) || contributionAmount <= 0) {
+    if (
+      !Number.isFinite(contributionAmount) ||
+      contributionAmount <= 0
+    ) {
       Alert.alert(
         'Invalid amount',
         'Please enter a valid contribution amount.',
@@ -115,21 +122,15 @@ export default function CreateGroupScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <GroupScreenHeader
+        title="Create a New Group"
+        subtitle="Set up your savings group."
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <Pressable onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
-        </Pressable>
-
-        <Text style={styles.title}>Create a Group</Text>
-
-        <Text style={styles.subtitle}>
-          Set up your savings group and invite members to start saving together.
-        </Text>
-
         <View style={styles.form}>
           <Text style={styles.label}>Group Name</Text>
 
@@ -152,20 +153,24 @@ export default function CreateGroupScreen() {
             onChangeText={setAmount}
           />
 
-          <Text style={styles.label}>Contribution Frequency</Text>
+          <Text style={styles.label}>
+            Contribution Frequency
+          </Text>
 
           <View style={styles.frequencyRow}>
             <Pressable
               style={[
                 styles.frequencyButton,
-                frequency === 'Weekly' && styles.frequencyButtonActive,
+                frequency === 'Weekly' &&
+                  styles.frequencyButtonActive,
               ]}
               onPress={() => setFrequency('Weekly')}
             >
               <Text
                 style={[
                   styles.frequencyText,
-                  frequency === 'Weekly' && styles.frequencyTextActive,
+                  frequency === 'Weekly' &&
+                    styles.frequencyTextActive,
                 ]}
               >
                 Weekly
@@ -175,14 +180,16 @@ export default function CreateGroupScreen() {
             <Pressable
               style={[
                 styles.frequencyButton,
-                frequency === 'Monthly' && styles.frequencyButtonActive,
+                frequency === 'Monthly' &&
+                  styles.frequencyButtonActive,
               ]}
               onPress={() => setFrequency('Monthly')}
             >
               <Text
                 style={[
                   styles.frequencyText,
-                  frequency === 'Monthly' && styles.frequencyTextActive,
+                  frequency === 'Monthly' &&
+                    styles.frequencyTextActive,
                 ]}
               >
                 Monthly
@@ -197,18 +204,21 @@ export default function CreateGroupScreen() {
             onPress={() => setShowStartPicker(true)}
           >
             <Text
-        style={
-         startDate
-         ? styles.dateInputText
-         : styles.datePlaceholderText
-            }>
-        {startDate || 'Select start date'}
-        </Text>
+              style={
+                startDate
+                  ? styles.dateInputText
+                  : styles.datePlaceholderText
+              }
+            >
+              {startDate || 'Select start date'}
+            </Text>
           </Pressable>
 
           {showStartPicker && (
             <DateTimePicker
-              value={startDate ? new Date(startDate) : new Date()}
+              value={
+                startDate ? new Date(startDate) : new Date()
+              }
               mode="date"
               display="default"
               onChange={handleStartDateChange}
@@ -222,12 +232,14 @@ export default function CreateGroupScreen() {
             onPress={() => setShowDeadlinePicker(true)}
           >
             <Text
-            style={
-            contributionDeadline
-            ? styles.dateInputText
-            : styles.datePlaceholderText
-            }>
-        {contributionDeadline || 'Select contribution deadline'}
+              style={
+                contributionDeadline
+                  ? styles.dateInputText
+                  : styles.datePlaceholderText
+              }
+            >
+              {contributionDeadline ||
+                'Select contribution deadline'}
             </Text>
           </Pressable>
 
@@ -255,6 +267,6 @@ export default function CreateGroupScreen() {
           </Pressable>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -1,3 +1,4 @@
+import { fonts } from '@/constants/fonts';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
@@ -8,9 +9,12 @@ export const resetVerificationStyles = StyleSheet.create({
   },
 
   content: {
-    flex: 1,
+    width: '100%',
+    maxWidth: 460,
+    alignSelf: 'center',
+    flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 30,
+    paddingTop: 20,
     paddingBottom: 30,
     justifyContent: 'center',
   },
@@ -21,6 +25,7 @@ export const resetVerificationStyles = StyleSheet.create({
   },
 
   backText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
@@ -34,14 +39,15 @@ export const resetVerificationStyles = StyleSheet.create({
 
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: fonts.extraBold,
     color: colors.textPrimary,
     textAlign: 'center',
   },
 
   subtitle: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 5,
@@ -54,18 +60,19 @@ export const resetVerificationStyles = StyleSheet.create({
 
   label: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     marginBottom: 6,
   },
 
   input: {
-    height: 46,
+    height: 50,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 13,
+    fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.textPrimary,
     textAlign: 'center',
@@ -83,7 +90,7 @@ export const resetVerificationStyles = StyleSheet.create({
 
   verifyButtonText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.white,
   },
 
@@ -95,13 +102,14 @@ export const resetVerificationStyles = StyleSheet.create({
   },
 
   resendText: {
+    fontFamily: fonts.regular,
     fontSize: 12,
     color: colors.textSecondary,
   },
 
   resendLink: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primary,
     marginLeft: 5,
   },
