@@ -10,8 +10,11 @@ export const groupSelectionStyles = StyleSheet.create({
 
   content: {
     padding: 20,
-    paddingTop: 24,
+    paddingTop: 12,
     paddingBottom: 40,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
   },
 
   title: {
@@ -72,7 +75,7 @@ export const groupSelectionStyles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
@@ -113,8 +116,8 @@ export const groupSelectionStyles = StyleSheet.create({
   },
 
   roleText: {
-    fontSize: 9,
-    fontFamily: fonts.bold,
+    fontSize: 12,
+    fontFamily: fonts.medium,
     textTransform: 'capitalize',
   },
 

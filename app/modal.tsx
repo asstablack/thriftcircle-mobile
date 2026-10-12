@@ -1,29 +1,27 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
-
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-
+import { Link, Stack } from 'expo-router';
+import { Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { modalStyles as styles } from '@/styles/modalStyles';
 export default function ModalScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
+    <View style={styles.container}>
+      <Stack.Screen options={{ title: 'ThriftCircle' }} />
+      <Image
+        source={require('@/assets/figma/94eba.png')}
+        contentFit="contain"
+        style={styles.logo}
+      />
+      <Text style={styles.title}>Your savings circle</Text>
+      <Text style={styles.body}>
+        Save together. Grow together.
+      </Text>
+      <Link
+        href="/group-selection"
+        dismissTo
+        style={styles.link}
+      >
+        Return to your groups
       </Link>
-    </ThemedView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});

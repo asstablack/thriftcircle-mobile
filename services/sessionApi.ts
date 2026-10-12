@@ -1,20 +1,29 @@
 import { API_BASE_URL } from '@/config/api';
-import { clearTokens, getTokens } from './authStorage';
+import {
+  clearTokens,
+  getStoredTokens,
+} from './authStorage';
 
 export async function logoutSession() {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(
+    () => controller.abort(),
+    10000,
+  );
   let serverRevoked = false;
 
   try {
-    const { refreshToken } = await getTokens();
+    const { refreshToken } = await getStoredTokens();
     if (refreshToken) {
-      const response = await fetch(`${API_BASE_URL}/logout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken }),
-        signal: controller.signal,
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/logout`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+          signal: controller.signal,
+        },
+      );
       serverRevoked = response.ok;
     } else {
       serverRevoked = true;

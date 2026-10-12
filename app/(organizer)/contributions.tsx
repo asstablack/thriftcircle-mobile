@@ -1,5 +1,11 @@
+import { GroupScreenHeader } from '@/components/group-screen-header';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import {
   router,
@@ -8,20 +14,22 @@ import {
   useLocalSearchParams,
 } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  OrganizerHeader,
-  OrganizerBottomNavigation,
-} from '@/components/organizer-chrome';
+import { OrganizerBottomNavigation } from '@/components/organizer-chrome';
 import { contributionsStyles as styles } from '@/styles/contributionsStyles';
 import {
   getGroupContributions,
   getGroupDetails,
+  getCurrentCycle,
 } from '@/services/groupApi';
 import { useAuthStore } from '@/store/authStore';
 import { colors } from '@/constants/color';
 
 type ContributionStatus =
-  'DUE' | 'PENDING_REVIEW' | 'CONFIRMED' | 'ISSUE' | 'OVERDUE';
+  | 'DUE'
+  | 'PENDING_REVIEW'
+  | 'CONFIRMED'
+  | 'ISSUE'
+  | 'OVERDUE';
 type Contribution = {
   _id: string;
   memberId: string;
@@ -60,7 +68,7 @@ const labels: Record<ContributionStatus, string> = {
   DUE: 'Due',
   PENDING_REVIEW: 'Under review',
   CONFIRMED: 'Confirmed',
-  ISSUE: 'Correction requested',
+  ISSUE: 'Payment issue',
   OVERDUE: 'Overdue',
 };
 
@@ -80,10 +88,18 @@ export default function ContributionsScreen() {
   const [selectedMemberId, setSelectedMemberId] = useState<
     string | undefined
   >(memberId);
-  const [choosingMember, setChoosingMember] = useState(false);
+  const [choosingMember, setChoosingMember] =
+    useState(false);
   const [activeTab, setActiveTab] = useState<Tab>(
     tab === 'Overview' ? 'Overview' : 'Contributions',
   );
+  const [filter, setFilter] = useState<
+    ContributionStatus | 'All'
+  >('All');
+  const [cycle, setCycle] = useState<{
+    cycleNumber: number;
+    status: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
@@ -107,22 +123,35 @@ export default function ContributionsScreen() {
       Promise.all([
         getGroupDetails(selectedGroup.id),
         getGroupContributions(selectedGroup.id),
+        getCurrentCycle(selectedGroup.id),
       ])
         .then(
-          ([details, records]: [
+          ([details, records, currentCycle]: [
             GroupDetails,
             Contribution[],
+            { cycleNumber: number; status: string } | null,
           ]) => {
             if (!active) return;
-            setGroupDetails(details);
+            if (details.callerRole !== 'organizer')
+              throw new Error(
+                'Only organizers can view group contributions.',
+              );
+            setCycle(currentCycle);
+            setGroupDetails({
+              ...details,
+              members: details.members.filter((item) =>
+                Boolean(item.userId),
+              ),
+            });
             setContributions(records);
             setSelectedMemberId((previous) => {
               const requested = memberId || previous;
               return details.members.some(
-                (member) => member.userId?._id === requested,
+                (member) =>
+                  member.userId?._id === requested,
               )
                 ? requested
-                : details.members[0]?.userId?._id;
+                : undefined;
             });
           },
         )
@@ -155,10 +184,21 @@ export default function ContributionsScreen() {
     (item) => item.userId?._id === selectedMemberId,
   );
   const history = contributions
-    .filter((item) => item.memberId === selectedMemberId)
+    .filter(
+      (item) =>
+        !selectedMemberId ||
+        item.memberId === selectedMemberId,
+    )
     .sort(
-      (a, b) => Date.parse(b.dueDate) - Date.parse(a.dueDate),
+      (a, b) =>
+        Date.parse(b.dueDate) - Date.parse(a.dueDate),
     );
+  const visibleHistory = history.filter(
+    (item) => filter === 'All' || item.status === filter,
+  );
+  const cycleRecords = contributions.filter(
+    (item) => item.cycleNumber === cycle?.cycleNumber,
+  );
   const confirmed = history.filter(
     (item) => item.status === 'CONFIRMED',
   );
@@ -197,44 +237,31 @@ export default function ContributionsScreen() {
           ]
         : []),
     ])
-    .sort((a, b) => Date.parse(b.time) - Date.parse(a.time));
+    .sort(
+      (a, b) => Date.parse(b.time) - Date.parse(a.time),
+    );
 
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      <OrganizerHeader />
-      <Pressable
-        style={styles.backButton}
-        accessibilityRole="button"
-        onPress={() => router.navigate('/organizer-dashboard')}
+      <GroupScreenHeader
+        variant="plain"
+        title="Contributions"
+        subtitle="Track contributions, verify payments, and manage your group’s progress."
+      />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
       >
-        <Feather
-          name="arrow-left"
-          size={17}
-          color={colors.textSecondary}
-        />
-        <Text style={styles.secondaryText}>
-          Back to dashboard
-        </Text>
-      </Pressable>
-      <View style={styles.banner}>
-        <Text style={styles.bannerTitle}>Contributions</Text>
-        <Text style={styles.bannerText}>
-          Track contributions, verify payments, and manage your
-          group’s progress.
-        </Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
         {loading ? (
           <ContributionSkeleton />
         ) : (
           <>
-            {member && (
+            {groupDetails && (
               <>
                 <Pressable
                   style={styles.memberSummary}
                   accessibilityRole="button"
-                  accessibilityLabel={`Select member, ${member.userId.fullName}`}
+                  accessibilityLabel={`Select member, ${member?.userId.fullName || 'All members'}`}
                   accessibilityState={{
                     expanded: choosingMember,
                   }}
@@ -249,18 +276,23 @@ export default function ContributionsScreen() {
                   </View>
                   <View style={styles.memberInfo}>
                     <Text style={styles.memberName}>
-                      {member.userId.fullName}
+                      {member?.userId.fullName ||
+                        'All members'}
                     </Text>
                     <Text style={styles.secondaryText}>
-                      {member.payoutOrder
-                        ? `Position ${member.payoutOrder}`
-                        : 'Position unavailable'}
+                      {member?.payoutOrder
+                        ? `Position ${member?.payoutOrder}`
+                        : member
+                          ? 'Position unavailable'
+                          : 'Select a member to see individual history'}
                     </Text>
                   </View>
-                  <Text style={[styles.badge, styles.confirmed]}>
-                    {member.status === 'active'
+                  <Text
+                    style={[styles.badge, styles.confirmed]}
+                  >
+                    {member?.status === 'active'
                       ? '• Active'
-                      : member.status}
+                      : member?.status || 'Group'}
                   </Text>
                   <Feather
                     name="chevron-down"
@@ -270,6 +302,20 @@ export default function ContributionsScreen() {
                 </Pressable>
                 {choosingMember && (
                   <View style={styles.memberPicker}>
+                    <Pressable
+                      style={styles.pickerRow}
+                      accessibilityRole="button"
+                      onPress={() => {
+                        setSelectedMemberId(undefined);
+                        setChoosingMember(false);
+                        setActiveTab('Contributions');
+                        router.setParams({ memberId: '' });
+                      }}
+                    >
+                      <Text style={styles.bodyText}>
+                        All members
+                      </Text>
+                    </Pressable>
                     {groupDetails?.members.map((item) => (
                       <Pressable
                         key={item.userId._id}
@@ -277,10 +323,13 @@ export default function ContributionsScreen() {
                         accessibilityRole="button"
                         accessibilityState={{
                           selected:
-                            selectedMemberId === item.userId._id,
+                            selectedMemberId ===
+                            item.userId._id,
                         }}
                         onPress={() => {
-                          setSelectedMemberId(item.userId._id);
+                          setSelectedMemberId(
+                            item.userId._id,
+                          );
                           setChoosingMember(false);
                         }}
                       >
@@ -311,7 +360,8 @@ export default function ContributionsScreen() {
                       key={tab}
                       style={[
                         styles.tab,
-                        tab === activeTab && styles.activeTab,
+                        tab === activeTab &&
+                          styles.activeTab,
                       ]}
                       accessibilityRole="tab"
                       accessibilityState={{
@@ -344,59 +394,163 @@ export default function ContributionsScreen() {
                   Something went wrong
                 </Text>
                 <Text style={styles.stateText}>
-                  We couldn’t load this member’s contributions.
-                  Please try again.
+                  We couldn’t load this member’s
+                  contributions. Please try again.
                 </Text>
-                <Text style={styles.stateText}>{error}</Text>
+                <Text style={styles.stateText}>
+                  {error}
+                </Text>
                 <Pressable
                   style={styles.primaryButton}
                   accessibilityRole="button"
-                  onPress={() => setReload((value) => value + 1)}
+                  onPress={() =>
+                    setReload((value) => value + 1)
+                  }
                 >
                   <Text style={styles.primaryButtonText}>
                     Try Again
                   </Text>
                 </Pressable>
               </View>
-            ) : !member ? (
+            ) : !groupDetails?.members.length ? (
               <View style={styles.stateCard}>
                 <Text style={styles.stateTitle}>
                   No members available
                 </Text>
                 <Text style={styles.stateText}>
-                  There are no members to show for this group.
+                  There are no members to show for this
+                  group.
                 </Text>
               </View>
             ) : (
               <>
-                <View style={styles.stats}>
-                  <View style={styles.stat}>
-                    <Text style={styles.statValue}>
-                      {money(totalPaid)}
+                {!selectedMemberId && (
+                  <View style={styles.cycleStrip}>
+                    <Text style={styles.bodyText}>
+                      {cycle
+                        ? 'Current cycle: ' +
+                          cycle.cycleNumber
+                        : 'No active cycle'}
                     </Text>
                     <Text style={styles.secondaryText}>
-                      Total Paid
+                      {cycle?.status.replaceAll('_', ' ') ||
+                        'History remains available'}
                     </Text>
                   </View>
-                  <View style={styles.stat}>
-                    <Text style={styles.statValue}>
-                      {money(totalExpected)}
-                    </Text>
-                    <Text style={styles.secondaryText}>
-                      Total Expected
-                    </Text>
+                )}
+                {!selectedMemberId && (
+                  <View style={styles.stats}>
+                    {[
+                      {
+                        label: 'Confirmed',
+                        value: cycleRecords.filter(
+                          (item) =>
+                            item.status === 'CONFIRMED',
+                        ).length,
+                      },
+                      {
+                        label: 'Pending review',
+                        value: cycleRecords.filter(
+                          (item) =>
+                            item.status ===
+                            'PENDING_REVIEW',
+                        ).length,
+                      },
+                      {
+                        label: 'Overdue',
+                        value: cycleRecords.filter(
+                          (item) =>
+                            item.status === 'OVERDUE',
+                        ).length,
+                      },
+                      {
+                        label: 'Active members',
+                        value:
+                          groupDetails?.members.length || 0,
+                      },
+                    ].map((item) => (
+                      <View
+                        key={item.label}
+                        style={styles.stat}
+                      >
+                        <Text style={styles.secondaryText}>
+                          {item.label}
+                        </Text>
+                        <Text style={styles.statValue}>
+                          {item.value}
+                        </Text>
+                      </View>
+                    ))}
                   </View>
-                  <View style={styles.stat}>
-                    <Text style={styles.statValue}>
-                      {confirmed.length}/{history.length}
-                    </Text>
-                    <Text style={styles.secondaryText}>
-                      Contributions
-                    </Text>
+                )}
+                {selectedMemberId && (
+                  <View style={styles.stats}>
+                    <View style={styles.stat}>
+                      <Text style={styles.statValue}>
+                        {money(totalPaid)}
+                      </Text>
+                      <Text style={styles.secondaryText}>
+                        Total Paid
+                      </Text>
+                    </View>
+                    <View style={styles.stat}>
+                      <Text style={styles.statValue}>
+                        {money(totalExpected)}
+                      </Text>
+                      <Text style={styles.secondaryText}>
+                        Total Expected
+                      </Text>
+                    </View>
+                    <View style={styles.stat}>
+                      <Text style={styles.statValue}>
+                        {confirmed.length}/{history.length}
+                      </Text>
+                      <Text style={styles.secondaryText}>
+                        Contributions
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                )}
+                {activeTab === 'Contributions' && (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.filters}
+                  >
+                    {(
+                      [
+                        'All',
+                        'CONFIRMED',
+                        'PENDING_REVIEW',
+                        'OVERDUE',
+                        'ISSUE',
+                        'DUE',
+                      ] as const
+                    ).map((value) => (
+                      <Pressable
+                        key={value}
+                        accessibilityRole="button"
+                        accessibilityState={{
+                          selected: filter === value,
+                        }}
+                        style={[
+                          styles.filter,
+                          filter === value &&
+                            styles.filterSelected,
+                        ]}
+                        onPress={() => setFilter(value)}
+                      >
+                        <Text style={styles.bodyText}>
+                          {value === 'All'
+                            ? 'All'
+                            : labels[value]}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
+                )}
                 {activeTab === 'Contributions' &&
-                  (history.length ? (
+                  (visibleHistory.length ? (
                     <>
                       <Text style={styles.sectionTitle}>
                         Contribution History
@@ -412,9 +566,11 @@ export default function ContributionsScreen() {
                           <Text style={styles.statusColumn}>
                             Status
                           </Text>
-                          <View style={styles.chevronSpace} />
+                          <View
+                            style={styles.chevronSpace}
+                          />
                         </View>
-                        {history.map((item) => (
+                        {visibleHistory.map((item) => (
                           <Pressable
                             key={item._id}
                             style={styles.historyRow}
@@ -422,31 +578,38 @@ export default function ContributionsScreen() {
                             accessibilityLabel={`${money(item.amount)}, ${date(item.dueDate)}, ${labels[item.status]}. View contribution details`}
                             onPress={() =>
                               router.push({
-                                pathname: '/contribution-review',
+                                pathname:
+                                  '/contribution-review',
                                 params: {
                                   contributionId: item._id,
                                 },
                               })
                             }
                           >
-                            <Text style={styles.amountColumn}>
+                            <Text
+                              style={styles.amountColumn}
+                            >
                               {money(item.amount)}
                             </Text>
                             <Text style={styles.dateColumn}>
                               {date(item.dueDate)}
                             </Text>
-                            <View style={styles.statusColumn}>
+                            <View
+                              style={styles.statusColumn}
+                            >
                               <Text
                                 style={[
                                   styles.badge,
-                                  item.status === 'CONFIRMED'
+                                  item.status ===
+                                  'CONFIRMED'
                                     ? styles.confirmed
                                     : item.status ===
                                         'PENDING_REVIEW'
                                       ? styles.pending
                                       : item.status ===
                                             'OVERDUE' ||
-                                          item.status === 'ISSUE'
+                                          item.status ===
+                                            'ISSUE'
                                         ? styles.issue
                                         : styles.due,
                                 ]}
@@ -473,18 +636,20 @@ export default function ContributionsScreen() {
                         />
                       </View>
                       <Text style={styles.stateTitle}>
-                        No contribution yet
+                        No matching contributions
                       </Text>
                       <Text style={styles.stateText}>
-                        This member hasn’t made any contribution
-                        for this group.
+                        Try a different status filter or
+                        member.
                       </Text>
                     </View>
                   ))}
                 {activeTab === 'Overview' && (
                   <View style={styles.historyCard}>
                     <Text style={styles.sectionTitle}>
-                      Member Overview
+                      {member
+                        ? 'Member Overview'
+                        : 'Group Overview'}
                     </Text>
                     <Text style={styles.overviewText}>
                       Group: {groupDetails?.group.groupName}
@@ -492,11 +657,11 @@ export default function ContributionsScreen() {
                     <Text style={styles.overviewText}>
                       Contribution amount:{' '}
                       {money(
-                        groupDetails?.group.contributionAmount ||
-                          0,
+                        groupDetails?.group
+                          .contributionAmount || 0,
                       )}
                     </Text>
-                    {member.joinedAt && (
+                    {member?.joinedAt && (
                       <Text style={styles.overviewText}>
                         Joined: {date(member.joinedAt)}
                       </Text>
@@ -517,7 +682,9 @@ export default function ContributionsScreen() {
                           <Text style={styles.bodyText}>
                             {item.text}
                           </Text>
-                          <Text style={styles.secondaryText}>
+                          <Text
+                            style={styles.secondaryText}
+                          >
                             {date(item.time)}
                           </Text>
                         </View>
@@ -555,10 +722,7 @@ function ContributionSkeleton() {
       </View>
       <View style={styles.stats}>
         {[0, 1, 2].map((key) => (
-          <View
-            key={key}
-            style={styles.stat}
-          >
+          <View key={key} style={styles.stat}>
             <View style={styles.skeletonShort} />
             <View style={styles.skeletonLine} />
           </View>
@@ -566,10 +730,7 @@ function ContributionSkeleton() {
       </View>
       <View style={styles.historyCard}>
         {[0, 1, 2, 3, 4, 5].map((key) => (
-          <View
-            key={key}
-            style={styles.skeletonRow}
-          >
+          <View key={key} style={styles.skeletonRow}>
             <View style={styles.skeletonLine} />
             <View style={styles.skeletonShort} />
           </View>

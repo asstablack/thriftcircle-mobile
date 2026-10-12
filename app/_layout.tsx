@@ -5,7 +5,7 @@ import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
 import { Inter_800ExtraBold } from '@expo-google-fonts/inter/800ExtraBold';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fonts } from '@/constants/fonts';
 import {
   DarkTheme,
@@ -19,9 +19,29 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthStore } from '@/store/authStore';
 
+import { restoreSession } from '@/services/authStorage';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [sessionReady, setSessionReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    restoreSession()
+      .then((user) => {
+        if (active && user)
+          useAuthStore.getState().setUser(user);
+      })
+      .catch(() => {
+        // Keep saved credentials for a later retry; sign-in stays available offline.
+      })
+      .finally(() => {
+        if (active) setSessionReady(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const colorScheme = useColorScheme();
   const isAuthenticated = useAuthStore(
     (state) => state.isAuthenticated,
@@ -35,12 +55,12 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if (sessionReady && (fontsLoaded || fontError)) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, sessionReady]);
 
-  if (!fontsLoaded && !fontError) {
+  if (!sessionReady || (!fontsLoaded && !fontError)) {
     return null;
   }
 
@@ -73,7 +93,9 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerTitleStyle: { fontFamily: fonts.semiBold },
-          headerBackTitleStyle: { fontFamily: fonts.regular },
+          headerBackTitleStyle: {
+            fontFamily: fonts.regular,
+          },
         }}
       >
         <Stack.Screen
@@ -104,6 +126,10 @@ export default function RootLayout() {
           <Stack.Screen name="profile" />
           <Stack.Screen name="payouts" />
           <Stack.Screen name="join-requests" />
+          <Stack.Screen name="group-details" />
+          <Stack.Screen name="group-schedule" />
+          <Stack.Screen name="payment-issues" />
+          <Stack.Screen name="payout-order" />
         </Stack.Protected>
         <Stack.Screen
           name="welcome"

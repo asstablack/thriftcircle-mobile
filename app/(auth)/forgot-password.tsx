@@ -1,3 +1,5 @@
+import { goBackOrReplace } from '@/utils/navigation';
+import { FigmaIcon } from '@/components/figma-icon';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -66,7 +68,9 @@ export default function ForgotPassword() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={
+          Platform.OS === 'ios' ? 'padding' : undefined
+        }
       >
         <ScrollView
           contentContainerStyle={styles.content}
@@ -75,13 +79,15 @@ export default function ForgotPassword() {
         >
           <Pressable
             style={styles.backButton}
-            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            onPress={() => goBackOrReplace('/login')}
           >
-            <Text style={styles.backText}>‹ Back</Text>
+            <FigmaIcon name="back" size="medium" />
           </Pressable>
 
           <Image
-            source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+            source={require('@/assets/figma/ec34e.png')}
             style={styles.logo}
             contentFit="contain"
           />
@@ -89,8 +95,8 @@ export default function ForgotPassword() {
           <Text style={styles.title}>Forgot Password?</Text>
 
           <Text style={styles.subtitle}>
-            Enter your email or phone number and we&apos;ll help
-            you reset your password.
+            Enter your email or phone number and we&apos;ll
+            help you reset your password.
           </Text>
 
           <View style={styles.form}>
@@ -125,7 +131,9 @@ export default function ForgotPassword() {
               Remember your password?
             </Text>
 
-            <Pressable onPress={() => router.replace('/login')}>
+            <Pressable
+              onPress={() => router.replace('/login')}
+            >
               <Text style={styles.loginLink}>Log In</Text>
             </Pressable>
           </View>

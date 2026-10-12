@@ -1,3 +1,5 @@
+import { goBackOrReplace } from '@/utils/navigation';
+import { FigmaIcon } from '@/components/figma-icon';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -24,11 +26,15 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] =
+    useState('');
   const [loading, setLoading] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] =
+  const [passwordVisible, setPasswordVisible] =
     useState(false);
+  const [
+    confirmPasswordVisible,
+    setConfirmPasswordVisible,
+  ] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const handleSignup = async () => {
@@ -99,7 +105,9 @@ export default function RegisterScreen() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={
+          Platform.OS === 'ios' ? 'padding' : undefined
+        }
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -108,18 +116,24 @@ export default function RegisterScreen() {
         >
           <Pressable
             style={styles.backButton}
-            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            onPress={() =>
+              goBackOrReplace('/role-selection')
+            }
           >
-            <Text style={styles.backText}>‹ Back</Text>
+            <FigmaIcon name="back" size="medium" />
           </Pressable>
 
           <Image
-            source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+            source={require('@/assets/figma/ec34e.png')}
             style={styles.logo}
             contentFit="contain"
           />
 
-          <Text style={styles.title}>Create your account</Text>
+          <Text style={styles.title}>
+            Create your account
+          </Text>
 
           <Text style={styles.subtitle}>
             Set up your ThriftCircle account to get started.
@@ -131,7 +145,9 @@ export default function RegisterScreen() {
             <TextInput
               style={styles.input}
               placeholder="Enter your full name"
-              placeholderTextColor={styles.placeholder.color}
+              placeholderTextColor={
+                styles.placeholder.color
+              }
               value={fullName}
               onChangeText={setFullName}
               autoCapitalize="words"
@@ -142,7 +158,9 @@ export default function RegisterScreen() {
             <TextInput
               style={styles.input}
               placeholder="Enter your email"
-              placeholderTextColor={styles.placeholder.color}
+              placeholderTextColor={
+                styles.placeholder.color
+              }
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -155,7 +173,9 @@ export default function RegisterScreen() {
             <TextInput
               style={styles.input}
               placeholder="Enter your phone number"
-              placeholderTextColor={styles.placeholder.color}
+              placeholderTextColor={
+                styles.placeholder.color
+              }
               keyboardType="phone-pad"
               value={phoneNumber}
               onChangeText={setPhoneNumber}
@@ -167,7 +187,9 @@ export default function RegisterScreen() {
               <TextInput
                 style={styles.passwordInput}
                 placeholder="Create a password"
-                placeholderTextColor={styles.placeholder.color}
+                placeholderTextColor={
+                  styles.placeholder.color
+                }
                 secureTextEntry={!passwordVisible}
                 value={password}
                 onChangeText={setPassword}
@@ -190,13 +212,17 @@ export default function RegisterScreen() {
               </Pressable>
             </View>
 
-            <Text style={styles.label}>Confirm Password</Text>
+            <Text style={styles.label}>
+              Confirm Password
+            </Text>
 
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.passwordInput}
                 placeholder="Confirm your password"
-                placeholderTextColor={styles.placeholder.color}
+                placeholderTextColor={
+                  styles.placeholder.color
+                }
                 secureTextEntry={!confirmPasswordVisible}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -215,7 +241,9 @@ export default function RegisterScreen() {
               >
                 <Feather
                   name={
-                    confirmPasswordVisible ? 'eye-off' : 'eye'
+                    confirmPasswordVisible
+                      ? 'eye-off'
+                      : 'eye'
                   }
                   size={19}
                   color={colors.textSecondary}
@@ -225,7 +253,9 @@ export default function RegisterScreen() {
 
             <Pressable
               style={styles.termsRow}
-              onPress={() => setAcceptedTerms(!acceptedTerms)}
+              onPress={() =>
+                setAcceptedTerms(!acceptedTerms)
+              }
             >
               <View
                 style={[
@@ -271,7 +301,9 @@ export default function RegisterScreen() {
               Already have an account?
             </Text>
 
-            <Pressable onPress={() => router.replace('/login')}>
+            <Pressable
+              onPress={() => router.replace('/login')}
+            >
               <Text style={styles.loginLink}>Log In</Text>
             </Pressable>
           </View>

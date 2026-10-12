@@ -3,7 +3,13 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const contributionReviewStyles = StyleSheet.create({
+  selectedUpload: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
+    borderStyle: 'solid',
+  },
   uploadBox: {
+    marginHorizontal: 20,
     padding: 24,
     marginVertical: 16,
     gap: 10,
@@ -22,8 +28,8 @@ export const contributionReviewStyles = StyleSheet.create({
     paddingBottom: 28,
   },
   header: {
-    minHeight: 64,
-    backgroundColor: colors.white,
+    minHeight: 72,
+    backgroundColor: colors.background,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -36,12 +42,15 @@ export const contributionReviewStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 20,
+    flexShrink: 1,
     fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
   banner: {
-    backgroundColor: colors.primary,
+    marginHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: 20,
     paddingVertical: 15,
     flexDirection: 'row',
@@ -52,13 +61,13 @@ export const contributionReviewStyles = StyleSheet.create({
   bannerDate: {
     fontFamily: fonts.regular,
     fontSize: 12,
-    color: colors.white,
+    color: colors.textSecondary,
     marginBottom: 6,
   },
   amount: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.bold,
-    color: colors.white,
+    color: colors.textPrimary,
   },
   statusBadge: {
     overflow: 'hidden',
@@ -66,12 +75,17 @@ export const contributionReviewStyles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     fontFamily: fonts.regular,
-    fontSize: 11,
+    fontSize: 12,
   },
   confirmed: {
     backgroundColor: colors.primaryLight,
     color: colors.primary,
   },
+  underReview: {
+    backgroundColor: '#EFF6FF',
+    color: '#315B8B',
+  },
+  issueLink: { marginHorizontal: 20, paddingVertical: 14 },
   pending: {
     backgroundColor: '#FFFAE8',
     color: '#8B581C',
@@ -83,9 +97,11 @@ export const contributionReviewStyles = StyleSheet.create({
   detailsCard: {
     margin: 20,
     marginBottom: 0,
-    padding: 14,
-    backgroundColor: colors.primaryLight,
-    borderRadius: 6,
+    padding: 16,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   detailRow: {
     flexDirection: 'row',
@@ -96,18 +112,18 @@ export const contributionReviewStyles = StyleSheet.create({
   },
   detailLabel: {
     fontFamily: fonts.regular,
-    fontSize: 12,
+    fontSize: 13.5,
     color: colors.textSecondary,
   },
   detailValue: {
     fontFamily: fonts.regular,
-    fontSize: 12,
+    fontSize: 13.5,
     color: colors.textDark,
     flexShrink: 1,
     textAlign: 'right',
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 17.5,
     fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     marginHorizontal: 20,
@@ -117,11 +133,13 @@ export const contributionReviewStyles = StyleSheet.create({
   evidenceCard: {
     marginHorizontal: 20,
     padding: 16,
-    backgroundColor: colors.subtleBackground,
-    borderRadius: 7,
+    backgroundColor: colors.white,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   evidenceImage: {
     width: 64,
@@ -148,7 +166,7 @@ export const contributionReviewStyles = StyleSheet.create({
     marginTop: 8,
     padding: 16,
     backgroundColor: colors.subtleBackground,
-    borderRadius: 6,
+    borderRadius: 12,
     gap: 6,
   },
   noteLabel: {

@@ -46,7 +46,11 @@ type ContributionDetails = {
   dueDate: string;
   cycleNumber: number;
   status:
-    'DUE' | 'PENDING_REVIEW' | 'CONFIRMED' | 'ISSUE' | 'OVERDUE';
+    | 'DUE'
+    | 'PENDING_REVIEW'
+    | 'CONFIRMED'
+    | 'ISSUE'
+    | 'OVERDUE';
   submittedAt: string | null;
   confirmedAt: string | null;
   issueReason: string | null;
@@ -56,7 +60,7 @@ const labels = {
   DUE: 'Due',
   PENDING_REVIEW: 'Under review',
   CONFIRMED: 'Confirmed',
-  ISSUE: 'Correction requested',
+  ISSUE: 'Payment issue',
   OVERDUE: 'Overdue',
 };
 const formatDate = (value?: string | null) =>
@@ -90,9 +94,9 @@ export default function ContributionReviewScreen() {
     'APPROVED' | 'REJECTED'
   >('APPROVED');
   const [error, setError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(
-    null,
-  );
+  const [actionError, setActionError] = useState<
+    string | null
+  >(null);
   const [imageFailed, setImageFailed] = useState(false);
   const [reload, setReload] = useState(0);
   const submitting = useRef(false);
@@ -190,7 +194,9 @@ export default function ContributionReviewScreen() {
     } else if (router.canGoBack()) router.back();
     else
       router.replace(
-        isOrganizer ? '/contributions' : '/member-dashboard',
+        isOrganizer
+          ? '/contributions'
+          : '/member-dashboard',
       );
   };
   const statusStyle =
@@ -199,7 +205,9 @@ export default function ContributionReviewScreen() {
       : contribution?.status === 'ISSUE' ||
           contribution?.status === 'OVERDUE'
         ? styles.issue
-        : styles.pending;
+        : contribution?.status === 'PENDING_REVIEW'
+          ? styles.underReview
+          : styles.pending;
   const canSubmit =
     contribution?.memberId === userId &&
     ['DUE', 'OVERDUE', 'ISSUE'].includes(
@@ -212,7 +220,10 @@ export default function ContributionReviewScreen() {
   // The current API has no original filename; display the stored asset basename.
   const evidenceName =
     latestEvidence?.fileName ||
-    latestEvidence?.fileUrl.split('/').pop()?.split('?')[0] ||
+    latestEvidence?.fileUrl
+      .split('/')
+      .pop()
+      ?.split('?')[0] ||
     'Payment evidence';
 
   return (
@@ -271,7 +282,9 @@ export default function ContributionReviewScreen() {
             </Text>
             <Pressable
               style={styles.primaryButton}
-              onPress={() => setReload((value) => value + 1)}
+              onPress={() =>
+                setReload((value) => value + 1)
+              }
             >
               <Text style={styles.primaryButtonText}>
                 Try Again
@@ -286,17 +299,22 @@ export default function ContributionReviewScreen() {
                   {formatDate(contribution.dueDate)}
                 </Text>
                 <Text style={styles.amount}>
-                  ₦{contribution.amount.toLocaleString('en-NG')}
+                  ₦
+                  {contribution.amount.toLocaleString(
+                    'en-NG',
+                  )}
                 </Text>
               </View>
-              <Text style={[styles.statusBadge, statusStyle]}>
+              <Text
+                style={[styles.statusBadge, statusStyle]}
+              >
                 {labels[contribution.status]}
               </Text>
             </View>
             {editingStatus ? (
               <>
                 <Text style={styles.sectionTitle}>
-                  Select new status
+                  Review payment evidence
                 </Text>
                 <View style={styles.selectionCard}>
                   {(['APPROVED', 'REJECTED'] as const).map(
@@ -317,7 +335,9 @@ export default function ContributionReviewScreen() {
                       >
                         <View style={styles.radio}>
                           {value === decision && (
-                            <View style={styles.radioSelected} />
+                            <View
+                              style={styles.radioSelected}
+                            />
                           )}
                         </View>
                         <View style={styles.optionContent}>
@@ -349,7 +369,9 @@ export default function ContributionReviewScreen() {
                   onChangeText={setReviewNote}
                   editable={!reviewing}
                   placeholder="Add a message to the member..."
-                  placeholderTextColor={colors.textSecondary}
+                  placeholderTextColor={
+                    colors.textSecondary
+                  }
                   multiline
                   style={styles.reviewInput}
                 />
@@ -371,10 +393,14 @@ export default function ContributionReviewScreen() {
                   onPress={handleReview}
                 >
                   {reviewing ? (
-                    <ActivityIndicator color={colors.white} />
+                    <ActivityIndicator
+                      color={colors.white}
+                    />
                   ) : (
                     <Text style={styles.primaryButtonText}>
-                      Update Status
+                      {decision === 'APPROVED'
+                        ? 'Confirm Payment'
+                        : 'Request Correction'}
                     </Text>
                   )}
                 </Pressable>
@@ -405,7 +431,9 @@ export default function ContributionReviewScreen() {
                       Date submitted
                     </Text>
                     <Text style={styles.detailValue}>
-                      {formatSubmitted(contribution.submittedAt)}
+                      {formatSubmitted(
+                        contribution.submittedAt,
+                      )}
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
@@ -413,7 +441,10 @@ export default function ContributionReviewScreen() {
                       Status
                     </Text>
                     <Text
-                      style={[styles.statusBadge, statusStyle]}
+                      style={[
+                        styles.statusBadge,
+                        statusStyle,
+                      ]}
                     >
                       {labels[contribution.status]}
                     </Text>
@@ -430,15 +461,17 @@ export default function ContributionReviewScreen() {
                       accessibilityLabel={`Open payment evidence, ${evidenceName}`}
                       onPress={openEvidence}
                     >
-                      {latestEvidence.fileType === 'image' &&
-                      !imageFailed ? (
+                      {latestEvidence.fileType ===
+                        'image' && !imageFailed ? (
                         <Image
                           source={{
                             uri: latestEvidence.fileUrl,
                           }}
                           style={styles.evidenceImage}
                           resizeMode="cover"
-                          onError={() => setImageFailed(true)}
+                          onError={() =>
+                            setImageFailed(true)
+                          }
                         />
                       ) : (
                         <View style={styles.fileIcon}>
@@ -460,7 +493,8 @@ export default function ContributionReviewScreen() {
                           undefined && (
                           <Text style={styles.detailLabel}>
                             {(
-                              latestEvidence.fileSize / 1048576
+                              latestEvidence.fileSize /
+                              1048576
                             ).toFixed(1)}{' '}
                             MB
                           </Text>
@@ -492,8 +526,8 @@ export default function ContributionReviewScreen() {
                 ) : (
                   <View style={styles.noteBox}>
                     <Text style={styles.noteText}>
-                      No payment evidence has been submitted for
-                      this contribution.
+                      No payment evidence has been submitted
+                      for this contribution.
                     </Text>
                   </View>
                 )}
@@ -501,7 +535,9 @@ export default function ContributionReviewScreen() {
                   <PaymentEvidenceForm
                     key={contribution._id}
                     contributionId={contribution._id}
-                    correction={contribution.status === 'ISSUE'}
+                    correction={
+                      contribution.status === 'ISSUE'
+                    }
                     onBusyChange={setReviewing}
                     onSubmitted={() =>
                       setReload((value) => value + 1)
@@ -518,7 +554,9 @@ export default function ContributionReviewScreen() {
                       value={reviewNote}
                       onChangeText={setReviewNote}
                       placeholder="No note added yet."
-                      placeholderTextColor={colors.textSecondary}
+                      placeholderTextColor={
+                        colors.textSecondary
+                      }
                       multiline
                       style={[
                         styles.reviewInput,
@@ -533,8 +571,10 @@ export default function ContributionReviewScreen() {
                         setActionError(null);
                       }}
                     >
-                      <Text style={styles.primaryButtonText}>
-                        Update Status
+                      <Text
+                        style={styles.primaryButtonText}
+                      >
+                        Review payment
                       </Text>
                     </Pressable>
                     <Pressable
@@ -542,7 +582,9 @@ export default function ContributionReviewScreen() {
                       accessibilityRole="button"
                       onPress={back}
                     >
-                      <Text style={styles.secondaryButtonText}>
+                      <Text
+                        style={styles.secondaryButtonText}
+                      >
                         Cancel
                       </Text>
                     </Pressable>
@@ -591,10 +633,31 @@ export default function ContributionReviewScreen() {
             )}
           </>
         )}
+        {contribution?.status === 'PENDING_REVIEW' &&
+          (isOrganizer ||
+            contribution.memberId === userId) && (
+            <Pressable
+              style={styles.issueLink}
+              accessibilityRole="button"
+              disabled={reviewing}
+              onPress={() =>
+                router.push({
+                  pathname: '/payment-issues',
+                  params: {
+                    contributionId: contribution._id,
+                  },
+                })
+              }
+            >
+              <Text style={styles.secondaryButtonText}>
+                Report a payment issue
+              </Text>
+            </Pressable>
+          )}
       </ScrollView>
       {!reviewing && (
         <OrganizerBottomNavigation active="Contributions" />
-      )}{' '}
+      )}
     </SafeAreaView>
   );
 }

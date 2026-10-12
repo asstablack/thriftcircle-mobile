@@ -3,6 +3,33 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const contributionsStyles = StyleSheet.create({
+  cycleStrip: {
+    marginHorizontal: 20,
+    padding: 16,
+    backgroundColor: colors.primaryLight,
+    borderRadius: 8,
+    gap: 4,
+    marginTop: 16,
+  },
+  filters: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  filter: {
+    minHeight: 40,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
+  },
+  filterSelected: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
+  },
+
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -19,9 +46,9 @@ export const contributionsStyles = StyleSheet.create({
   },
   secondaryText: {
     fontFamily: fonts.regular,
-    fontSize: 11,
+    fontSize: 12,
     color: colors.textSecondary,
-    lineHeight: 16,
+    lineHeight: 18,
   },
   bodyText: {
     fontFamily: fonts.regular,
@@ -113,12 +140,20 @@ export const contributionsStyles = StyleSheet.create({
   },
   stats: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
     padding: 20,
-    marginTop: 8,
+    marginTop: 0,
+    flexWrap: 'wrap',
   },
   stat: {
-    flex: 1,
+    flex: 0,
+    flexGrow: 1,
+    flexBasis: '45%',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    padding: 16,
   },
   statValue: {
     fontSize: 14,
@@ -127,7 +162,7 @@ export const contributionsStyles = StyleSheet.create({
     marginBottom: 5,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 17.5,
     fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     marginHorizontal: 20,
@@ -149,20 +184,25 @@ export const contributionsStyles = StyleSheet.create({
   historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 48,
+    minHeight: 56,
     gap: 3,
     paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    marginTop: 8,
+    paddingHorizontal: 8,
   },
   amountColumn: {
     flex: 0.9,
     fontFamily: fonts.regular,
-    fontSize: 11,
+    fontSize: 12,
     color: colors.textDark,
   },
   dateColumn: {
     flex: 1.1,
     fontFamily: fonts.regular,
-    fontSize: 10,
+    fontSize: 12,
     color: colors.textSecondary,
   },
   statusColumn: {
@@ -181,7 +221,7 @@ export const contributionsStyles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical: 3,
     fontFamily: fonts.regular,
-    fontSize: 10,
+    fontSize: 12,
   },
   confirmed: {
     backgroundColor: colors.primaryLight,

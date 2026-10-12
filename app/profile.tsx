@@ -1,3 +1,4 @@
+import { GroupTools } from '@/components/group-tools';
 import { useRef, useState } from 'react';
 import {
   Alert,
@@ -16,8 +17,12 @@ import { accountStyles as styles } from '@/styles/accountStyles';
 
 export default function ProfileScreen() {
   const user = useAuthStore((state) => state.user);
-  const group = useAuthStore((state) => state.selectedGroup);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const group = useAuthStore(
+    (state) => state.selectedGroup,
+  );
+  const clearAuth = useAuthStore(
+    (state) => state.clearAuth,
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submitting = useRef(false);
@@ -55,6 +60,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <GroupScreenHeader
+        variant="plain"
         title="My Profile"
         subtitle="Your account and selected group"
         disabled={busy}
@@ -118,8 +124,11 @@ export default function ProfileScreen() {
             {busy ? 'Signing out…' : 'Log out'}
           </Text>
         </Pressable>
+        <GroupTools />
       </ScrollView>
-      {!busy && <OrganizerBottomNavigation active="Profile" />}
+      {!busy && (
+        <OrganizerBottomNavigation active="Profile" />
+      )}
     </SafeAreaView>
   );
 }

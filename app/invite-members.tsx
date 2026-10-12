@@ -1,3 +1,5 @@
+import { OrganizerBottomNavigation } from '@/components/organizer-chrome';
+import { FigmaIcon } from '@/components/figma-icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GroupScreenHeader } from '@/components/group-screen-header';
 import { useCallback, useRef, useState } from 'react';
@@ -6,6 +8,7 @@ import {
   Alert,
   Pressable,
   ScrollView,
+  Share,
   Text,
   View,
 } from 'react-native';
@@ -13,6 +16,7 @@ import * as Clipboard from 'expo-clipboard';
 import { router, useFocusEffect } from 'expo-router';
 import { getMyGroups } from '@/services/groupApi';
 import { inviteMembersStyles as styles } from '@/styles/inviteMembersStyles';
+import { useAuthStore } from '@/store/authStore';
 import { colors } from '@/constants/color';
 
 type Group = {
@@ -25,6 +29,9 @@ type Group = {
 };
 
 export default function InviteMembersScreen() {
+  const activeGroupId = useAuthStore(
+    (state) => state.selectedGroup?.id,
+  );
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] =
     useState<Group | null>(null);
@@ -50,7 +57,9 @@ export default function InviteMembersScreen() {
       setSelectedGroup(
         (previous) =>
           organizerGroups.find(
-            (group: Group) => group._id === previous?._id,
+            (group: Group) =>
+              group._id ===
+              (activeGroupId || previous?._id),
           ) ||
           (organizerGroups.length === 1
             ? organizerGroups[0]
@@ -65,9 +74,10 @@ export default function InviteMembersScreen() {
 
       setError(message);
     } finally {
-      if (version === requestVersion.current) setLoading(false);
+      if (version === requestVersion.current)
+        setLoading(false);
     }
-  }, []);
+  }, [activeGroupId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -81,7 +91,9 @@ export default function InviteMembersScreen() {
   const handleCopyCode = async () => {
     if (!selectedGroup) return;
 
-    await Clipboard.setStringAsync(selectedGroup.inviteCode);
+    await Clipboard.setStringAsync(
+      selectedGroup.inviteCode,
+    );
 
     Alert.alert(
       'Copied',
@@ -89,9 +101,30 @@ export default function InviteMembersScreen() {
     );
   };
 
+  const handleShare = async () => {
+    if (!selectedGroup) return;
+    try {
+      await Share.share({
+        message:
+          'Join ' +
+          selectedGroup.groupName +
+          ' on ThriftCircle. Enter invite code: ' +
+          selectedGroup.inviteCode,
+      });
+    } catch (reason) {
+      Alert.alert(
+        'Unable to share',
+        reason instanceof Error
+          ? reason.message
+          : 'Please copy the invite code instead.',
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <GroupScreenHeader
+        variant="plain"
         title="Invite Members"
         subtitle="Share your group code with the people you want to invite."
       />
@@ -119,7 +152,9 @@ export default function InviteMembersScreen() {
               {error}
             </Text>
             <Pressable onPress={() => void loadGroups()}>
-              <Text style={styles.emptyTitle}>Try Again</Text>
+              <Text style={styles.emptyTitle}>
+                Try Again
+              </Text>
             </Pressable>
           </View>
         ) : groups.length === 0 ? (
@@ -129,8 +164,8 @@ export default function InviteMembersScreen() {
             </Text>
 
             <Text style={styles.emptyText}>
-              You need to create a group before you can invite
-              members.
+              You need to create a group before you can
+              invite members.
             </Text>
 
             <Pressable
@@ -164,7 +199,8 @@ export default function InviteMembersScreen() {
                   </Text>
 
                   <Text style={styles.groupDetails}>
-                    ₦{group.contributionAmount.toLocaleString()}{' '}
+                    ₦
+                    {group.contributionAmount.toLocaleString()}{' '}
                     • {group.frequency}
                   </Text>
                 </View>
@@ -178,33 +214,63 @@ export default function InviteMembersScreen() {
             {selectedGroup && (
               <View style={styles.inviteCard}>
                 <Text style={styles.inviteLabel}>
-                  Invite Code
+                  Group Code
                 </Text>
 
                 <Text style={styles.inviteDescription}>
-                  Share this code with members so they can join
-                  this group.
+                  Share this code with members so they can
+                  join this group.
                 </Text>
 
                 <View style={styles.codeBox}>
                   <Text style={styles.inviteCode}>
                     {selectedGroup.inviteCode}
                   </Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    style={styles.copyButton}
+                    onPress={handleCopyCode}
+                  >
+                    <FigmaIcon name="copy" />
+                    <Text style={styles.copyButtonText}>
+                      Copy
+                    </Text>
+                  </Pressable>
                 </View>
-
                 <Pressable
-                  style={styles.copyButton}
-                  onPress={handleCopyCode}
+                  accessibilityRole="button"
+                  style={styles.shareButton}
+                  onPress={() => void handleShare()}
                 >
-                  <Text style={styles.copyButtonText}>
-                    Copy Invite Code
+                  <Text style={styles.shareButtonText}>
+                    Share invite code
                   </Text>
+                </Pressable>
+                <View style={styles.approvalCard}>
+                  <Text style={styles.sectionTitle}>
+                    Organizer approval required
+                  </Text>
+                  <Text style={styles.inviteDescription}>
+                    New members send a join request. Review
+                    and approve each request before they
+                    enter the group.
+                  </Text>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  style={styles.doneButton}
+                  onPress={() =>
+                    router.replace('/group-selection')
+                  }
+                >
+                  <Text style={styles.shareText}>Done</Text>
                 </Pressable>
               </View>
             )}
           </>
         )}
       </ScrollView>
+      <OrganizerBottomNavigation active="Groups" />
     </SafeAreaView>
   );
 }

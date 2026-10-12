@@ -1,3 +1,5 @@
+import { goBackOrReplace } from '@/utils/navigation';
+import { FigmaIcon } from '@/components/figma-icon';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -26,10 +28,14 @@ export default function NewPassword() {
   }>();
 
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] =
+  const [confirmPassword, setConfirmPassword] =
+    useState('');
+  const [passwordVisible, setPasswordVisible] =
     useState(false);
+  const [
+    confirmPasswordVisible,
+    setConfirmPasswordVisible,
+  ] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleResetPassword = async () => {
@@ -110,7 +116,9 @@ export default function NewPassword() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={
+          Platform.OS === 'ios' ? 'padding' : undefined
+        }
       >
         <ScrollView
           contentContainerStyle={styles.content}
@@ -119,13 +127,17 @@ export default function NewPassword() {
         >
           <Pressable
             style={styles.backButton}
-            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            onPress={() =>
+              goBackOrReplace('/forgot-password')
+            }
           >
-            <Text style={styles.backText}>‹ Back</Text>
+            <FigmaIcon name="back" size="medium" />
           </Pressable>
 
           <Image
-            source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+            source={require('@/assets/figma/ec34e.png')}
             style={styles.logo}
             contentFit="contain"
           />
@@ -133,7 +145,8 @@ export default function NewPassword() {
           <Text style={styles.title}>Reset Password</Text>
 
           <Text style={styles.subtitle}>
-            Create a new password for your ThriftCircle account.
+            Create a new password for your ThriftCircle
+            account.
           </Text>
 
           <View style={styles.form}>
@@ -197,7 +210,9 @@ export default function NewPassword() {
               >
                 <Feather
                   name={
-                    confirmPasswordVisible ? 'eye-off' : 'eye'
+                    confirmPasswordVisible
+                      ? 'eye-off'
+                      : 'eye'
                   }
                   size={19}
                   color={colors.textSecondary}
@@ -214,7 +229,9 @@ export default function NewPassword() {
               disabled={loading}
             >
               <Text style={styles.resetButtonText}>
-                {loading ? 'Resetting...' : 'Reset Password'}
+                {loading
+                  ? 'Resetting...'
+                  : 'Reset Password'}
               </Text>
             </Pressable>
           </View>

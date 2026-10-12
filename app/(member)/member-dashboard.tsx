@@ -1,3 +1,4 @@
+import { GroupTools } from '@/components/group-tools';
 import {
   getMemberDashboard,
   type MemberDashboardData,
@@ -29,14 +30,19 @@ type Contribution = {
   memberId: string;
   amount: number;
   dueDate: string;
+  issueReason?: string | null;
   status:
-    'DUE' | 'PENDING_REVIEW' | 'CONFIRMED' | 'ISSUE' | 'OVERDUE';
+    | 'DUE'
+    | 'PENDING_REVIEW'
+    | 'CONFIRMED'
+    | 'ISSUE'
+    | 'OVERDUE';
 };
 const labels = {
   DUE: 'Due',
   PENDING_REVIEW: 'Under review',
   CONFIRMED: 'Confirmed',
-  ISSUE: 'Correction requested',
+  ISSUE: 'Payment issue',
   OVERDUE: 'Overdue',
 };
 const money = (amount: number) =>
@@ -50,17 +56,24 @@ const date = (value: string) =>
 
 export default function MemberDashboard() {
   const user = useAuthStore((state) => state.user);
-  const group = useAuthStore((state) => state.selectedGroup);
-  const { view } = useLocalSearchParams<{ view?: string }>();
+  const group = useAuthStore(
+    (state) => state.selectedGroup,
+  );
+  const { view } = useLocalSearchParams<{
+    view?: string;
+  }>();
   const historyView = view === 'history';
   const [summary, setSummary] =
     useState<MemberDashboardData | null>(null);
-  const [records, setRecords] = useState<Contribution[]>([]);
+  const [records, setRecords] = useState<Contribution[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -107,7 +120,8 @@ export default function MemberDashboard() {
   const history = records
     .filter((item) => item.memberId === user?.id)
     .sort(
-      (a, b) => Date.parse(b.dueDate) - Date.parse(a.dueDate),
+      (a, b) =>
+        Date.parse(b.dueDate) - Date.parse(a.dueDate),
     );
   // The summary endpoint currently excludes ISSUE; keep correction requests visible.
   const attention = history.filter(
@@ -130,7 +144,8 @@ export default function MemberDashboard() {
   const visible = historyView
     ? history.filter(
         (item) =>
-          (status === 'All' || labels[item.status] === status) &&
+          (status === 'All' ||
+            labels[item.status] === status) &&
           (
             date(item.dueDate) +
             ' ' +
@@ -151,53 +166,59 @@ export default function MemberDashboard() {
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.fullName?.trim().charAt(0).toUpperCase() ||
-              'M'}
-          </Text>
+      {!historyView && (
+        <View style={styles.header}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {user?.fullName
+                ?.trim()
+                .charAt(0)
+                .toUpperCase() || 'M'}
+            </Text>
+          </View>
+          <View style={styles.headerName}>
+            <Text style={styles.secondaryText}>
+              Welcome,
+            </Text>
+            <Text style={styles.name}>
+              {user?.fullName?.split(' ')[0] || 'Member'}
+            </Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open notifications"
+            hitSlop={12}
+            onPress={() => router.push('/notifications')}
+          >
+            <Feather
+              name="bell"
+              size={22}
+              color={colors.textDark}
+            />
+          </Pressable>
         </View>
-        <View style={styles.headerName}>
-          <Text style={styles.secondaryText}>Welcome,</Text>
-          <Text style={styles.name}>
-            {user?.fullName?.split(' ')[0] || 'Member'}
-          </Text>
-        </View>
+      )}
+      {historyView && (
         <Pressable
+          style={styles.historyHeading}
+          onPress={() => router.setParams({ view: 'home' })}
           accessibilityRole="button"
-          accessibilityLabel="Open notifications"
-          hitSlop={12}
-          onPress={() => router.push('/notifications')}
+          accessibilityLabel="Back to dashboard"
         >
           <Feather
-            name="bell"
+            name="arrow-left"
             size={22}
-            color={colors.textDark}
+            color={colors.white}
           />
+          <Text style={styles.groupName}>
+            Contribution History
+          </Text>
         </Pressable>
-      </View>
+      )}
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {historyView && (
-          <Pressable
-            style={styles.historyHeading}
-            onPress={() => router.setParams({ view: 'home' })}
-            accessibilityRole="button"
-            accessibilityLabel="Back to dashboard"
-          >
-            <Feather
-              name="arrow-left"
-              size={22}
-              color={colors.white}
-            />
-            <Text style={styles.groupName}>
-              Contribution History
-            </Text>
-          </Pressable>
-        )}
         {loading ? (
           <View
             accessibilityLabel="Loading contributions"
@@ -221,12 +242,18 @@ export default function MemberDashboard() {
             <Text style={styles.heading}>
               Unable to load contributions
             </Text>
-            <Text style={styles.secondaryText}>{error}</Text>
+            <Text style={styles.secondaryText}>
+              {error}
+            </Text>
             <Pressable
               style={styles.retryButton}
-              onPress={() => setReload((value) => value + 1)}
+              onPress={() =>
+                setReload((value) => value + 1)
+              }
             >
-              <Text style={styles.whiteText}>Try Again</Text>
+              <Text style={styles.whiteText}>
+                Try Again
+              </Text>
             </Pressable>
           </View>
         ) : (
@@ -277,7 +304,10 @@ export default function MemberDashboard() {
                       }
                     >
                       <Text style={styles.whiteText}>
-                        View Contribution Details
+                        {outstanding.status === 'DUE' ||
+                        outstanding.status === 'OVERDUE'
+                          ? 'View Outstanding Contribution'
+                          : 'View Contribution Details'}
                       </Text>
                       <Feather
                         name="arrow-right"
@@ -291,70 +321,26 @@ export default function MemberDashboard() {
                     </Text>
                   )}
                 </View>
-                <View style={styles.paymentCard}>
-                  <View style={styles.headerName}>
-                    <Text style={styles.secondaryText}>
-                      Your payout position
-                    </Text>
-                    <Text style={styles.amount}>
-                      {summary?.payoutOrder
-                        ? 'Position ' + summary.payoutOrder
-                        : 'Not assigned'}
-                    </Text>
-                    <Text style={styles.secondaryText}>
-                      {summary?.isNextRecipient
-                        ? 'You are the current cycle recipient.'
-                        : 'Payouts are arranged outside ThriftCircle.'}
-                    </Text>
-                    <Pressable
-                      onPress={() => router.push('/payouts')}
-                    >
-                      <Text style={styles.linkText}>
-                        View payout order and history
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
-                <View style={styles.paymentCard}>
-                  <View>
-                    <Text style={styles.secondaryText}>
-                      Outstanding amount
-                    </Text>
-                    <Text style={styles.amount}>
-                      {money(amountOutstanding)}
-                    </Text>
-                    <Text style={styles.secondaryText}>
-                      Due and overdue contributions
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.paymentCard}>
-                  <View>
-                    <Text style={styles.heading}>
-                      Group progress
-                    </Text>
-                    <Text style={styles.secondaryText}>
-                      {summary?.cycleProgress
-                        ? 'Cycle ' +
-                          summary.cycleProgress.cycleNumber +
-                          ': ' +
-                          summary.cycleProgress.confirmed +
-                          ' of ' +
-                          summary.cycleProgress.total +
-                          ' contributions confirmed'
-                        : 'No active cycle yet.'}
-                    </Text>
-                  </View>
-                </View>
                 {attention.map((item) => (
                   <Pressable
                     key={item._id}
-                    style={styles.paymentCard}
+                    accessibilityRole="button"
+                    style={styles.correctionCard}
                     onPress={() => openDetails(item._id)}
                   >
+                    <Text style={styles.correctionTitle}>
+                      {item.issueReason
+                        ? 'Correction required'
+                        : 'Payment issue'}
+                    </Text>
+                    <Text style={styles.secondaryText}>
+                      {money(item.amount)} ·{' '}
+                      {date(item.dueDate)}
+                    </Text>
                     <Text style={styles.linkText}>
-                      Correction requested · {money(item.amount)}{' '}
-                      · View details
+                      {item.issueReason
+                        ? 'View feedback and update evidence →'
+                        : 'View payment issue →'}
                     </Text>
                   </Pressable>
                 ))}
@@ -387,33 +373,62 @@ export default function MemberDashboard() {
                   value={query}
                   onChangeText={setQuery}
                 />
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.filters}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Filter contribution status"
+                  accessibilityState={{
+                    expanded: showFilters,
+                  }}
+                  style={styles.filterControl}
+                  onPress={() =>
+                    setShowFilters(!showFilters)
+                  }
                 >
-                  {['All', ...Object.values(labels)].map(
-                    (label) => (
-                      <Pressable
-                        key={label}
-                        style={[
-                          styles.filter,
-                          status === label &&
-                            styles.filterSelected,
-                        ]}
-                        onPress={() => setStatus(label)}
-                        accessibilityRole="button"
-                        accessibilityState={{
-                          selected: status === label,
-                        }}
-                      >
-                        <Text style={styles.linkText}>
-                          {label}
-                        </Text>
-                      </Pressable>
-                    ),
-                  )}
-                </ScrollView>
+                  <Text style={styles.linkText}>
+                    Status: {status}
+                  </Text>
+                  <Feather
+                    name={
+                      showFilters
+                        ? 'chevron-up'
+                        : 'chevron-down'
+                    }
+                    size={18}
+                    color={colors.textSecondary}
+                  />
+                </Pressable>
+                {showFilters && (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.filters}
+                  >
+                    {['All', ...Object.values(labels)].map(
+                      (label) => (
+                        <Pressable
+                          key={label}
+                          style={[
+                            styles.filter,
+                            status === label &&
+                              styles.filterSelected,
+                          ]}
+                          onPress={() => {
+                            setStatus(label);
+                            setShowFilters(false);
+                          }}
+                          accessibilityRole="button"
+                          accessibilityState={{
+                            selected: status === label,
+                          }}
+                        >
+                          <Text style={styles.linkText}>
+                            {label}
+                          </Text>
+                        </Pressable>
+                      ),
+                    )}
+                  </ScrollView>
+                )}
               </>
             )}
             {visible.length ? (
@@ -448,7 +463,13 @@ export default function MemberDashboard() {
                         styles.badge,
                         item.status === 'CONFIRMED'
                           ? styles.confirmed
-                          : styles.pending,
+                          : item.status === 'ISSUE' ||
+                              item.status === 'OVERDUE'
+                            ? styles.issue
+                            : item.status ===
+                                'PENDING_REVIEW'
+                              ? styles.underReview
+                              : styles.pending,
                       ]}
                     >
                       {labels[item.status]}
@@ -475,8 +496,71 @@ export default function MemberDashboard() {
                 </Text>
               </View>
             )}
+            {!historyView && (
+              <>
+                <View style={styles.paymentCard}>
+                  <View style={styles.headerName}>
+                    <Text style={styles.secondaryText}>
+                      Your payout position
+                    </Text>
+                    <Text style={styles.amount}>
+                      {summary?.payoutOrder
+                        ? 'Position ' + summary.payoutOrder
+                        : 'Not assigned'}
+                    </Text>
+                    <Text style={styles.secondaryText}>
+                      {summary?.isNextRecipient
+                        ? 'You are the current cycle recipient.'
+                        : 'Payouts are arranged outside ThriftCircle.'}
+                    </Text>
+                    <Pressable
+                      onPress={() =>
+                        router.push('/payouts')
+                      }
+                    >
+                      <Text style={styles.linkText}>
+                        View payout order and history
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+                <View style={styles.paymentCard}>
+                  <View>
+                    <Text style={styles.secondaryText}>
+                      Outstanding amount
+                    </Text>
+                    <Text style={styles.amount}>
+                      {money(amountOutstanding)}
+                    </Text>
+                    <Text style={styles.secondaryText}>
+                      Due and overdue contributions
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.paymentCard}>
+                  <View>
+                    <Text style={styles.heading}>
+                      Group progress
+                    </Text>
+                    <Text style={styles.secondaryText}>
+                      {summary?.cycleProgress
+                        ? 'Cycle ' +
+                          summary.cycleProgress
+                            .cycleNumber +
+                          ': ' +
+                          summary.cycleProgress.confirmed +
+                          ' of ' +
+                          summary.cycleProgress.total +
+                          ' contributions confirmed'
+                        : 'No active cycle yet.'}
+                    </Text>
+                  </View>
+                </View>
+              </>
+            )}
           </>
         )}
+        <GroupTools />
       </ScrollView>
       <OrganizerBottomNavigation
         active={historyView ? 'Contributions' : 'Home'}

@@ -36,10 +36,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setRole: (role) => set({ selectedRole: role }),
 
   setUser: (user) =>
-    set({
+    set((state) => ({
       user,
       isAuthenticated: true,
-    }),
+      selectedGroup:
+        state.user?.id === user.id
+          ? state.selectedGroup
+          : null,
+    })),
 
   setSelectedGroup: (group) =>
     set({

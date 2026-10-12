@@ -140,22 +140,24 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   welcomeBanner: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryLight,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 15,
   },
 
   greeting: {
-    fontSize: 14,
-    fontFamily: fonts.bold,
-    color: colors.white,
+    fontSize: 16,
+    fontFamily: fonts.semiBold,
+    color: colors.textPrimary,
     marginBottom: 4,
   },
 
   welcomeText: {
     fontFamily: fonts.regular,
-    fontSize: 11,
-    color: colors.white,
+    fontSize: 12,
+    color: colors.textSecondary,
     opacity: 0.9,
   },
 
@@ -683,19 +685,21 @@ export const organizerDashboardStyles = StyleSheet.create({
   ========================= */
 
   bottomNav: {
-    height: 68,
+    height: 76,
     backgroundColor: colors.white,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 5,
+    paddingHorizontal: 8,
+    minHeight: 76,
+    paddingVertical: 8,
   },
 
   navItem: {
     flex: 1,
-    minHeight: 52,
-    gap: 5,
+    minHeight: 58,
+    gap: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -714,14 +718,15 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   navText: {
-    fontFamily: fonts.regular,
-    fontSize: 10,
+    fontFamily: fonts.medium,
+    fontSize: 11,
     color: colors.textSecondary,
   },
 
   navTextActive: {
     color: colors.primary,
-    fontFamily: fonts.bold,
+    fontFamily: fonts.medium,
+    fontSize: 11,
   },
 
   /* =========================

@@ -13,14 +13,17 @@ export const roleSelectionStyles = StyleSheet.create({
     width: '100%',
     maxWidth: 460,
     alignSelf: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingTop: 24,
     paddingBottom: 28,
   },
 
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 18,
+    marginBottom: 16,
+    minHeight: 44,
+    minWidth: 44,
+    justifyContent: 'center',
   },
 
   backText: {
@@ -30,39 +33,41 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   logo: {
-    width: 125,
-    height: 100,
+    width: 115,
+    height: 96,
     alignSelf: 'center',
-    marginBottom: 5,
+    marginBottom: 20,
   },
 
   title: {
-    fontSize: 22,
-    fontFamily: fonts.extraBold,
+    fontSize: 33,
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     textAlign: 'center',
+    lineHeight: 40,
   },
 
   subtitle: {
     fontFamily: fonts.regular,
-    fontSize: 11,
+    fontSize: 14.5,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginTop: 5,
-    marginBottom: 20,
+    marginTop: 8,
+    marginBottom: 28,
+    lineHeight: 21,
   },
 
   roleCard: {
-    minHeight: 150,
+    minHeight: 160,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    marginBottom: 14,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    marginBottom: 24,
   },
 
   roleCardSelected: {
@@ -71,14 +76,15 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   roleIcon: {
-    width: 42,
-    height: 42,
+    width: 56,
+    height: 56,
     borderWidth: 1,
     borderColor: colors.primary,
-    borderRadius: 9,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 13,
+    backgroundColor: colors.primaryLight,
   },
 
   roleIconText: {
@@ -93,16 +99,16 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   roleTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: fonts.bold,
     color: colors.textPrimary,
-    marginBottom: 3,
+    marginBottom: 8,
   },
 
   roleDescription: {
     fontFamily: fonts.regular,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: 14.5,
+    lineHeight: 21,
     color: colors.textSecondary,
   },
 
@@ -114,6 +120,7 @@ export const roleSelectionStyles = StyleSheet.create({
     borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'flex-start',
   },
 
   radioSelected: {
@@ -128,9 +135,9 @@ export const roleSelectionStyles = StyleSheet.create({
   },
 
   continueButton: {
-    height: 52,
+    height: 48,
     backgroundColor: colors.primary,
-    borderRadius: 9,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 6,
@@ -142,7 +149,7 @@ export const roleSelectionStyles = StyleSheet.create({
 
   continueText: {
     color: colors.white,
-    fontSize: 12,
+    fontSize: 14.5,
     fontFamily: fonts.bold,
   },
 });

@@ -15,48 +15,49 @@ export const welcomeStyles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 22,
-    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingTop: 36,
     paddingBottom: 32,
   },
 
   logo: {
-    width: 125,
-    height: 48,
-    marginBottom: 8,
+    width: 130,
+    height: 44,
+    marginBottom: 24,
   },
 
   illustration: {
     width: '100%',
-    height: 300,
-    marginBottom: 8,
+    height: 310,
+    marginBottom: 24,
+    maxWidth: 310,
   },
 
   title: {
-    fontSize: 36,
-    fontFamily: fonts.extraBold,
-    color: colors.textPrimary,
+    fontSize: 40,
+    fontFamily: fonts.bold,
+    color: colors.primary,
     textAlign: 'center',
     lineHeight: 44,
   },
 
   titleAccent: {
-    fontSize: 36,
-    fontFamily: fonts.extraBold,
+    fontSize: 40,
+    fontFamily: fonts.bold,
     color: colors.accent,
     textAlign: 'center',
     lineHeight: 44,
-    marginBottom: 9,
+    marginBottom: 16,
   },
 
   description: {
     fontFamily: fonts.regular,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.textSecondary,
     textAlign: 'center',
     maxWidth: 310,
-    marginBottom: 22,
+    marginBottom: 28,
   },
 
   actions: {
@@ -75,7 +76,7 @@ export const welcomeStyles = StyleSheet.create({
 
   primaryButtonText: {
     color: colors.white,
-    fontSize: 13,
+    fontSize: 14.5,
     fontFamily: fonts.bold,
   },
 
@@ -92,7 +93,7 @@ export const welcomeStyles = StyleSheet.create({
 
   secondaryButtonText: {
     color: colors.primary,
-    fontSize: 13,
+    fontSize: 14.5,
     fontFamily: fonts.bold,
   },
 });

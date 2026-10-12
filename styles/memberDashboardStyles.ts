@@ -3,6 +3,37 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const memberDashboardStyles = StyleSheet.create({
+  underReview: {
+    backgroundColor: '#EFF6FF',
+    color: '#315B8B',
+  },
+  filterControl: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minHeight: 48,
+    paddingHorizontal: 14,
+    marginVertical: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    backgroundColor: colors.subtleBackground,
+  },
+  correctionCard: {
+    padding: 16,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#F6D28B',
+    backgroundColor: '#FFFBEB',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  correctionTitle: {
+    fontFamily: fonts.semiBold,
+    fontSize: 14,
+    color: '#92400E',
+  },
+  issue: { backgroundColor: '#FFF0F2', color: '#AD3045' },
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -11,15 +42,16 @@ export const memberDashboardStyles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 22,
-    paddingVertical: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     backgroundColor: colors.white,
+    minHeight: 56,
   },
 
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
@@ -37,14 +69,17 @@ export const memberDashboardStyles = StyleSheet.create({
   },
 
   name: {
-    fontSize: 18,
-    fontFamily: fonts.bold,
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
 
   content: {
-    padding: 22,
+    padding: 16,
     paddingBottom: 32,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
   },
 
   secondaryText: {
@@ -57,20 +92,21 @@ export const memberDashboardStyles = StyleSheet.create({
   summary: {
     backgroundColor: colors.primary,
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 28,
+    padding: 16,
+    marginBottom: 24,
   },
 
   groupName: {
-    fontSize: 21,
-    fontFamily: fonts.bold,
+    flexShrink: 1,
+    fontSize: 20,
+    fontFamily: fonts.semiBold,
     color: colors.white,
   },
 
   summaryRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginVertical: 24,
+    gap: 8,
+    marginVertical: 16,
   },
 
   summaryColumn: {
@@ -87,9 +123,9 @@ export const memberDashboardStyles = StyleSheet.create({
   summaryValue: {
     fontSize: 14,
     lineHeight: 21,
-    fontFamily: fonts.bold,
+    fontFamily: fonts.medium,
     color: colors.white,
-    marginTop: 8,
+    marginTop: 6,
   },
 
   outstandingLink: {
@@ -109,7 +145,7 @@ export const memberDashboardStyles = StyleSheet.create({
 
   heading: {
     fontSize: 20,
-    fontFamily: fonts.bold,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
 
@@ -117,12 +153,12 @@ export const memberDashboardStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginTop: 12,
-    marginBottom: 20,
+    marginTop: 8,
+    marginBottom: 16,
   },
 
   linkText: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.primary,
     fontFamily: fonts.semiBold,
   },
@@ -135,15 +171,17 @@ export const memberDashboardStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 12,
-    padding: 18,
-    marginBottom: 14,
+    padding: 0,
+    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
 
   amount: {
-    fontSize: 21,
-    fontFamily: fonts.bold,
+    fontSize: 20,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
-    marginTop: 12,
+    marginTop: 8,
   },
 
   paymentStatus: {
@@ -153,12 +191,12 @@ export const memberDashboardStyles = StyleSheet.create({
 
   badge: {
     fontFamily: fonts.regular,
-    fontSize: 11,
+    fontSize: 12,
     paddingHorizontal: 9,
-    paddingVertical: 5,
+    paddingVertical: 4,
     borderRadius: 12,
     overflow: 'hidden',
-    marginTop: 12,
+    marginTop: 8,
   },
 
   confirmed: {
@@ -167,8 +205,8 @@ export const memberDashboardStyles = StyleSheet.create({
   },
 
   pending: {
-    backgroundColor: '#FFF2D5',
-    color: '#805F12',
+    backgroundColor: '#FFFBEB',
+    color: '#92400E',
   },
 
   stateCard: {
@@ -204,25 +242,27 @@ export const memberDashboardStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 18,
-    marginBottom: 20,
+    borderRadius: 0,
+    padding: 16,
+    marginBottom: 0,
+    minHeight: 56,
   },
 
   search: {
     fontFamily: fonts.regular,
-    height: 48,
+    height: 44,
     paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
     color: colors.textPrimary,
+    fontSize: 14,
   },
 
   filters: {
     gap: 8,
-    paddingVertical: 16,
+    paddingVertical: 12,
   },
 
   filter: {

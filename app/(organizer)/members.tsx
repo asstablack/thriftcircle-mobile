@@ -1,3 +1,4 @@
+import { GroupScreenHeader } from '@/components/group-screen-header';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,10 +11,7 @@ import {
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import {
-  OrganizerHeader,
-  OrganizerBottomNavigation,
-} from '@/components/organizer-chrome';
+import { OrganizerBottomNavigation } from '@/components/organizer-chrome';
 import {
   getGroupDetails,
   getGroupContributions,
@@ -24,7 +22,11 @@ import { membersStyles as styles } from '@/styles/membersStyles';
 import { colors } from '@/constants/color';
 
 type Member = {
-  userId: { _id: string; fullName: string };
+  userId: {
+    _id: string;
+    fullName: string;
+    phoneNumber?: string;
+  };
   payoutOrder?: number;
   status: string;
 };
@@ -42,21 +44,21 @@ type Contribution = {
   cycleNumber: number;
   status: string;
 };
-const labels: Record<string, string> = {
-  CONFIRMED: 'Confirmed',
-  DUE: 'Due',
-  OVERDUE: 'Overdue',
-  PENDING_REVIEW: 'Under review',
-  ISSUE: 'Correction requested',
-};
 
 export default function MembersScreen() {
-  const group = useAuthStore((state) => state.selectedGroup);
-  const [details, setDetails] = useState<Details | null>(null);
-  const [records, setRecords] = useState<Contribution[]>([]);
+  const group = useAuthStore(
+    (state) => state.selectedGroup,
+  );
+  const [details, setDetails] = useState<Details | null>(
+    null,
+  );
+  const [records, setRecords] = useState<Contribution[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [paymentFilter, setPaymentFilter] = useState('All');
   const [reload, setReload] = useState(0);
   useFocusEffect(
     useCallback(() => {
@@ -84,7 +86,8 @@ export default function MembersScreen() {
               cycle
                 ? contributions.filter(
                     (item) =>
-                      item.cycleNumber === cycle.cycleNumber,
+                      item.cycleNumber ===
+                      cycle.cycleNumber,
                   )
                 : [],
             );
@@ -108,27 +111,52 @@ export default function MembersScreen() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [group?.id, group?.role, reload]),
   );
-  const members = (details?.members || []).filter((member) =>
-    member.userId?.fullName
-      .toLowerCase()
-      .includes(query.toLowerCase()),
+  const members = (details?.members || []).filter(
+    (member) =>
+      Boolean(member.userId) &&
+      (
+        (member.userId?.fullName || '') +
+        ' ' +
+        (member.userId?.phoneNumber || '')
+      )
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+  );
+  const filteredMembers = members.filter(
+    (member) =>
+      paymentFilter === 'All' ||
+      records.some(
+        (record) =>
+          record.memberId === member.userId._id &&
+          record.status ===
+            (
+              {
+                Confirmed: 'CONFIRMED',
+                'Pending review': 'PENDING_REVIEW',
+                Overdue: 'OVERDUE',
+              } as Record<string, string>
+            )[paymentFilter],
+      ),
   );
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      <OrganizerHeader />
-      <View style={styles.pageHeader}>
-        <Text style={styles.pageTitle}>Members</Text>
-        <Text style={styles.pageSubtitle}>
-          Manage members and view their contribution status.
-        </Text>
-      </View>
+      <GroupScreenHeader
+        variant="plain"
+        title="Member List"
+        subtitle="Manage members and view their contribution status."
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Pressable onPress={() => router.push('/join-requests')}>
-          <Text style={styles.paidText}>Review pending join requests</Text>
+        <Pressable
+          style={styles.requestLink}
+          onPress={() => router.push('/join-requests')}
+        >
+          <Text style={styles.paidText}>
+            Review pending join requests
+          </Text>
         </Pressable>
         {loading ? (
           <ActivityIndicator color={colors.primary} />
@@ -136,7 +164,9 @@ export default function MembersScreen() {
           <View style={styles.groupCard}>
             <Text style={styles.groupDetails}>{error}</Text>
             <Pressable
-              onPress={() => setReload((value) => value + 1)}
+              onPress={() =>
+                setReload((value) => value + 1)
+              }
             >
               <Text style={styles.paidText}>Try Again</Text>
             </Pressable>
@@ -172,7 +202,8 @@ export default function MembersScreen() {
                 {
                   label: 'Review',
                   value: records.filter(
-                    (item) => item.status === 'PENDING_REVIEW',
+                    (item) =>
+                      item.status === 'PENDING_REVIEW',
                   ).length,
                 },
                 {
@@ -195,6 +226,15 @@ export default function MembersScreen() {
                 </View>
               ))}
             </View>
+            <Pressable
+              accessibilityRole="button"
+              style={styles.inviteButton}
+              onPress={() => router.push('/invite-members')}
+            >
+              <Text style={styles.inviteButtonText}>
+                Add new member
+              </Text>
+            </Pressable>
             <View style={styles.searchBox}>
               <Feather
                 name="search"
@@ -204,32 +244,57 @@ export default function MembersScreen() {
               <TextInput
                 style={styles.searchText}
                 accessibilityLabel="Search members"
-                placeholder="Search members"
+                placeholder="Search name or phone number"
                 value={query}
                 onChangeText={setQuery}
               />
+            </View>
+            <View style={styles.filters}>
+              {[
+                'All',
+                'Confirmed',
+                'Pending review',
+                'Overdue',
+              ].map((label) => (
+                <Pressable
+                  key={label}
+                  accessibilityRole="button"
+                  accessibilityState={{
+                    selected: paymentFilter === label,
+                  }}
+                  style={[
+                    styles.filter,
+                    paymentFilter === label &&
+                      styles.filterActive,
+                  ]}
+                  onPress={() => setPaymentFilter(label)}
+                >
+                  <Text style={styles.memberAmount}>
+                    {label}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>
                 All Members
               </Text>
               <Pressable
-                onPress={() => router.push('/invite-members')}
+                onPress={() =>
+                  router.push('/invite-members')
+                }
               >
                 <Text style={styles.paidText}>
                   Invite members
                 </Text>
               </Pressable>
             </View>
-            {!members.length && (
+            {!filteredMembers.length && (
               <Text style={styles.groupDetails}>
                 No matching members.
               </Text>
             )}
-            {members.map((member) => {
-              const record = records.find(
-                (item) => item.memberId === member.userId._id,
-              );
+            {filteredMembers.map((member) => {
               return (
                 <Pressable
                   key={member.userId._id}
@@ -237,43 +302,33 @@ export default function MembersScreen() {
                   onPress={() =>
                     router.push({
                       pathname: '/member-detail',
-                      params: { memberId: member.userId._id },
+                      params: {
+                        memberId: member.userId._id,
+                      },
                     })
                   }
                 >
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>
-                      {member.userId.fullName
-                        .trim()
-                        .split(/\s+/)
-                        .slice(0, 2)
-                        .map((part) => part[0])
-                        .join('')}
-                    </Text>
-                  </View>
                   <View style={styles.memberInfo}>
                     <Text style={styles.memberName}>
                       {member.userId.fullName}
                     </Text>
                     <Text style={styles.memberAmount}>
-                      {member.payoutOrder
-                        ? 'Position ' + member.payoutOrder
-                        : 'Position not assigned'}{' '}
-                      · {member.status}
+                      {member.userId.phoneNumber ||
+                        'Phone not provided'}
                     </Text>
                   </View>
                   <View
                     style={[
                       styles.statusBadge,
-                      record?.status === 'CONFIRMED'
+                      member.status === 'active'
                         ? styles.paidBadge
                         : styles.pendingBadge,
                     ]}
                   >
                     <Text style={styles.statusText}>
-                      {record
-                        ? labels[record.status]
-                        : 'No obligation'}
+                      {member.status === 'active'
+                        ? 'Active'
+                        : member.status}
                     </Text>
                   </View>
                   <Feather

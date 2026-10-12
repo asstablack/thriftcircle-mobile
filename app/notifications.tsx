@@ -1,3 +1,4 @@
+import { GroupScreenHeader } from '@/components/group-screen-header';
 import { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -6,28 +7,30 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Stack, useFocusEffect } from 'expo-router';
+import { router, Stack, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  OrganizerHeader,
-  OrganizerBottomNavigation,
-} from '@/components/organizer-chrome';
+import { OrganizerBottomNavigation } from '@/components/organizer-chrome';
 import {
   getNotifications,
   markNotificationRead,
+  markAllNotificationsRead,
   type AppNotification,
 } from '@/services/notificationApi';
 import { memberDashboardStyles as styles } from '@/styles/memberDashboardStyles';
+import { notificationDestination } from '@/services/notificationDestination';
+import { useAuthStore } from '@/store/authStore';
 import { colors } from '@/constants/color';
 
 export default function NotificationsScreen() {
   const [items, setItems] = useState<AppNotification[]>([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const opening = useRef(false);
   const version = useRef(0);
   const loadingMore = useRef(false);
 
@@ -42,6 +45,7 @@ export default function NotificationsScreen() {
           setItems(result.notifications);
           setPage(1);
           setTotal(result.total);
+          setUnread(result.unreadCount);
         })
         .catch((reason: unknown) => {
           if (version.current === current)
@@ -52,7 +56,8 @@ export default function NotificationsScreen() {
             );
         })
         .finally(() => {
-          if (version.current === current) setLoading(false);
+          if (version.current === current)
+            setLoading(false);
         });
       return () => {
         version.current++;
@@ -63,7 +68,8 @@ export default function NotificationsScreen() {
   );
 
   const loadMore = async () => {
-    if (loadingMore.current) return;
+    if (loadingMore.current || opening.current || loading)
+      return;
     loadingMore.current = true;
     setBusyId('more');
     setError(null);
@@ -80,6 +86,7 @@ export default function NotificationsScreen() {
       ]);
       setPage(result.page);
       setTotal(result.total);
+      setUnread(result.unreadCount);
     } catch (reason) {
       if (current === version.current)
         setError(
@@ -92,34 +99,90 @@ export default function NotificationsScreen() {
       setBusyId(null);
     }
   };
-  const markRead = async (item: AppNotification) => {
-    if (item.isRead || busyId) return;
-    setBusyId(item._id);
+  const markAll = async () => {
+    if (
+      opening.current ||
+      loadingMore.current ||
+      loading ||
+      unread === 0
+    )
+      return;
+    opening.current = true;
+    const current = version.current;
+    setBusyId('all');
+    setError(null);
     try {
-      const updated = await markNotificationRead(item._id);
+      await markAllNotificationsRead();
+      if (current !== version.current) return;
       setItems((previous) =>
-        previous.map((entry) =>
-          entry._id === updated._id ? updated : entry,
-        ),
+        previous.map((item) => ({ ...item, isRead: true })),
       );
+      setUnread(0);
+      setReload((value) => value + 1);
     } catch (reason) {
-      setError(
-        reason instanceof Error
-          ? reason.message
-          : 'Unable to mark notification as read.',
-      );
+      if (current === version.current)
+        setError(
+          reason instanceof Error
+            ? reason.message
+            : 'Unable to mark notifications as read.',
+        );
     } finally {
+      opening.current = false;
+      setBusyId(null);
+    }
+  };
+  const openNotification = async (
+    item: AppNotification,
+  ) => {
+    if (opening.current || loadingMore.current || loading)
+      return;
+    opening.current = true;
+    const current = version.current;
+    setBusyId(item._id);
+    setError(null);
+    try {
+      const destination =
+        await notificationDestination(item);
+      if (current !== version.current) return;
+      if (!item.isRead) {
+        const updated = await markNotificationRead(
+          item._id,
+        );
+        if (current !== version.current) return;
+        setUnread((count) => Math.max(0, count - 1));
+        setItems((previous) =>
+          previous.map((entry) =>
+            entry._id === updated._id ? updated : entry,
+          ),
+        );
+      }
+      if (destination) {
+        useAuthStore
+          .getState()
+          .setSelectedGroup(destination.group);
+        router.push(destination.href);
+      }
+    } catch (reason) {
+      if (current === version.current)
+        setError(
+          reason instanceof Error
+            ? reason.message
+            : 'Unable to open this update.',
+        );
+    } finally {
+      opening.current = false;
       setBusyId(null);
     }
   };
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      <OrganizerHeader />
+      <GroupScreenHeader
+        variant="plain"
+        title="Notifications"
+        subtitle="Stay up to date with your savings circle."
+      />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.historyHeading}>
-          <Text style={styles.groupName}>Notifications</Text>
-        </View>
         {loading ? (
           <ActivityIndicator color={colors.primary} />
         ) : (
@@ -133,9 +196,13 @@ export default function NotificationsScreen() {
                   {error}
                 </Text>
                 <Pressable
-                  onPress={() => setReload((value) => value + 1)}
+                  onPress={() =>
+                    setReload((value) => value + 1)
+                  }
                 >
-                  <Text style={styles.linkText}>Try Again</Text>
+                  <Text style={styles.linkText}>
+                    Try Again
+                  </Text>
                 </Pressable>
               </View>
             )}
@@ -149,32 +216,66 @@ export default function NotificationsScreen() {
                 </Text>
               </View>
             )}
+            <Text style={styles.secondaryText}>
+              {unread} unread notifications
+            </Text>
+            {unread > 0 && (
+              <Pressable
+                accessibilityRole="button"
+                disabled={!!busyId || !!error}
+                onPress={() => void markAll()}
+              >
+                <Text style={styles.linkText}>
+                  {busyId === 'all'
+                    ? 'Updating…'
+                    : 'Mark all as read'}
+                </Text>
+              </Pressable>
+            )}
             {items.map((item) => (
               <Pressable
                 key={item._id}
                 style={styles.paymentCard}
-                onPress={() => void markRead(item)}
-                disabled={!!busyId || item.isRead}
+                onPress={() => void openNotification(item)}
+                disabled={
+                  !!busyId ||
+                  (item.isRead &&
+                    !['Group', 'Contribution'].includes(
+                      item.relatedModel ?? '',
+                    ))
+                }
+                accessibilityRole="button"
                 accessibilityLabel={
                   item.title +
-                  (item.isRead ? ', read' : ', mark as read')
+                  (item.isRead
+                    ? ', open update'
+                    : ', open and mark as read')
                 }
               >
                 <View style={styles.headerName}>
-                  <Text style={styles.name}>{item.title}</Text>
+                  <Text style={styles.name}>
+                    {item.title}
+                  </Text>
                   <Text style={styles.secondaryText}>
                     {item.message}
                   </Text>
                   <Text style={styles.secondaryText}>
-                    {new Date(item.createdAt).toLocaleString(
-                      'en-NG',
-                    )}
+                    {new Date(
+                      item.createdAt,
+                    ).toLocaleString('en-NG')}
                   </Text>
                   {!item.isRead && (
                     <Text style={styles.linkText}>
                       {busyId === item._id
                         ? 'Updating…'
-                        : 'Mark as read'}
+                        : [
+                              'Group',
+                              'Contribution',
+                            ].includes(
+                              item.relatedModel ?? '',
+                            )
+                          ? 'Open update'
+                          : 'Mark as read'}
                     </Text>
                   )}
                 </View>
@@ -187,7 +288,9 @@ export default function NotificationsScreen() {
                 onPress={() => void loadMore()}
               >
                 <Text style={styles.whiteText}>
-                  {busyId === 'more' ? 'Loading…' : 'Load more'}
+                  {busyId === 'more'
+                    ? 'Loading…'
+                    : 'Load more'}
                 </Text>
               </Pressable>
             )}

@@ -1,272 +1,647 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { GroupScreenHeader } from '@/components/group-screen-header';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
-  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
+  Switch,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { router } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
+import { router, Stack } from 'expo-router';
+import { OrganizerBottomNavigation } from '@/components/organizer-chrome';
 import { createGroupStyles as styles } from '@/styles/createGroupStyles';
 import { colors } from '@/constants/color';
+import { useAuthStore } from '@/store/authStore';
 import { createGroup } from '@/services/groupApi';
+import { saveGroupRules } from '@/services/groupWorkflowApi';
+
+const titles = [
+  'Create a New Group',
+  'Contribution Setup',
+  'Group Rules',
+  'Payout Configuration',
+  'Review Group Setup',
+];
+const descriptions = [
+  'Let’s set up your savings group.',
+  'Define how and when members will contribute.',
+  'Create clear rules so everyone understands how the group works.',
+  'Choose how payout turns will be arranged and recorded.',
+  'Please review your group details before creating it. You can edit any section below.',
+];
+function validDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(value + 'T12:00:00');
+  return (
+    !Number.isNaN(date.getTime()) &&
+    date.getFullYear() === Number(value.slice(0, 4)) &&
+    date.getMonth() + 1 === Number(value.slice(5, 7)) &&
+    date.getDate() === Number(value.slice(8, 10))
+  );
+}
+function WizardButton({
+  label,
+  onPress,
+  secondary = false,
+}: {
+  label: string;
+  onPress: () => void;
+  secondary?: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      style={
+        secondary
+          ? styles.secondaryAction
+          : styles.createButton
+      }
+      onPress={onPress}
+    >
+      <Text
+        style={
+          secondary
+            ? styles.backButton
+            : styles.createButtonText
+        }
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 export default function CreateGroupScreen() {
+  const [step, setStep] = useState(0);
   const [groupName, setGroupName] = useState('');
+  const [limit, setLimit] = useState('');
   const [amount, setAmount] = useState('');
-  const [frequency, setFrequency] = useState('Monthly');
-
+  const [frequency, setFrequency] = useState('monthly');
   const [startDate, setStartDate] = useState('');
-  const [contributionDeadline, setContributionDeadline] =
-    useState('');
-
-  const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showDeadlinePicker, setShowDeadlinePicker] =
-    useState(false);
-
-  const [loading, setLoading] = useState(false);
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
+  const [deadline, setDeadline] = useState('');
+  const [grace, setGrace] = useState('0');
+  const [late, setLate] = useState(true);
+  const [picker, setPicker] = useState<
+    'start' | 'deadline' | null
+  >(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [created, setCreated] = useState<{
+    _id: string;
+    groupName: string;
+  } | null>(null);
+  const [uncertain, setUncertain] = useState(false);
+  const [done, setDone] = useState(false);
+  const submitting = useRef(false);
+  const scroll = useRef<ScrollView>(null);
+  const changeStep = (next: number) => {
+    setError('');
+    setPicker(null);
+    setStep(next);
+    scroll.current?.scrollTo({ y: 0, animated: false });
   };
-
-  const handleStartDateChange = (
-    event: any,
-    selectedDate?: Date,
-  ) => {
-    setShowStartPicker(false);
-
-    if (selectedDate) {
-      setStartDate(formatDate(selectedDate));
-    }
-  };
-
-  const handleDeadlineChange = (
-    event: any,
-    selectedDate?: Date,
-  ) => {
-    setShowDeadlinePicker(false);
-
-    if (selectedDate) {
-      setContributionDeadline(formatDate(selectedDate));
-    }
-  };
-
-  const handleCreateGroup = async () => {
+  const validation = (section: number) => {
+    if (section === 0 && !groupName.trim())
+      return 'Enter a name for your group.';
     if (
-      !groupName.trim() ||
-      !amount.trim() ||
-      !frequency.trim() ||
-      !startDate.trim() ||
-      !contributionDeadline.trim()
-    ) {
-      Alert.alert(
-        'Required fields',
-        'Please fill in all fields before creating the group.',
-      );
-      return;
-    }
-
-    const contributionAmount = Number(amount.replace(/,/g, ''));
-
+      section === 0 &&
+      limit.trim() &&
+      (!/^\d+$/.test(limit.trim()) ||
+        !Number.isSafeInteger(Number(limit)) ||
+        Number(limit) < 2)
+    )
+      return 'Maximum members must be a whole number of at least 2, or leave it blank.';
     if (
-      !Number.isFinite(contributionAmount) ||
-      contributionAmount <= 0
-    ) {
-      Alert.alert(
-        'Invalid amount',
-        'Please enter a valid contribution amount.',
-      );
-      return;
+      section === 1 &&
+      (!Number.isFinite(Number(amount.replace(/,/g, ''))) ||
+        Number(amount.replace(/,/g, '')) < 0.01)
+    )
+      return 'Enter a contribution amount of at least ₦0.01.';
+    if (
+      section === 1 &&
+      (!validDate(startDate) || !validDate(deadline))
+    )
+      return 'Choose valid start and deadline dates (YYYY-MM-DD).';
+    if (section === 1 && deadline < startDate)
+      return 'The deadline must be on or after the start date.';
+    if (
+      section === 2 &&
+      (!/^\d+$/.test(grace.trim()) || Number(grace) > 30)
+    )
+      return 'Grace period must be a whole number from 0 to 30.';
+    return '';
+  };
+  const continueStep = () => {
+    const message = validation(step);
+    if (message) setError(message);
+    else changeStep(step + 1);
+  };
+  const submit = async () => {
+    if (submitting.current || uncertain) return;
+    for (const section of [0, 1, 2]) {
+      const message = validation(section);
+      if (message) {
+        changeStep(section);
+        setError(message);
+        return;
+      }
     }
-
+    submitting.current = true;
+    setBusy(true);
+    setError('');
+    let saved = created;
     try {
-      setLoading(true);
-
-      await createGroup({
-        groupName: groupName.trim(),
-        contributionAmount,
-        frequency: frequency.toLowerCase(),
-        startDate: startDate.trim(),
-        contributionDeadline: contributionDeadline.trim(),
+      if (!saved) {
+        const result = await createGroup({
+          groupName: groupName.trim(),
+          contributionAmount: Number(
+            amount.replace(/,/g, ''),
+          ),
+          frequency,
+          startDate,
+          contributionDeadline: deadline,
+        });
+        if (!result?._id)
+          throw new Error(
+            'The server did not return the created group.',
+          );
+        saved = {
+          _id: result._id,
+          groupName: result.groupName,
+        };
+        setCreated(saved);
+        useAuthStore.getState().setSelectedGroup({
+          id: saved._id,
+          groupName: saved.groupName,
+          role: 'organizer',
+        });
+      }
+      await saveGroupRules(saved._id, {
+        gracePeriodDays: Number(grace),
+        allowLateSubmission: late,
+        maxMembers: limit.trim() ? Number(limit) : null,
       });
-
-      Alert.alert(
-        'Group Created',
-        'Your savings group has been created successfully.',
-        [
-          {
-            text: 'Continue',
-            onPress: () => router.replace('/group-selection'),
-          },
-        ],
+      setDone(true);
+    } catch (reason) {
+      if (!saved) setUncertain(true);
+      setError(
+        saved
+          ? 'Your group was created, but its rules could not be confirmed. Retry saving the rules, or open the group to check them.'
+          : (reason instanceof Error
+              ? reason.message
+              : 'Unable to confirm group creation.') +
+              ' Check your groups before creating another to avoid duplicates.',
       );
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unable to create the group. Please try again.';
-
-      Alert.alert('Create Group Failed', message);
     } finally {
-      setLoading(false);
+      submitting.current = false;
+      setBusy(false);
     }
   };
-
+  const field = (
+    label: string,
+    value: string,
+    onChange: (value: string) => void,
+    numeric = false,
+    placeholder = '',
+  ) => (
+    <View>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        accessibilityLabel={label}
+        style={styles.input}
+        value={value}
+        onChangeText={onChange}
+        keyboardType={numeric ? 'decimal-pad' : 'default'}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textSecondary}
+      />
+    </View>
+  );
+  const summary = (
+    title: string,
+    text: string,
+    section: number,
+    icon: 'users' | 'shield' | 'clock' | 'list',
+  ) => (
+    <View style={styles.reviewCard}>
+      <View style={styles.reviewHeading}>
+        <Feather
+          name={icon}
+          size={22}
+          color={colors.primary}
+        />
+        <Text style={styles.reviewTitle}>{title}</Text>
+        {!created && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={'Edit ' + title}
+            onPress={() => changeStep(section)}
+          >
+            <Text style={styles.editLink}>Edit</Text>
+          </Pressable>
+        )}
+      </View>
+      <Text style={styles.helper}>{text}</Text>
+    </View>
+  );
   return (
     <SafeAreaView style={styles.container}>
-      <GroupScreenHeader
-        title="Create a New Group"
-        subtitle="Set up your savings group."
+      <Stack.Screen
+        options={{
+          headerShown: false,
+          gestureEnabled: !busy,
+        }}
       />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={
+          Platform.OS === 'ios' ? 'padding' : undefined
+        }
       >
-        <View style={styles.form}>
-          <Text style={styles.label}>Group Name</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. Lagos Creatives Circle"
-            placeholderTextColor={colors.textSecondary}
-            value={groupName}
-            onChangeText={setGroupName}
-          />
-
-          <Text style={styles.label}>Contribution Amount</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. 25000"
-            placeholderTextColor={colors.textSecondary}
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-          />
-
-          <Text style={styles.label}>
-            Contribution Frequency
-          </Text>
-
-          <View style={styles.frequencyRow}>
-            <Pressable
-              style={[
-                styles.frequencyButton,
-                frequency === 'Weekly' &&
-                  styles.frequencyButtonActive,
-              ]}
-              onPress={() => setFrequency('Weekly')}
-            >
-              <Text
-                style={[
-                  styles.frequencyText,
-                  frequency === 'Weekly' &&
-                    styles.frequencyTextActive,
-                ]}
-              >
-                Weekly
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.frequencyButton,
-                frequency === 'Monthly' &&
-                  styles.frequencyButtonActive,
-              ]}
-              onPress={() => setFrequency('Monthly')}
-            >
-              <Text
-                style={[
-                  styles.frequencyText,
-                  frequency === 'Monthly' &&
-                    styles.frequencyTextActive,
-                ]}
-              >
-                Monthly
-              </Text>
-            </Pressable>
+        {busy ? (
+          <View style={styles.saving}>
+            <ActivityIndicator
+              size="large"
+              color={colors.white}
+            />
+            <Text style={styles.savingTitle}>
+              Creating your group…
+            </Text>
+            <Text style={styles.savingText}>
+              This may take a few moments
+            </Text>
+            <Text style={styles.savingText}>
+              {created
+                ? '✓ Group details saved\nSaving group rules…'
+                : 'Saving group details…'}
+            </Text>
           </View>
-
-          <Text style={styles.label}>Start Date</Text>
-
-          <Pressable
-            style={styles.input}
-            onPress={() => setShowStartPicker(true)}
+        ) : done ? (
+          <ScrollView
+            contentContainerStyle={styles.success}
           >
-            <Text
-              style={
-                startDate
-                  ? styles.dateInputText
-                  : styles.datePlaceholderText
-              }
-            >
-              {startDate || 'Select start date'}
-            </Text>
-          </Pressable>
-
-          {showStartPicker && (
-            <DateTimePicker
-              value={
-                startDate ? new Date(startDate) : new Date()
-              }
-              mode="date"
-              display="default"
-              onChange={handleStartDateChange}
+            <Feather
+              name="check-circle"
+              size={64}
+              style={styles.successIcon}
+              color={colors.primary}
             />
-          )}
-
-          <Text style={styles.label}>Contribution Deadline</Text>
-
-          <Pressable
-            style={styles.input}
-            onPress={() => setShowDeadlinePicker(true)}
-          >
+            <Text style={styles.successTitle}>
+              Group created successfully!
+            </Text>
             <Text
-              style={
-                contributionDeadline
-                  ? styles.dateInputText
-                  : styles.datePlaceholderText
-              }
+              style={[styles.helper, styles.successMessage]}
             >
-              {contributionDeadline ||
-                'Select contribution deadline'}
+              Your savings group and rules have been saved.
             </Text>
-          </Pressable>
-
-          {showDeadlinePicker && (
-            <DateTimePicker
-              value={
-                contributionDeadline
-                  ? new Date(contributionDeadline)
-                  : new Date()
+            <WizardButton
+              label="Invite Members"
+              onPress={() =>
+                router.replace('/invite-members')
               }
-              mode="date"
-              display="default"
-              onChange={handleDeadlineChange}
             />
-          )}
-
-          <Pressable
-            style={styles.createButton}
-            onPress={handleCreateGroup}
-            disabled={loading}
-          >
-            <Text style={styles.createButtonText}>
-              {loading ? 'Creating...' : 'Create Group'}
-            </Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+            <WizardButton
+              label="View Group"
+              onPress={() =>
+                router.replace('/group-details')
+              }
+              secondary
+            />
+          </ScrollView>
+        ) : (
+          <>
+            <View style={styles.stepHeader}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Back"
+                disabled={!!created || uncertain}
+                onPress={() =>
+                  step
+                    ? changeStep(step - 1)
+                    : router.replace('/group-selection')
+                }
+              >
+                <Feather
+                  name="chevron-left"
+                  size={24}
+                  color={colors.textSecondary}
+                />
+              </Pressable>
+              <Text style={styles.stepTitle}>
+                {titles[step]}
+              </Text>
+            </View>
+            <ScrollView
+              ref={scroll}
+              contentContainerStyle={styles.content}
+              keyboardShouldPersistTaps="handled"
+            >
+              <Text style={styles.helper}>
+                {descriptions[step]}
+              </Text>
+              <Text style={styles.stepCount}>
+                Step {step + 1} of 5
+              </Text>
+              {step === 0 && (
+                <View style={styles.form}>
+                  {field(
+                    'Group Name',
+                    groupName,
+                    setGroupName,
+                    false,
+                    'e.g. Family Savings Circle',
+                  )}
+                  {field(
+                    'Maximum Members (optional)',
+                    limit,
+                    setLimit,
+                    true,
+                    'No limit',
+                  )}
+                  <Text style={styles.helper}>
+                    This limits active membership; members
+                    still need organizer approval.
+                  </Text>
+                </View>
+              )}
+              {step === 1 && (
+                <View style={styles.form}>
+                  {field(
+                    'Contribution Amount',
+                    amount,
+                    setAmount,
+                    true,
+                    'e.g. 50000',
+                  )}
+                  <Text style={styles.label}>
+                    Contribution Frequency
+                  </Text>
+                  <View style={styles.frequencyRow}>
+                    {['daily', 'weekly', 'monthly'].map(
+                      (value) => (
+                        <Pressable
+                          key={value}
+                          accessibilityRole="radio"
+                          accessibilityState={{
+                            checked: frequency === value,
+                          }}
+                          style={[
+                            styles.frequencyButton,
+                            frequency === value &&
+                              styles.frequencyButtonActive,
+                          ]}
+                          onPress={() =>
+                            setFrequency(value)
+                          }
+                        >
+                          <Text
+                            style={[
+                              styles.frequencyText,
+                              frequency === value &&
+                                styles.frequencyTextActive,
+                            ]}
+                          >
+                            {value.charAt(0).toUpperCase() +
+                              value.slice(1)}
+                          </Text>
+                        </Pressable>
+                      ),
+                    )}
+                  </View>
+                  {Platform.OS === 'web' ? (
+                    <>
+                      {field(
+                        'Contribution Start Date',
+                        startDate,
+                        setStartDate,
+                        false,
+                        'YYYY-MM-DD',
+                      )}
+                      {field(
+                        'Contribution Deadline',
+                        deadline,
+                        setDeadline,
+                        false,
+                        'YYYY-MM-DD',
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {(['start', 'deadline'] as const).map(
+                        (kind) => (
+                          <View key={kind}>
+                            <Text style={styles.label}>
+                              {kind === 'start'
+                                ? 'Contribution Start Date'
+                                : 'Contribution Deadline'}
+                            </Text>
+                            <Pressable
+                              accessibilityRole="button"
+                              style={styles.dateButton}
+                              onPress={() =>
+                                setPicker(kind)
+                              }
+                            >
+                              <Text
+                                style={styles.dateInputText}
+                              >
+                                {(kind === 'start'
+                                  ? startDate
+                                  : deadline) ||
+                                  'Select date'}
+                              </Text>
+                              <Feather
+                                name="calendar"
+                                size={18}
+                                color={colors.textSecondary}
+                              />
+                            </Pressable>
+                          </View>
+                        ),
+                      )}
+                      {picker && (
+                        <DateTimePicker
+                          value={
+                            new Date(
+                              ((picker === 'start'
+                                ? startDate
+                                : deadline) ||
+                                new Date()
+                                  .toISOString()
+                                  .slice(0, 10)) +
+                                'T12:00:00',
+                            )
+                          }
+                          mode="date"
+                          onChange={(_, date) => {
+                            const kind = picker;
+                            setPicker(null);
+                            if (date) {
+                              const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                              if (kind === 'start')
+                                setStartDate(value);
+                              else setDeadline(value);
+                            }
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
+                </View>
+              )}
+              {step === 2 && (
+                <View style={styles.form}>
+                  {field(
+                    'Late Payment Grace Period (days)',
+                    grace,
+                    setGrace,
+                    true,
+                  )}
+                  <Text style={styles.helper}>
+                    Choose 0–30 days after the contribution
+                    deadline.
+                  </Text>
+                  <View style={styles.ruleRow}>
+                    <Feather
+                      name="clock"
+                      size={24}
+                      color={colors.primary}
+                    />
+                    <Text style={styles.reviewTitle}>
+                      Allow late evidence submission
+                    </Text>
+                    <Switch
+                      accessibilityLabel="Allow late evidence submission"
+                      value={late}
+                      onValueChange={setLate}
+                    />
+                  </View>
+                  <View style={styles.reviewCard}>
+                    <Text style={styles.reviewTitle}>
+                      Joining the group
+                    </Text>
+                    <Text style={styles.helper}>
+                      All new members require organizer
+                      approval.
+                    </Text>
+                  </View>
+                </View>
+              )}
+              {step === 3 && (
+                <View style={styles.form}>
+                  <Text style={styles.label}>
+                    How will members’ payout turns be
+                    decided?
+                  </Text>
+                  <View style={styles.ruleRow}>
+                    <Feather
+                      name="check-circle"
+                      size={22}
+                      color={colors.primary}
+                    />
+                    <Text style={styles.reviewTitle}>
+                      Organizer assigns after members join
+                    </Text>
+                  </View>
+                  <Text style={styles.helper}>
+                    Review member positions from Payout
+                    order after approving their requests.
+                  </Text>
+                  <Text style={styles.label}>
+                    Payout approval
+                  </Text>
+                  <View style={styles.reviewCard}>
+                    <Text style={styles.helper}>
+                      The organizer reviews the
+                      server-calculated amount and
+                      separately confirms each payout after
+                      paying the recipient outside
+                      ThriftCircle.
+                    </Text>
+                  </View>
+                </View>
+              )}
+              {step === 4 && (
+                <View style={styles.form}>
+                  {summary(
+                    'Group Details',
+                    `${groupName}\nMaximum active members: ${limit || 'No limit'}`,
+                    0,
+                    'users',
+                  )}
+                  {summary(
+                    'Contribution Setup',
+                    `₦${Number(amount.replace(/,/g, '')).toLocaleString('en-NG')} · ${frequency}\nStart: ${startDate}\nDeadline: ${deadline}`,
+                    1,
+                    'shield',
+                  )}
+                  {summary(
+                    'Group Rules',
+                    `${grace} grace days\nLate evidence: ${late ? 'Allowed' : 'Not allowed when overdue'}\nOrganizer approval required`,
+                    2,
+                    'clock',
+                  )}
+                  {summary(
+                    'Payout Configuration',
+                    'Organizer assigns after members join. Each payout requires separate approval.',
+                    3,
+                    'list',
+                  )}
+                </View>
+              )}
+              {!!error && (
+                <Text
+                  accessibilityRole="alert"
+                  style={styles.error}
+                >
+                  {error}
+                </Text>
+              )}
+              {uncertain ? (
+                <WizardButton
+                  label="Check my groups"
+                  onPress={() =>
+                    router.replace('/group-selection')
+                  }
+                />
+              ) : (
+                <WizardButton
+                  label={
+                    created
+                      ? 'Retry saving rules'
+                      : step === 4
+                        ? 'Create Group'
+                        : 'Continue'
+                  }
+                  onPress={
+                    step === 4
+                      ? () => void submit()
+                      : continueStep
+                  }
+                />
+              )}
+              {created && (
+                <WizardButton
+                  label="Open created group"
+                  onPress={() =>
+                    router.replace('/group-details')
+                  }
+                  secondary
+                />
+              )}
+            </ScrollView>
+          </>
+        )}
+      </KeyboardAvoidingView>
+      {!busy && (
+        <OrganizerBottomNavigation active="Groups" />
+      )}
     </SafeAreaView>
   );
 }

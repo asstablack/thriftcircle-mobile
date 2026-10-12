@@ -11,7 +11,10 @@ export const joinGroupStyles = StyleSheet.create({
   content: {
     flexGrow: 1,
     padding: 20,
-    paddingTop: 24,
+    paddingTop: 12,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
   },
 
   backButton: {

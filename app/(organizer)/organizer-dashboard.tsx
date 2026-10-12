@@ -1,8 +1,4 @@
 import {
-  getOrganizerDashboard,
-  type OrganizerDashboardData,
-} from '@/services/dashboardApi';
-import {
   getCurrentCycle,
   getGroupContributions,
   getGroupDetails,
@@ -36,7 +32,11 @@ type Contribution = {
   dueDate: string;
   cycleNumber: number;
   status:
-    'DUE' | 'PENDING_REVIEW' | 'CONFIRMED' | 'ISSUE' | 'OVERDUE';
+    | 'DUE'
+    | 'PENDING_REVIEW'
+    | 'CONFIRMED'
+    | 'ISSUE'
+    | 'OVERDUE';
   submittedAt: string | null;
   confirmedAt: string | null;
 };
@@ -80,12 +80,9 @@ export default function OrganizerDashboard() {
     Contribution[]
   >([]);
 
-  const [currentCycle, setCurrentCycle] = useState<Cycle | null>(
-    null,
-  );
+  const [currentCycle, setCurrentCycle] =
+    useState<Cycle | null>(null);
 
-  const [summary, setSummary] =
-    useState<OrganizerDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const requestVersion = useRef(0);
 
@@ -103,19 +100,17 @@ export default function OrganizerDashboard() {
     try {
       setLoading(true);
 
-      const [details, contributionData, cycle, dashboard] =
+      const [details, contributionData, cycle] =
         await Promise.all([
           getGroupDetails(selectedGroup.id),
           getGroupContributions(selectedGroup.id),
           getCurrentCycle(selectedGroup.id),
-          getOrganizerDashboard(selectedGroup.id),
         ]);
 
       if (version !== requestVersion.current) return;
       setGroupDetails(details);
       setContributions(contributionData);
       setCurrentCycle(cycle);
-      setSummary(dashboard);
     } catch (error) {
       if (version !== requestVersion.current) return;
       const message =
@@ -126,7 +121,8 @@ export default function OrganizerDashboard() {
       setGroupDetails(null);
       Alert.alert('Unable to load dashboard', message);
     } finally {
-      if (version === requestVersion.current) setLoading(false);
+      if (version === requestVersion.current)
+        setLoading(false);
     }
   }, [selectedGroup]);
 
@@ -192,19 +188,15 @@ export default function OrganizerDashboard() {
             <View style={styles.skeletonButton} />
           </View>
           {[0, 1].map((key) => (
-            <View
-              key={key}
-              style={styles.skeletonSummary}
-            >
+            <View key={key} style={styles.skeletonSummary}>
               <View style={styles.skeletonShortLine} />
               {[0, 1].map((row) => (
-                <View
-                  key={row}
-                  style={styles.skeletonRow}
-                >
+                <View key={row} style={styles.skeletonRow}>
                   <View style={styles.skeletonCircle} />
                   <View style={styles.skeletonTextBlock}>
-                    <View style={styles.skeletonShortLine} />
+                    <View
+                      style={styles.skeletonShortLine}
+                    />
                     <View style={styles.skeletonLine} />
                   </View>
                 </View>
@@ -234,7 +226,9 @@ export default function OrganizerDashboard() {
             style={styles.viewButton}
             onPress={loadDashboard}
           >
-            <Text style={styles.viewButtonText}>Try Again</Text>
+            <Text style={styles.viewButtonText}>
+              Try Again
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -243,7 +237,8 @@ export default function OrganizerDashboard() {
 
   const currentCycleContributions = currentCycle
     ? contributions.filter(
-        (item) => item.cycleNumber === currentCycle.cycleNumber,
+        (item) =>
+          item.cycleNumber === currentCycle.cycleNumber,
       )
     : [];
 
@@ -252,13 +247,15 @@ export default function OrganizerDashboard() {
       (item) => item.status === 'CONFIRMED',
     );
 
-  const pendingContributions = currentCycleContributions.filter(
-    (item) => item.status === 'PENDING_REVIEW',
-  );
+  const pendingContributions =
+    currentCycleContributions.filter(
+      (item) => item.status === 'PENDING_REVIEW',
+    );
 
-  const overdueContributions = currentCycleContributions.filter(
-    (item) => item.status === 'OVERDUE',
-  );
+  const overdueContributions =
+    currentCycleContributions.filter(
+      (item) => item.status === 'OVERDUE',
+    );
 
   const totalAmount = currentCycleContributions.reduce(
     (total, item) => total + item.amount,
@@ -324,7 +321,8 @@ export default function OrganizerDashboard() {
   ]
     .sort(
       (a, b) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime(),
+        new Date(b.date).getTime() -
+        new Date(a.date).getTime(),
     )
     .slice(0, 3);
 
@@ -346,38 +344,6 @@ export default function OrganizerDashboard() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <Pressable
-          accessibilityRole="button"
-          style={styles.viewButton}
-          onPress={() => router.push('/payouts')}
-        >
-          <Text style={styles.viewButtonText}>
-            View payout order and history
-          </Text>
-        </Pressable>
-        {summary && (
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryLabel}>
-              Across all cycles
-            </Text>
-            <Text style={styles.emptyStateText}>
-              {summary.memberCount} active members ·{' '}
-              {summary.confirmedContributions} confirmed
-            </Text>
-            <Text style={styles.emptyStateText}>
-              {summary.outstandingContributions} outstanding ·{' '}
-              {summary.awaitingVerification} awaiting
-              verification · {summary.paymentIssues} payment
-              issues
-            </Text>
-            {summary.currentCycle && (
-              <Text style={styles.emptyStateText}>
-                Current recipient:{' '}
-                {getMemberName(summary.currentCycle.recipientId)}
-              </Text>
-            )}
-          </View>
-        )}
         {/* Active Cycle */}
         {currentCycle ? (
           <>
@@ -415,8 +381,8 @@ export default function OrganizerDashboard() {
 
               <Text style={styles.summaryCount}>
                 {confirmedContributions.length} of{' '}
-                {currentCycleContributions.length} contributions
-                confirmed
+                {currentCycleContributions.length}{' '}
+                contributions confirmed
               </Text>
 
               <Text style={styles.summaryAmount}>
@@ -524,7 +490,9 @@ export default function OrganizerDashboard() {
 
               <Pressable
                 style={styles.viewButton}
-                onPress={() => router.push('/contributions')}
+                onPress={() =>
+                  router.push('/contributions')
+                }
               >
                 <Text style={styles.viewButtonText}>
                   View Contributions
@@ -572,7 +540,9 @@ export default function OrganizerDashboard() {
                       ]}
                     >
                       <Text style={styles.statusIconText}>
-                        {item.type === 'overdue' ? '!' : '✓'}
+                        {item.type === 'overdue'
+                          ? '!'
+                          : '✓'}
                       </Text>
                     </View>
 
@@ -589,6 +559,23 @@ export default function OrganizerDashboard() {
                   </Pressable>
                 ))
               )}
+              <Pressable
+                accessibilityRole="button"
+                style={styles.listRow}
+                onPress={() => router.push('/payouts')}
+              >
+                <Feather
+                  name="calendar"
+                  size={18}
+                  color={colors.primary}
+                />
+                <View style={styles.listInfo}>
+                  <Text style={styles.listTitle}>
+                    Payout Position
+                  </Text>
+                </View>
+                <Text style={styles.rowArrow}>›</Text>
+              </Pressable>
             </View>
 
             {/* Upcoming Deadlines */}
@@ -598,9 +585,13 @@ export default function OrganizerDashboard() {
               </Text>
 
               <Pressable
-                onPress={() => router.push('/contributions')}
+                onPress={() =>
+                  router.push('/contributions')
+                }
               >
-                <Text style={styles.viewAll}>View all ›</Text>
+                <Text style={styles.viewAll}>
+                  View all ›
+                </Text>
               </Pressable>
             </View>
 
@@ -659,9 +650,13 @@ export default function OrganizerDashboard() {
               </Text>
 
               <Pressable
-                onPress={() => router.push('/notifications')}
+                onPress={() =>
+                  router.push('/notifications')
+                }
               >
-                <Text style={styles.viewAll}>View all ›</Text>
+                <Text style={styles.viewAll}>
+                  View all ›
+                </Text>
               </Pressable>
             </View>
 
@@ -713,9 +708,10 @@ export default function OrganizerDashboard() {
               </Text>
 
               <Text style={styles.noCycleText}>
-                There is no active cycle right now. New cycles
-                follow the group schedule. You can still view
-                contributions and recorded payouts.
+                There is no active cycle right now. New
+                cycles follow the group schedule. You can
+                still view contributions and recorded
+                payouts.
               </Text>
 
               <Pressable
@@ -740,7 +736,9 @@ export default function OrganizerDashboard() {
                 style={styles.listRow}
                 onPress={() => router.push('/members')}
               >
-                <Text style={styles.quickActionIcon}>♙</Text>
+                <Text style={styles.quickActionIcon}>
+                  ♙
+                </Text>
 
                 <Text style={styles.listTitle}>
                   Manage Members
@@ -751,24 +749,38 @@ export default function OrganizerDashboard() {
 
               <Pressable
                 style={styles.listRow}
-                onPress={() => router.push('/group-selection')}
+                onPress={() =>
+                  router.push('/group-selection')
+                }
               >
-                <Text style={styles.quickActionIcon}>▦</Text>
+                <Text style={styles.quickActionIcon}>
+                  ▦
+                </Text>
 
-                <Text style={styles.listTitle}>View Groups</Text>
+                <Text style={styles.listTitle}>
+                  View Groups
+                </Text>
 
                 <Text style={styles.rowArrow}>›</Text>
               </Pressable>
 
-              <View style={styles.listRow}>
-                <Text style={styles.quickActionIcon}>⚙</Text>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.listRow}
+                onPress={() =>
+                  router.push('/group-details')
+                }
+              >
+                <Text style={styles.quickActionIcon}>
+                  ⚙
+                </Text>
 
                 <Text style={styles.listTitle}>
                   Group Settings
                 </Text>
 
                 <Text style={styles.rowArrow}>›</Text>
-              </View>
+              </Pressable>
             </View>
           </>
         )}

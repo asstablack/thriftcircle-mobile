@@ -4,7 +4,10 @@ import { getTokens } from './authStorage';
 export type Payout = {
   _id: string;
   cycleNumber: number;
-  recipientId: { _id: string; fullName: string } | string | null;
+  recipientId:
+    | { _id: string; fullName: string }
+    | string
+    | null;
   amount: number;
   currency: string;
   status:
@@ -28,22 +31,22 @@ async function payoutRequest(
   data?: PayoutInput,
 ) {
   const { accessToken } = await getTokens();
-  if (!accessToken) throw new Error('You are not logged in.');
+  if (!accessToken)
+    throw new Error('You are not logged in.');
 
-  const response = await fetch(
-    `${API_ROOT_URL}/groups/${path}`,
-    {
-      method,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      ...(data ? { body: JSON.stringify(data) } : {}),
+  const response = await fetch(`${API_ROOT_URL}/${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
     },
-  );
+    ...(data ? { body: JSON.stringify(data) } : {}),
+  });
   const result = await response.json();
   if (!response.ok) {
-    throw new Error(result.message || 'Unable to load payouts.');
+    throw new Error(
+      result.message || 'Unable to load payouts.',
+    );
   }
   return result;
 }
@@ -51,7 +54,10 @@ async function payoutRequest(
 export function getGroupPayouts(
   groupId: string,
 ): Promise<Payout[]> {
-  return payoutRequest(`${encodeURIComponent(groupId)}/payouts`, 'GET');
+  return payoutRequest(
+    `groups/${encodeURIComponent(groupId)}/payouts`,
+    'GET',
+  );
 }
 
 export function recordPayout(
@@ -64,14 +70,20 @@ export function recordPayout(
   ) {
     throw new Error('A valid cycle is required.');
   }
-  return payoutRequest(`${encodeURIComponent(groupId)}/payouts`, 'POST', {
-    cycleNumber: data.cycleNumber,
-    note: data.note?.trim(),
-  });
+  return payoutRequest(
+    `groups/${encodeURIComponent(groupId)}/payouts`,
+    'POST',
+    {
+      cycleNumber: data.cycleNumber,
+      note: data.note?.trim(),
+    },
+  );
 }
 
-export function approvePayout(payoutId: string): Promise<Payout> {
-  // payoutRoutes is mounted under /groups in the current backend.
+export function approvePayout(
+  payoutId: string,
+): Promise<Payout> {
+  // Approval is mounted separately under /payouts.
   return payoutRequest(
     `payouts/${encodeURIComponent(payoutId)}/approve`,
     'PATCH',

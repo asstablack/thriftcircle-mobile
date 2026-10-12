@@ -3,6 +3,10 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const membersStyles = StyleSheet.create({
+  requestLink: {
+    marginHorizontal: 20,
+    paddingVertical: 12,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -104,13 +108,13 @@ export const membersStyles = StyleSheet.create({
   },
 
   groupCard: {
-    marginHorizontal: 18,
+    marginHorizontal: 20,
     marginTop: 14,
     padding: 15,
-    backgroundColor: colors.white,
+    backgroundColor: colors.primaryLight,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -142,11 +146,45 @@ export const membersStyles = StyleSheet.create({
     fontFamily: fonts.extraBold,
   },
 
+  inviteButton: {
+    marginHorizontal: 20,
+    marginTop: 16,
+    minHeight: 48,
+    borderRadius: 8,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inviteButtonText: {
+    fontFamily: fonts.semiBold,
+    fontSize: 14,
+    color: colors.white,
+  },
+  filters: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: 20,
+    marginTop: 12,
+    gap: 8,
+  },
+  filter: {
+    minHeight: 44,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 6,
+  },
+  filterActive: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
+  },
   statsRow: {
     flexDirection: 'row',
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     marginTop: 10,
     gap: 7,
+    flexWrap: 'wrap',
   },
 
   statCard: {
@@ -161,24 +199,24 @@ export const membersStyles = StyleSheet.create({
 
   statValue: {
     fontSize: 16,
-    fontFamily: fonts.extraBold,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
 
   statLabel: {
     fontFamily: fonts.regular,
-    fontSize: 13,
+    fontSize: 12,
     color: colors.textSecondary,
     marginTop: 3,
   },
 
   searchBox: {
-    marginHorizontal: 18,
+    marginHorizontal: 20,
     marginTop: 15,
     height: 44,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
+    borderRadius: 8,
     backgroundColor: colors.white,
     flexDirection: 'row',
     alignItems: 'center',
@@ -201,12 +239,13 @@ export const membersStyles = StyleSheet.create({
   },
 
   sectionHeader: {
-    marginHorizontal: 18,
+    marginHorizontal: 20,
     marginTop: 22,
     marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 8,
   },
 
   sectionTitle: {
@@ -222,15 +261,17 @@ export const membersStyles = StyleSheet.create({
   },
 
   memberCard: {
-    marginHorizontal: 18,
-    marginBottom: 8,
+    marginHorizontal: 20,
+    marginBottom: 0,
     backgroundColor: colors.white,
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: colors.border,
-    borderRadius: 11,
-    padding: 11,
+    borderRadius: 0,
+    padding: 12,
     flexDirection: 'row',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    gap: 8,
   },
 
   avatar: {
@@ -250,18 +291,19 @@ export const membersStyles = StyleSheet.create({
 
   memberInfo: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 0,
+    minWidth: 0,
   },
 
   memberName: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: fonts.bold,
     color: colors.textPrimary,
   },
 
   memberAmount: {
     fontFamily: fonts.regular,
-    fontSize: 13,
+    fontSize: 12,
     color: colors.textSecondary,
     marginTop: 3,
   },
@@ -269,7 +311,8 @@ export const membersStyles = StyleSheet.create({
   statusBadge: {
     paddingHorizontal: 7,
     paddingVertical: 4,
-    borderRadius: 7,
+    borderRadius: 12,
+    maxWidth: 110,
   },
 
   paidBadge: {
@@ -285,13 +328,15 @@ export const membersStyles = StyleSheet.create({
   },
 
   statusText: {
-    fontSize: 13,
-    fontFamily: fonts.bold,
+    fontSize: 12,
+    fontFamily: fonts.medium,
+    color: colors.primary,
   },
 
   paidText: {
-    fontFamily: fonts.regular,
+    fontFamily: fonts.medium,
     color: colors.primary,
+    fontSize: 14,
   },
 
   pendingText: {

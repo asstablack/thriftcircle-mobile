@@ -1,3 +1,5 @@
+import { goBackOrReplace } from '@/utils/navigation';
+import { FigmaIcon } from '@/components/figma-icon';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -24,7 +26,8 @@ import { useAuthStore } from '@/store/authStore';
 export default function LoginScreen() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] =
+    useState(false);
   const [loading, setLoading] = useState(false);
 
   const setUser = useAuthStore((state) => state.setUser);
@@ -55,7 +58,11 @@ export default function LoginScreen() {
             },
       );
 
-      await saveTokens(result.accessToken, result.refreshToken);
+      await saveTokens(
+        result.accessToken,
+        result.refreshToken,
+        result.user,
+      );
 
       setUser(result.user);
 
@@ -76,7 +83,9 @@ export default function LoginScreen() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={
+          Platform.OS === 'ios' ? 'padding' : undefined
+        }
       >
         <ScrollView
           contentContainerStyle={styles.content}
@@ -85,13 +94,15 @@ export default function LoginScreen() {
         >
           <Pressable
             style={styles.backButton}
-            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            onPress={() => goBackOrReplace('/welcome')}
           >
-            <Text style={styles.backText}>‹ Back</Text>
+            <FigmaIcon name="back" size="medium" />
           </Pressable>
 
           <Image
-            source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+            source={require('@/assets/figma/ec34e.png')}
             style={styles.logo}
             contentFit="contain"
           />
@@ -147,7 +158,9 @@ export default function LoginScreen() {
 
             <Pressable
               style={styles.forgotButton}
-              onPress={() => router.push('/forgot-password')}
+              onPress={() =>
+                router.push('/forgot-password')
+              }
             >
               <Text style={styles.forgotPassword}>
                 Forgot Password?
@@ -176,7 +189,9 @@ export default function LoginScreen() {
             <Pressable
               onPress={() => router.replace('/register')}
             >
-              <Text style={styles.registerLink}>Sign Up</Text>
+              <Text style={styles.registerLink}>
+                Sign Up
+              </Text>
             </Pressable>
           </View>
         </ScrollView>

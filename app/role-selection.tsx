@@ -1,8 +1,13 @@
-import { Feather } from '@expo/vector-icons';
-import { colors } from '@/constants/color';
+import { goBackOrReplace } from '@/utils/navigation';
+import { FigmaIcon } from '@/components/figma-icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { roleSelectionStyles as styles } from '@/styles/roleSelectionStyles';
@@ -30,13 +35,15 @@ export default function RoleSelectionScreen() {
       >
         <Pressable
           style={styles.backButton}
-          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          onPress={() => goBackOrReplace('/welcome')}
         >
-          <Text style={styles.backText}>‹ Back</Text>
+          <FigmaIcon name="back" size="medium" />
         </Pressable>
 
         <Image
-          source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+          source={require('@/assets/figma/ec34e.png')}
           style={styles.logo}
           contentFit="contain"
         />
@@ -61,19 +68,15 @@ export default function RoleSelectionScreen() {
           onPress={() => setRole('organizer')}
         >
           <View style={styles.roleIcon}>
-            <Feather
-              name="users"
-              size={26}
-              color={colors.primary}
-            />
+            <FigmaIcon name="organizer" size="large" />
           </View>
 
           <View style={styles.roleInfo}>
             <Text style={styles.roleTitle}>Organizer</Text>
 
             <Text style={styles.roleDescription}>
-              Create and manage savings groups, invite members,
-              and track contributions.
+              Create and manage savings groups, invite
+              members, and track contributions.
             </Text>
           </View>
 
@@ -94,7 +97,8 @@ export default function RoleSelectionScreen() {
         <Pressable
           style={[
             styles.roleCard,
-            selectedRole === 'member' && styles.roleCardSelected,
+            selectedRole === 'member' &&
+              styles.roleCardSelected,
           ]}
           accessibilityRole="radio"
           accessibilityState={{
@@ -103,26 +107,23 @@ export default function RoleSelectionScreen() {
           onPress={() => setRole('member')}
         >
           <View style={styles.roleIcon}>
-            <Feather
-              name="user"
-              size={26}
-              color={colors.primary}
-            />
+            <FigmaIcon name="member" size="large" />
           </View>
 
           <View style={styles.roleInfo}>
             <Text style={styles.roleTitle}>Member</Text>
 
             <Text style={styles.roleDescription}>
-              Join a savings group, make contributions, and track
-              your progress.
+              Join a savings group, make contributions, and
+              track your progress.
             </Text>
           </View>
 
           <View
             style={[
               styles.radio,
-              selectedRole === 'member' && styles.radioSelected,
+              selectedRole === 'member' &&
+                styles.radioSelected,
             ]}
           >
             {selectedRole === 'member' && (

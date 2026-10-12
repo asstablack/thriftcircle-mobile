@@ -30,8 +30,12 @@ export function PaymentEvidenceForm({
   onSubmitted,
 }: Props) {
   const [file, setFile] =
-    useState<DocumentPicker.DocumentPickerAsset | null>(null);
+    useState<DocumentPicker.DocumentPickerAsset | null>(
+      null,
+    );
   const [note, setNote] = useState('');
+  const [review, setReview] = useState(false);
+  const [needsRefresh, setNeedsRefresh] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submitting = useRef(false);
@@ -48,6 +52,7 @@ export function PaymentEvidenceForm({
       if (result.canceled) return;
       validateEvidence(result.assets[0]);
       setFile(result.assets[0]);
+      setReview(false);
     } catch (reason) {
       setError(
         reason instanceof Error
@@ -57,19 +62,25 @@ export function PaymentEvidenceForm({
     }
   };
   const submit = async () => {
-    if (!file || submitting.current) return;
+    if (!file || submitting.current || needsRefresh) return;
     submitting.current = true;
     setBusy(true);
     onBusyChange(true);
     setError(null);
     try {
-      await submitPaymentEvidence(contributionId, file, note);
+      await submitPaymentEvidence(
+        contributionId,
+        file,
+        note,
+      );
       onSubmitted();
     } catch (reason) {
+      setNeedsRefresh(true);
       setError(
-        reason instanceof Error
+        (reason instanceof Error
           ? reason.message
-          : 'Unable to submit evidence.',
+          : 'Unable to submit evidence.') +
+          ' Refresh the contribution before trying again.',
       );
     } finally {
       submitting.current = false;
@@ -80,18 +91,23 @@ export function PaymentEvidenceForm({
   return (
     <View>
       <Text style={styles.sectionTitle}>
-        {correction
-          ? 'Submit corrected evidence'
-          : 'Submit payment evidence'}
+        {review
+          ? 'Review Submission'
+          : correction
+            ? 'Update Submission'
+            : 'Upload Payment Evidence'}
       </Text>
       <Text style={styles.noteText}>
         Upload proof of the payment you made outside
         ThriftCircle. Your organizer will review it.
       </Text>
       <Pressable
-        style={styles.uploadBox}
+        style={[
+          styles.uploadBox,
+          file && styles.selectedUpload,
+        ]}
         onPress={() => void selectFile()}
-        disabled={busy}
+        disabled={busy || review || needsRefresh}
         accessibilityRole="button"
         accessibilityLabel="Choose payment evidence"
       >
@@ -105,25 +121,32 @@ export function PaymentEvidenceForm({
         </Text>
         <Text style={styles.detailLabel}>
           {file
-            ? 'Tap to replace file'
+            ? review
+              ? 'Selected · ready to submit'
+              : 'Selected · tap to replace file'
             : 'JPEG, PNG or PDF · Maximum 5 MB'}
         </Text>
       </Pressable>
-      {file && (
+      {file && !review && (
         <Pressable
           disabled={busy}
-          onPress={() => setFile(null)}
+          onPress={() => {
+            setFile(null);
+            setReview(false);
+          }}
         >
           <Text style={styles.secondaryButtonText}>
             Remove file
           </Text>
         </Pressable>
       )}
-      <Text style={styles.sectionTitle}>Note (optional)</Text>
+      <Text style={styles.sectionTitle}>
+        Note (optional)
+      </Text>
       <TextInput
         accessibilityLabel="Payment evidence note"
         multiline
-        editable={!busy}
+        editable={!busy && !review && !needsRefresh}
         value={note}
         onChangeText={setNote}
         style={styles.reviewInput}
@@ -141,19 +164,48 @@ export function PaymentEvidenceForm({
       <Pressable
         style={[
           styles.primaryButton,
-          (!file || busy) && styles.disabledButton,
+          (!file || busy || needsRefresh) &&
+            styles.disabledButton,
         ]}
-        disabled={!file || busy}
-        onPress={() => void submit()}
+        disabled={!file || busy || needsRefresh}
+        onPress={() =>
+          review ? void submit() : setReview(true)
+        }
       >
         {busy ? (
           <ActivityIndicator color={colors.white} />
         ) : (
           <Text style={styles.primaryButtonText}>
-            Submit for Review
+            {review
+              ? correction
+                ? 'Resubmit Evidence'
+                : 'Submit'
+              : 'Continue to Review'}
           </Text>
         )}
       </Pressable>
+      {review && !busy && !needsRefresh && (
+        <Pressable
+          accessibilityRole="button"
+          style={styles.secondaryButton}
+          onPress={() => setReview(false)}
+        >
+          <Text style={styles.secondaryButtonText}>
+            Back to Edit
+          </Text>
+        </Pressable>
+      )}
+      {needsRefresh && (
+        <Pressable
+          accessibilityRole="button"
+          style={styles.secondaryButton}
+          onPress={onSubmitted}
+        >
+          <Text style={styles.secondaryButtonText}>
+            Refresh contribution
+          </Text>
+        </Pressable>
+      )}
       {busy && (
         <Text style={styles.noteText}>
           Uploading evidence… Please keep this screen open.

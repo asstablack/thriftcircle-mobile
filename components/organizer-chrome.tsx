@@ -1,3 +1,4 @@
+import { FigmaIcon } from '@/components/figma-icon';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
@@ -17,7 +18,7 @@ export function OrganizerHeader() {
   return (
     <View style={styles.topHeader}>
       <Image
-        source={require('@/assets/images/thriftcirlce-official-logo.png')}
+        source={require('@/assets/figma/94eba.png')}
         style={styles.headerLogo}
         resizeMode="contain"
         accessibilityLabel="ThriftCircle"
@@ -52,33 +53,55 @@ export function OrganizerBottomNavigation({
   active = 'Home',
 }: {
   active?:
-    'Home' | 'Groups' | 'Contributions' | 'Activity' | 'Profile';
+    | 'Home'
+    | 'Groups'
+    | 'Contributions'
+    | 'Activity'
+    | 'Profile';
 }) {
-  const isMember = useAuthStore(
-    (state) => state.selectedGroup?.role === 'member',
+  const group = useAuthStore(
+    (state) => state.selectedGroup,
   );
+  const isMember = group?.role === 'member';
   const items = [
     {
       label: 'Home',
       icon: 'home',
-      route: isMember
-        ? '/member-dashboard'
-        : '/organizer-dashboard',
+      route: !group
+        ? '/group-selection'
+        : isMember
+          ? '/member-dashboard?view=home'
+          : '/organizer-dashboard',
     },
     {
       label: 'Groups',
-      icon: 'users',
-      route: '/group-selection',
+      icon: 'groups',
+      route:
+        !group
+          ? '/group-selection'
+          : isMember
+            ? '/group-details'
+            : '/members',
     },
     {
       label: 'Contributions',
-      icon: 'file-text',
-      route: isMember
-        ? '/member-dashboard?view=history'
-        : '/contributions',
+      icon: 'contributions',
+      route: !group
+        ? '/group-selection'
+        : isMember
+          ? '/member-dashboard?view=history'
+          : '/contributions',
     },
-    { label: 'Activity', icon: 'bell', route: '/notifications' },
-    { label: 'Profile', icon: 'user', route: '/profile' },
+    {
+      label: 'Activity',
+      icon: 'activity',
+      route: '/notifications',
+    },
+    {
+      label: 'Profile',
+      icon: 'profile',
+      route: '/profile',
+    },
   ] as const;
   return (
     <View style={styles.bottomNav}>
@@ -86,10 +109,11 @@ export function OrganizerBottomNavigation({
         const selected = active === item.label;
         const content = (
           <>
-            <Feather
+            <FigmaIcon
               name={item.icon}
-              size={20}
-              color={selected ? colors.primary : colors.textDark}
+              color={
+                selected ? colors.primary : colors.textDark
+              }
             />
             <Text
               style={[

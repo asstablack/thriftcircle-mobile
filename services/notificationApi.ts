@@ -3,6 +3,9 @@ import { getTokens } from '@/services/authStorage';
 
 export type AppNotification = {
   _id: string;
+  type?: string;
+  relatedModel?: string;
+  relatedId?: string;
   title: string;
   message: string;
   isRead: boolean;
@@ -20,7 +23,8 @@ async function notificationRequest(
   method = 'GET',
 ) {
   const { accessToken } = await getTokens();
-  if (!accessToken) throw new Error('You are not logged in.');
+  if (!accessToken)
+    throw new Error('You are not logged in.');
   const response = await fetch(
     API_ROOT_URL + '/notifications' + path,
     {
@@ -47,4 +51,10 @@ export function markNotificationRead(
     '/' + encodeURIComponent(id) + '/read',
     'PATCH',
   );
+}
+
+export function markAllNotificationsRead(): Promise<{
+  updated: number;
+}> {
+  return notificationRequest('/read-all', 'PATCH');
 }

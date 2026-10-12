@@ -12,15 +12,18 @@ export const registerStyles = StyleSheet.create({
     width: '100%',
     maxWidth: 460,
     alignSelf: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
 
-    paddingTop: 20,
-    paddingBottom: 30,
+    paddingTop: 24,
+    paddingBottom: 28,
   },
 
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 40,
+    marginBottom: 16,
+    minHeight: 44,
+    minWidth: 44,
+    justifyContent: 'center',
   },
 
   backText: {
@@ -30,27 +33,28 @@ export const registerStyles = StyleSheet.create({
   },
 
   logo: {
-    width: 110,
-    height: 82,
+    width: 115,
+    height: 96,
     alignSelf: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
 
   title: {
-    fontSize: 22,
-    fontFamily: fonts.extraBold,
+    fontSize: 33,
+    fontFamily: fonts.bold,
     color: colors.textPrimary,
     textAlign: 'center',
+    lineHeight: 40,
   },
 
   subtitle: {
     fontFamily: fonts.regular,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 14.5,
+    lineHeight: 21,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginTop: 5,
-    marginBottom: 22,
+    marginTop: 8,
+    marginBottom: 28,
   },
 
   form: {
@@ -58,23 +62,23 @@ export const registerStyles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 12,
-    fontFamily: fonts.semiBold,
+    fontSize: 13.5,
+    fontFamily: fonts.medium,
     color: colors.textPrimary,
-    marginBottom: 6,
+    marginBottom: 8,
   },
 
   input: {
-    height: 50,
+    height: 44,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
     paddingHorizontal: 13,
     fontFamily: fonts.regular,
-    fontSize: 13,
+    fontSize: 14.5,
     color: colors.textPrimary,
-    marginBottom: 13,
+    marginBottom: 20,
   },
 
   placeholder: {
@@ -96,7 +100,7 @@ export const registerStyles = StyleSheet.create({
 
   registerButtonText: {
     color: colors.white,
-    fontSize: 13,
+    fontSize: 14.5,
     fontFamily: fonts.bold,
   },
 
@@ -109,12 +113,12 @@ export const registerStyles = StyleSheet.create({
 
   loginText: {
     fontFamily: fonts.regular,
-    fontSize: 12,
+    fontSize: 14.5,
     color: colors.textSecondary,
   },
 
   loginLink: {
-    fontSize: 12,
+    fontSize: 14.5,
     fontFamily: fonts.bold,
     color: colors.primary,
     marginLeft: 5,
@@ -122,11 +126,11 @@ export const registerStyles = StyleSheet.create({
 
   passwordContainer: {
     position: 'relative',
-    marginBottom: 13,
+    marginBottom: 20,
   },
 
   passwordInput: {
-    height: 50,
+    height: 44,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
@@ -134,7 +138,7 @@ export const registerStyles = StyleSheet.create({
     paddingHorizontal: 13,
     paddingRight: 60,
     fontFamily: fonts.regular,
-    fontSize: 13,
+    fontSize: 14.5,
     color: colors.textPrimary,
   },
 
@@ -142,12 +146,12 @@ export const registerStyles = StyleSheet.create({
     position: 'absolute',
     right: 13,
     top: 0,
-    height: 50,
+    height: 44,
     justifyContent: 'center',
   },
 
   eyeText: {
-    fontSize: 13,
+    fontSize: 14.5,
     fontFamily: fonts.semiBold,
     color: colors.primary,
   },
@@ -160,8 +164,8 @@ export const registerStyles = StyleSheet.create({
   },
 
   checkbox: {
-    width: 18,
-    height: 18,
+    width: 20,
+    height: 20,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 4,
@@ -185,8 +189,8 @@ export const registerStyles = StyleSheet.create({
   termsText: {
     flex: 1,
     fontFamily: fonts.regular,
-    fontSize: 10,
-    lineHeight: 15,
+    fontSize: 14.5,
+    lineHeight: 21,
     color: colors.textSecondary,
   },
 

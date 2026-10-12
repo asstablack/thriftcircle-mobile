@@ -1,3 +1,5 @@
+import { goBackOrReplace } from '@/utils/navigation';
+import { FigmaIcon } from '@/components/figma-icon';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -22,7 +24,8 @@ export default function ResetVerification() {
     identifier?: string;
   }>();
 
-  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationCode, setVerificationCode] =
+    useState('');
 
   const handleVerify = () => {
     if (!identifier) {
@@ -62,7 +65,9 @@ export default function ResetVerification() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={
+          Platform.OS === 'ios' ? 'padding' : undefined
+        }
       >
         <ScrollView
           contentContainerStyle={styles.content}
@@ -71,13 +76,17 @@ export default function ResetVerification() {
         >
           <Pressable
             style={styles.backButton}
-            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            onPress={() =>
+              goBackOrReplace('/forgot-password')
+            }
           >
-            <Text style={styles.backText}>‹ Back</Text>
+            <FigmaIcon name="back" size="medium" />
           </Pressable>
 
           <Image
-            source={require('@/assets/images/thrift-circle-logo-stacked.png')}
+            source={require('@/assets/figma/ec34e.png')}
             style={styles.logo}
             contentFit="contain"
           />
@@ -85,12 +94,14 @@ export default function ResetVerification() {
           <Text style={styles.title}>Check your email</Text>
 
           <Text style={styles.subtitle}>
-            Enter the verification code sent to your email or
-            phone number.
+            Enter the verification code sent to your email
+            or phone number.
           </Text>
 
           <View style={styles.form}>
-            <Text style={styles.label}>Verification Code</Text>
+            <Text style={styles.label}>
+              Verification Code
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -106,7 +117,9 @@ export default function ResetVerification() {
               style={styles.verifyButton}
               onPress={handleVerify}
             >
-              <Text style={styles.verifyButtonText}>Verify</Text>
+              <Text style={styles.verifyButtonText}>
+                Verify
+              </Text>
             </Pressable>
           </View>
 

@@ -1,6 +1,6 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GroupScreenHeader } from '@/components/group-screen-header';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Alert,
   ScrollView,
@@ -17,8 +17,10 @@ import { joinGroup } from '@/services/groupApi';
 export default function JoinGroupScreen() {
   const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const submitting = useRef(false);
 
   const handleJoinGroup = async () => {
+    if (submitting.current) return;
     if (!inviteCode.trim()) {
       Alert.alert(
         'Required field',
@@ -28,6 +30,7 @@ export default function JoinGroupScreen() {
     }
 
     try {
+      submitting.current = true;
       setLoading(true);
 
       await joinGroup({
@@ -40,7 +43,8 @@ export default function JoinGroupScreen() {
         [
           {
             text: 'Continue',
-            onPress: () => router.replace('/group-selection'),
+            onPress: () =>
+              router.replace('/group-selection'),
           },
         ],
       );
@@ -52,6 +56,7 @@ export default function JoinGroupScreen() {
 
       Alert.alert('Join Group Failed', message);
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   };
@@ -59,6 +64,8 @@ export default function JoinGroupScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <GroupScreenHeader
+        variant="plain"
+        disabled={loading}
         title="Join a Group"
         subtitle="Enter the invite code shared by your organizer."
       />
@@ -70,11 +77,13 @@ export default function JoinGroupScreen() {
           <Text style={styles.label}>Invite Code</Text>
 
           <TextInput
+            accessibilityLabel="Invite Code"
             style={styles.input}
             placeholder="e.g. A1B2C3"
             placeholderTextColor={colors.textSecondary}
             autoCapitalize="characters"
             autoCorrect={false}
+            editable={!loading}
             value={inviteCode}
             onChangeText={setInviteCode}
           />
@@ -88,7 +97,9 @@ export default function JoinGroupScreen() {
             disabled={loading}
           >
             <Text style={styles.joinButtonText}>
-              {loading ? 'Sending request...' : 'Request to join'}
+              {loading
+                ? 'Sending request...'
+                : 'Request to join'}
             </Text>
           </Pressable>
         </View>

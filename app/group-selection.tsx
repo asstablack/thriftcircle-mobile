@@ -52,7 +52,8 @@ export default function GroupSelectionScreen() {
 
       setError(message);
     } finally {
-      if (version === requestVersion.current) setLoading(false);
+      if (version === requestVersion.current)
+        setLoading(false);
     }
   }, []);
 
@@ -117,16 +118,21 @@ export default function GroupSelectionScreen() {
               {error}
             </Text>
             <Pressable onPress={() => void loadGroups()}>
-              <Text style={styles.emptyTitle}>Try Again</Text>
+              <Text style={styles.emptyTitle}>
+                Try Again
+              </Text>
             </Pressable>
           </View>
         ) : groups.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>No groups yet</Text>
+            <Text style={styles.emptyTitle}>
+              No groups yet
+            </Text>
 
             <Text style={styles.emptyText}>
-              You don&apos;t belong to any groups yet. Create a
-              group or join one using an invite code.
+              You don&apos;t belong to any groups yet.
+              Create a group or join one using an invite
+              code.
             </Text>
           </View>
         ) : (
@@ -143,7 +149,8 @@ export default function GroupSelectionScreen() {
                   </Text>
 
                   <Text style={styles.groupDetails}>
-                    ₦{group.contributionAmount.toLocaleString()}{' '}
+                    ₦
+                    {group.contributionAmount.toLocaleString()}{' '}
                     • {group.frequency}
                   </Text>
                 </View>
