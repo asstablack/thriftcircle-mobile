@@ -3,6 +3,18 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const membersStyles = StyleSheet.create({
+  cycleStrip: { backgroundColor: colors.infoSurface, paddingHorizontal:20, paddingVertical:12, flexDirection:'row',alignItems:'center',justifyContent:'space-between' },
+  infoText: { color: colors.infoText }, activeText: { color: colors.primary },
+  inactiveBadge: { backgroundColor: colors.subtleBackground },
+  viewControls: {flexDirection:'row', marginLeft:'auto'}, viewButton: {minWidth:44,minHeight:44,alignItems:'center',justifyContent:'center',borderRadius:6},
+  tableHeader: {marginHorizontal:20,marginTop:12,padding:8,flexDirection:'row',backgroundColor:colors.border},
+  nameCell: {flex:1.1,fontFamily:fonts.medium,fontSize:12,color:colors.textPrimary},
+  phoneCell: {flex:1.2,fontFamily:fonts.regular,fontSize:11,color:colors.textSecondary},
+  statusCell: {flex:1}, actionCell:{width:16},
+  grid:{flexDirection:'row',flexWrap:'wrap',paddingHorizontal:20,gap:8},
+  gridCard:{width:'48%',padding:12,gap:8,backgroundColor:colors.white,borderRadius:8,borderWidth:1,borderColor:colors.border},
+  pagination:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginHorizontal:20,marginTop:8},
+  emptyText:{padding:20,fontFamily:fonts.regular,color:colors.textSecondary},
   requestLink: {
     marginHorizontal: 20,
     paddingVertical: 12,
@@ -168,6 +180,9 @@ export const membersStyles = StyleSheet.create({
     gap: 8,
   },
   filter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
     minHeight: 44,
     paddingHorizontal: 12,
     justifyContent: 'center',
@@ -194,7 +209,8 @@ export const membersStyles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 9,
     paddingVertical: 10,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    paddingHorizontal:8,
   },
 
   statValue: {

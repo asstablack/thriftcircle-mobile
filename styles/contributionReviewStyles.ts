@@ -3,6 +3,12 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const contributionReviewStyles = StyleSheet.create({
+  paymentDetailsContainer: {marginHorizontal:20,marginBottom:12},
+  correctionWarning:{backgroundColor:colors.warningSurface,borderColor:colors.warning,borderWidth:1},
+  informationBox:{backgroundColor:colors.infoSurface},
+  instructionRow:{marginHorizontal:20,marginVertical:12,flexDirection:'row',alignItems:'flex-start',gap:12},
+  stepNumber:{width:28,height:28,borderRadius:14,overflow:'hidden',textAlign:'center',lineHeight:28,color:colors.white,backgroundColor:colors.primary,fontFamily:fonts.medium},
+  reviewFile:{flexDirection:'row',borderStyle:'solid',backgroundColor:colors.white,padding:16},
   selectedUpload: {
     borderColor: colors.primary,
     backgroundColor: colors.primaryLight,

@@ -1,3 +1,4 @@
+import { PaymentDetailsCard } from '@/components/payment-details';
 import { PaymentEvidenceForm } from '@/components/payment-evidence-form';
 import { useAuthStore } from '@/store/authStore';
 import { useCallback, useRef, useState } from 'react';
@@ -40,6 +41,7 @@ type Evidence = {
   fileSize?: number;
 };
 type ContributionDetails = {
+  paymentInstructions?: {bankName:string;accountName:string;accountNumber:string;reference:string} | null;
   _id: string;
   memberId: string;
   amount: number;
@@ -77,6 +79,14 @@ const formatSubmitted = (value?: string | null) =>
     : 'Not submitted';
 
 export default function ContributionReviewScreen() {
+  const { contributionId } = useLocalSearchParams<{ contributionId: string }>();
+  return <ContributionReviewContent key={contributionId} />;
+}
+
+function ContributionReviewContent() {
+  const groupName = useAuthStore((state) => state.selectedGroup?.groupName);
+  const [resubmitted, setResubmitted] = useState(false);
+  const [memberStep, setMemberStep] = useState<'details' | 'instructions' | 'upload' | 'review'>('details');
   const userId = useAuthStore((state) => state.user?.id);
   const isOrganizer = useAuthStore(
     (state) => state.selectedGroup?.role === 'organizer',
@@ -138,6 +148,8 @@ export default function ContributionReviewScreen() {
     }, [contributionId, reload]),
   );
 
+
+
   const latestEvidence = contribution?.evidence?.[0];
   const handleReview = async () => {
     if (
@@ -188,7 +200,9 @@ export default function ContributionReviewScreen() {
     }
   };
   const back = () => {
-    if (editingStatus) {
+    if (!isOrganizer && memberStep !== 'details') {
+      setMemberStep(contribution?.status === 'ISSUE' || memberStep === 'instructions' ? 'details' : 'instructions');
+    } else if (editingStatus) {
       setEditingStatus(false);
       setActionError(null);
     } else if (router.canGoBack()) router.back();
@@ -249,7 +263,7 @@ export default function ContributionReviewScreen() {
           />
         </Pressable>
         <Text style={styles.headerTitle}>
-          Contribution Details
+          {!isOrganizer && resubmitted ? 'Review Submission' : !isOrganizer && canSubmit ? (contribution?.status === 'ISSUE' ? ({details:'Correction Required',instructions:'Correction Required',upload:'Update Submission',review:reviewing?'Resubmit Evidence':'Review'}[memberStep]) : ({details:'Contribution Details',instructions:'Payment Instructions',upload:'Upload Evidence',review:'Review submission'}[memberStep])) : 'Contribution Details'}
         </Text>
       </View>
       <ScrollView
@@ -291,6 +305,33 @@ export default function ContributionReviewScreen() {
               </Text>
             </Pressable>
           </View>
+        ) : !isOrganizer && (canSubmit || resubmitted) ? (
+          <>
+            {resubmitted && <View style={[styles.noteBox,styles.confirmedBackground]}><Feather name="check-circle" size={24} color={colors.primary}/><Text style={styles.optionTitle}>Submission successful</Text><Text style={styles.noteText}>{contribution.status === 'PENDING_REVIEW' ? 'Your evidence has been successfully resubmitted and is under review.' : 'Your evidence has been successfully resubmitted.'}</Text></View>}
+            {!resubmitted && contribution.status==='ISSUE' && <View style={[styles.noteBox,memberStep==='details'?styles.correctionWarning:styles.informationBox]}><Text style={styles.optionTitle}>{memberStep==='details'?'Correction required':memberStep==='review'?'Ready for review':'Update your evidence'}</Text><Text style={styles.noteText}>{memberStep==='details' ? (latestEvidence?.reviewNote || contribution.issueReason || 'Review your evidence before resubmitting.') : memberStep==='review' ? 'Your updated submission will be sent for review. You will be notified if further action is required.' : 'Replace the incorrect evidence below. Contribution details stay linked to the original record.'}</Text></View>}
+            {memberStep === 'instructions' && <View style={styles.detailsCard}><Text style={styles.optionTitle}>Payment happens outside ThriftCircle</Text><Text style={styles.noteText}>Pay using the method agreed by {groupName || 'your group'}. ThriftCircle only records your contribution and evidence; it does not process the payment.</Text></View>}
+            <View style={styles.detailsCard}>
+              {[['Group',groupName || 'Your group'],['Amount','₦'+contribution.amount.toLocaleString('en-NG')],['Cycle','Cycle '+contribution.cycleNumber],['Due Date',formatDate(contribution.dueDate)]].map(([label,value])=><View key={label} style={styles.detailRow}><Text style={styles.detailLabel}>{label}</Text><Text style={styles.detailValue}>{value}</Text></View>)}
+              <View style={styles.detailRow}><Text style={styles.detailLabel}>Payment Status</Text><Text style={[styles.statusBadge,contribution.status === 'ISSUE' ? styles.pending : statusStyle]}>{contribution.status==='ISSUE'?'Correction Required':labels[contribution.status]}</Text></View>
+            </View>
+            {resubmitted && <>{latestEvidence && <Pressable accessibilityRole="button" accessibilityLabel="Open resubmitted evidence" style={styles.evidenceCard} onPress={openEvidence}><Feather name="file-text" size={26} color={colors.primary}/><View style={styles.optionContent}><Text style={styles.fileName}>{evidenceName}</Text><Text style={styles.detailLabel}>Uploaded · Open evidence</Text></View></Pressable>}{actionError && <Text accessibilityRole="alert" style={styles.errorText}>{actionError}</Text>}<Pressable accessibilityRole="button" style={styles.primaryButton} onPress={()=>router.replace('/member-dashboard')}><Text style={styles.primaryButtonText}>Back home</Text></Pressable></>}
+            {!resubmitted && memberStep==='details' && contribution.status==='ISSUE' && <><Text style={styles.sectionTitle}>What to fix</Text><View style={styles.instructionRow}><Text style={styles.stepNumber}>1</Text><Text style={[styles.noteText,styles.optionContent]}>Review the organizer’s reason above and check the details on your receipt.</Text></View><View style={styles.instructionRow}><Text style={styles.stepNumber}>2</Text><Text style={[styles.noteText,styles.optionContent]}>Upload clear evidence showing the correct payment details.</Text></View><Pressable accessibilityRole="button" style={styles.primaryButton} onPress={()=>setMemberStep('upload')}><Text style={styles.primaryButtonText}>Update Submission</Text></Pressable></>}
+            {!resubmitted && memberStep === 'details' && contribution.status!=='ISSUE' && <>
+              <Text style={styles.sectionTitle}>Payment Instructions</Text>
+              <View style={styles.paymentDetailsContainer}><PaymentDetailsCard details={contribution.paymentInstructions ? {...contribution.paymentInstructions,referenceNote:contribution.paymentInstructions.reference} : null}/></View>
+              <View style={[styles.noteBox,styles.informationBox]}><Text style={styles.noteLabel}>Note</Text><Text style={styles.noteText}>Upload proof after payment.</Text></View>
+              <Pressable accessibilityRole="button" style={styles.primaryButton} onPress={()=>setMemberStep('instructions')}><Text style={styles.primaryButtonText}>View Payment Instructions</Text></Pressable>
+              <Pressable accessibilityRole="button" style={styles.secondaryButton} onPress={()=>setMemberStep('upload')}><Text style={styles.secondaryButtonText}>Submit Payment Evidence</Text></Pressable>
+              <Pressable accessibilityRole="button" style={styles.issueLink} onPress={()=>router.push({pathname:'/contributions',params:{memberId:userId}})}><Text style={styles.secondaryButtonText}>View Contribution History →</Text></Pressable>
+            </>}
+            {memberStep === 'instructions' && <>
+              <View style={styles.paymentDetailsContainer}><PaymentDetailsCard details={contribution.paymentInstructions ? {...contribution.paymentInstructions,referenceNote:contribution.paymentInstructions.reference} : null}/></View>
+              <Text style={styles.sectionTitle}>How to pay</Text>
+              {['Pay using the group’s agreed method (e.g. bank transfer).','Keep your payment proof (screenshot or receipt).','Return to ThriftCircle to submit your evidence.'].map((text,index)=><View key={text} style={styles.instructionRow}><Text style={styles.stepNumber}>{index+1}</Text><Text style={[styles.noteText,styles.optionContent]}>{text}</Text></View>)}
+              <Pressable accessibilityRole="button" style={styles.primaryButton} onPress={()=>setMemberStep('upload')}><Text style={styles.primaryButtonText}>I have made the payment</Text></Pressable>
+            </>}
+            {!resubmitted && (memberStep === 'upload' || memberStep === 'review') && <PaymentEvidenceForm contributionId={contribution._id} correction={contribution.status==='ISSUE'} initialNote={latestEvidence?.note || ''} onRefresh={()=>setReload(value=>value+1)} onBusyChange={setReviewing} onReviewChange={value=>setMemberStep(value?'review':'upload')} onSubmitted={()=>{setResubmitted(contribution.status==='ISSUE');setMemberStep('details');setReload(value=>value+1)}}/>}
+          </>
         ) : (
           <>
             <View style={styles.banner}>

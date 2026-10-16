@@ -83,7 +83,8 @@ export default function ForgotPassword() {
             accessibilityLabel="Back"
             onPress={() => goBackOrReplace('/login')}
           >
-            <FigmaIcon name="back" size="medium" />
+            <FigmaIcon name="back" size="small" />
+            <Text style={styles.backText}>Back</Text>
           </Pressable>
 
           <Image
@@ -100,12 +101,12 @@ export default function ForgotPassword() {
           </Text>
 
           <View style={styles.form}>
-            <Text style={styles.label}>Email Address</Text>
+            <Text style={styles.label}>Email Address / Phone Number</Text>
 
             <TextInput
               style={styles.input}
               placeholder="Enter your email or phone number"
-              placeholderTextColor={colors.textSecondary}
+              placeholderTextColor={colors.textDisabled}
               autoCapitalize="none"
               autoCorrect={false}
               value={identifier}
@@ -117,6 +118,7 @@ export default function ForgotPassword() {
                 styles.resetButton,
                 loading && styles.resetButtonDisabled,
               ]}
+              accessibilityRole="button"
               onPress={handleResetRequest}
               disabled={loading}
             >
@@ -132,6 +134,7 @@ export default function ForgotPassword() {
             </Text>
 
             <Pressable
+              accessibilityRole="button"
               onPress={() => router.replace('/login')}
             >
               <Text style={styles.loginLink}>Log In</Text>

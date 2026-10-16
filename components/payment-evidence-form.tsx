@@ -1,17 +1,20 @@
 import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { File, Paths } from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 import { Feather } from '@expo/vector-icons';
 import {
   EVIDENCE_TYPES,
   submitPaymentEvidence,
-  validateEvidence,
+  checkEvidenceFile,
+  EvidenceFileError,
 } from '@/services/evidenceApi';
 import { contributionReviewStyles as styles } from '@/styles/contributionReviewStyles';
 import { colors } from '@/constants/color';
@@ -21,6 +24,9 @@ type Props = {
   correction: boolean;
   onBusyChange: (busy: boolean) => void;
   onSubmitted: () => void;
+  onRefresh?: () => void;
+  initialNote?: string;
+  onReviewChange?: (review: boolean) => void;
 };
 
 export function PaymentEvidenceForm({
@@ -28,30 +34,53 @@ export function PaymentEvidenceForm({
   correction,
   onBusyChange,
   onSubmitted,
+  onReviewChange,
+  onRefresh,
+  initialNote = '',
 }: Props) {
   const [file, setFile] =
     useState<DocumentPicker.DocumentPickerAsset | null>(
       null,
     );
-  const [note, setNote] = useState('');
-  const [review, setReview] = useState(false);
+  const [note, setNote] = useState(initialNote);
+  const [review, updateReview] = useState(false);
+  const setReview = (value: boolean) => { updateReview(value); onReviewChange?.(value); };
   const [needsRefresh, setNeedsRefresh] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submitting = useRef(false);
+  const selecting = useRef(false);
+  const [picking, setPicking] = useState(false);
 
   const selectFile = async () => {
-    if (submitting.current) return;
+    if (submitting.current || selecting.current) return;
+    selecting.current = true;
+    setPicking(true);
     setError(null);
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: EVIDENCE_TYPES,
-        multiple: false,
-        copyToCacheDirectory: true,
-      });
-      if (result.canceled) return;
-      validateEvidence(result.assets[0]);
-      setFile(result.assets[0]);
+      let selected: DocumentPicker.DocumentPickerAsset;
+      if (Platform.OS === 'web') {
+        const result = await DocumentPicker.getDocumentAsync({
+          type: EVIDENCE_TYPES, multiple: false,
+        });
+        if (result.canceled) return;
+        selected = result.assets[0];
+      } else {
+        // The file-system picker retains access to Android document-provider URIs.
+        const result = await File.pickFileAsync({ mimeTypes: EVIDENCE_TYPES });
+        if (result.canceled) return;
+        const source = result.result;
+        selected = {
+          uri: source.uri, name: source.name, mimeType: source.type,
+          size: source.size, lastModified: Date.now(),
+        };
+        await checkEvidenceFile(selected);
+        const cached = new File(Paths.cache, 'evidence-' + Date.now() + '-' + source.name.replace(/[^a-zA-Z0-9._-]/g, '_'));
+        await source.copy(cached);
+        selected = { ...selected, uri: cached.uri };
+      }
+      await checkEvidenceFile(selected);
+      setFile(selected);
       setReview(false);
     } catch (reason) {
       setError(
@@ -59,10 +88,13 @@ export function PaymentEvidenceForm({
           ? reason.message
           : 'Unable to choose this file.',
       );
+    } finally {
+      selecting.current = false;
+      setPicking(false);
     }
   };
   const submit = async () => {
-    if (!file || submitting.current || needsRefresh) return;
+    if (!file || submitting.current || selecting.current || needsRefresh) return;
     submitting.current = true;
     setBusy(true);
     onBusyChange(true);
@@ -75,6 +107,12 @@ export function PaymentEvidenceForm({
       );
       onSubmitted();
     } catch (reason) {
+      if (reason instanceof EvidenceFileError) {
+        setFile(null);
+        setReview(false);
+        setError(reason.message);
+        return;
+      }
       setNeedsRefresh(true);
       setError(
         (reason instanceof Error
@@ -90,6 +128,7 @@ export function PaymentEvidenceForm({
   };
   return (
     <View>
+      {!review && <>
       <Text style={styles.sectionTitle}>
         {review
           ? 'Review Submission'
@@ -101,35 +140,37 @@ export function PaymentEvidenceForm({
         Upload proof of the payment you made outside
         ThriftCircle. Your organizer will review it.
       </Text>
+      </>}
       <Pressable
         style={[
           styles.uploadBox,
           file && styles.selectedUpload,
+          review && styles.reviewFile,
         ]}
         onPress={() => void selectFile()}
-        disabled={busy || review || needsRefresh}
+        disabled={picking || busy || review || needsRefresh}
         accessibilityRole="button"
         accessibilityLabel="Choose payment evidence"
       >
         <Feather
-          name="upload"
+          name={review ? 'file-text' : 'upload'}
           size={26}
           color={colors.primary}
         />
-        <Text style={styles.fileName}>
+        <Text numberOfLines={2} style={[styles.fileName, review && styles.optionContent]}>
           {file ? file.name : 'Upload payment evidence'}
         </Text>
         <Text style={styles.detailLabel}>
           {file
             ? review
-              ? 'Selected · ready to submit'
+              ? ((file.size !== undefined ? (file.size / 1048576).toFixed(2) + ' MB · ' : '') + 'Ready to submit')
               : 'Selected · tap to replace file'
             : 'JPEG, PNG or PDF · Maximum 5 MB'}
         </Text>
       </Pressable>
       {file && !review && (
         <Pressable
-          disabled={busy}
+          disabled={picking || busy}
           onPress={() => {
             setFile(null);
             setReview(false);
@@ -140,10 +181,10 @@ export function PaymentEvidenceForm({
           </Text>
         </Pressable>
       )}
-      <Text style={styles.sectionTitle}>
+      {!review && <Text style={styles.sectionTitle}>
         Note (optional)
-      </Text>
-      <TextInput
+      </Text>}
+      {!review ? <TextInput
         accessibilityLabel="Payment evidence note"
         multiline
         editable={!busy && !review && !needsRefresh}
@@ -152,7 +193,7 @@ export function PaymentEvidenceForm({
         style={styles.reviewInput}
         placeholder="Add a payment reference or explanation"
         placeholderTextColor={colors.textSecondary}
-      />
+      /> : note.trim() ? <View style={styles.noteBox}><Text style={styles.noteText}>{note}</Text></View> : null}
       {error && (
         <Text
           accessibilityRole="alert"
@@ -162,12 +203,13 @@ export function PaymentEvidenceForm({
         </Text>
       )}
       <Pressable
+        accessibilityRole="button"
         style={[
           styles.primaryButton,
-          (!file || busy || needsRefresh) &&
+          (!file || picking || busy || needsRefresh) &&
             styles.disabledButton,
         ]}
-        disabled={!file || busy || needsRefresh}
+        disabled={!file || picking || busy || needsRefresh}
         onPress={() =>
           review ? void submit() : setReview(true)
         }
@@ -199,7 +241,7 @@ export function PaymentEvidenceForm({
         <Pressable
           accessibilityRole="button"
           style={styles.secondaryButton}
-          onPress={onSubmitted}
+          onPress={onRefresh ?? onSubmitted}
         >
           <Text style={styles.secondaryButtonText}>
             Refresh contribution
@@ -214,3 +256,4 @@ export function PaymentEvidenceForm({
     </View>
   );
 }
+

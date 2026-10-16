@@ -3,6 +3,35 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const registerStyles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  successCard: {
+    width: '100%',
+    maxWidth: 368,
+    alignSelf: 'center',
+    backgroundColor: colors.primaryLight,
+    borderRadius: 16,
+    padding: 24,
+    gap: 16,
+  },
+  successTitle: {
+    fontFamily: fonts.semiBold,
+    fontSize: 20,
+    lineHeight: 28,
+    color: colors.textPrimary,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -20,7 +49,10 @@ export const registerStyles = StyleSheet.create({
 
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     minHeight: 44,
     minWidth: 44,
     justifyContent: 'center',
@@ -33,15 +65,15 @@ export const registerStyles = StyleSheet.create({
   },
 
   logo: {
-    width: 115,
-    height: 96,
+    width: 116,
+    height: 116,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
   },
 
   title: {
-    fontSize: 33,
-    fontFamily: fonts.bold,
+    fontSize: 32,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     textAlign: 'center',
     lineHeight: 40,
@@ -49,8 +81,8 @@ export const registerStyles = StyleSheet.create({
 
   subtitle: {
     fontFamily: fonts.regular,
-    fontSize: 14.5,
-    lineHeight: 21,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 8,
@@ -62,7 +94,8 @@ export const registerStyles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 13.5,
+    fontSize: 12,
+    lineHeight: 16,
     fontFamily: fonts.medium,
     color: colors.textPrimary,
     marginBottom: 8,
@@ -74,24 +107,25 @@ export const registerStyles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
-    paddingHorizontal: 13,
+    paddingHorizontal: 12,
     fontFamily: fonts.regular,
-    fontSize: 14.5,
+    fontSize: 14,
     color: colors.textPrimary,
     marginBottom: 20,
   },
 
   placeholder: {
-    color: colors.textSecondary,
+    color: colors.textDisabled,
   },
 
   registerButton: {
-    height: 48,
+    minHeight: 48,
+    paddingVertical: 12,
     backgroundColor: colors.primary,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 5,
+    marginTop: 4,
   },
 
   registerButtonDisabled: {
@@ -100,8 +134,8 @@ export const registerStyles = StyleSheet.create({
 
   registerButtonText: {
     color: colors.white,
-    fontSize: 14.5,
-    fontFamily: fonts.bold,
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
   },
 
   loginRow: {
@@ -113,13 +147,13 @@ export const registerStyles = StyleSheet.create({
 
   loginText: {
     fontFamily: fonts.regular,
-    fontSize: 14.5,
+    fontSize: 14,
     color: colors.textSecondary,
   },
 
   loginLink: {
-    fontSize: 14.5,
-    fontFamily: fonts.bold,
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
     color: colors.primary,
     marginLeft: 5,
   },
@@ -135,10 +169,10 @@ export const registerStyles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
-    paddingHorizontal: 13,
+    paddingHorizontal: 12,
     paddingRight: 60,
     fontFamily: fonts.regular,
-    fontSize: 14.5,
+    fontSize: 14,
     color: colors.textPrimary,
   },
 
@@ -151,7 +185,7 @@ export const registerStyles = StyleSheet.create({
   },
 
   eyeText: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontFamily: fonts.semiBold,
     color: colors.primary,
   },
@@ -183,18 +217,19 @@ export const registerStyles = StyleSheet.create({
   checkmark: {
     color: colors.white,
     fontSize: 12,
-    fontFamily: fonts.bold,
+    fontFamily: fonts.semiBold,
   },
 
   termsText: {
     flex: 1,
     fontFamily: fonts.regular,
-    fontSize: 14.5,
-    lineHeight: 21,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.textSecondary,
   },
 
   termsLink: {
+    textDecorationLine: 'underline',
     color: colors.primary,
     fontFamily: fonts.semiBold,
   },

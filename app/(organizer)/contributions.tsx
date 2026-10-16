@@ -99,6 +99,7 @@ export default function ContributionsScreen() {
   const [cycle, setCycle] = useState<{
     cycleNumber: number;
     status: string;
+    openedAt?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -129,7 +130,7 @@ export default function ContributionsScreen() {
           ([details, records, currentCycle]: [
             GroupDetails,
             Contribution[],
-            { cycleNumber: number; status: string } | null,
+            { cycleNumber: number; status: string; openedAt?: string } | null,
           ]) => {
             if (!active) return;
             if (details.callerRole !== 'organizer')
@@ -247,7 +248,6 @@ export default function ContributionsScreen() {
       <GroupScreenHeader
         variant="plain"
         title="Contributions"
-        subtitle="Track contributions, verify payments, and manage your group’s progress."
       />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -256,7 +256,7 @@ export default function ContributionsScreen() {
           <ContributionSkeleton />
         ) : (
           <>
-            {groupDetails && (
+            {groupDetails && selectedMemberId && (
               <>
                 <Pressable
                   style={styles.memberSummary}
@@ -394,7 +394,7 @@ export default function ContributionsScreen() {
                   Something went wrong
                 </Text>
                 <Text style={styles.stateText}>
-                  We couldn’t load this member’s
+                  We couldn’t load the
                   contributions. Please try again.
                 </Text>
                 <Text style={styles.stateText}>
@@ -412,6 +412,13 @@ export default function ContributionsScreen() {
                   </Text>
                 </Pressable>
               </View>
+            ) : !cycle && !contributions.length ? (
+              <View style={styles.emptyCycle}>
+                <View style={styles.avatar}><Feather name="calendar" size={20} color={colors.primary} /></View>
+                <Text style={styles.stateTitle}>No contribution yet</Text>
+                <Text style={styles.stateText}>There’s currently no active savings cycle running.</Text>
+                <Pressable accessibilityRole="button" style={styles.primaryButton} onPress={() => router.push('/organizer-dashboard')}><Text style={styles.primaryButtonText}>Back to dashboard</Text></Pressable>
+              </View>
             ) : !groupDetails?.members.length ? (
               <View style={styles.stateCard}>
                 <Text style={styles.stateTitle}>
@@ -426,30 +433,25 @@ export default function ContributionsScreen() {
               <>
                 {!selectedMemberId && (
                   <View style={styles.cycleStrip}>
-                    <Text style={styles.bodyText}>
-                      {cycle
-                        ? 'Current cycle: ' +
-                          cycle.cycleNumber
-                        : 'No active cycle'}
-                    </Text>
-                    <Text style={styles.secondaryText}>
-                      {cycle?.status.replaceAll('_', ' ') ||
-                        'History remains available'}
-                    </Text>
+                    <View style={styles.memberInfo}>
+                      <Text style={styles.secondaryText}>{cycle ? 'Current Cycle' : 'No active cycle'}</Text>
+                      <Text style={styles.cycleTitle}>{cycle ? (cycle.openedAt ? new Date(cycle.openedAt).toLocaleDateString('en-NG', {month: 'long', year: 'numeric'}) + ' Cycle' : 'Cycle ' + cycle.cycleNumber) : 'History remains available'}</Text>
+                    </View>
+                    {cycle && <Text style={[styles.badge, styles.confirmed]}>{cycle.status === 'ACTIVE' ? 'Active' : cycle.status.replaceAll('_', ' ')}</Text>}
                   </View>
                 )}
                 {!selectedMemberId && (
                   <View style={styles.stats}>
                     {[
                       {
-                        label: 'Confirmed',
+                        label: 'Confirmed', description: 'Payments received from members.', tone: styles.statConfirmed,
                         value: cycleRecords.filter(
                           (item) =>
                             item.status === 'CONFIRMED',
                         ).length,
                       },
                       {
-                        label: 'Pending review',
+                        label: 'Pending', description: 'Pending verification', tone: styles.statPending,
                         value: cycleRecords.filter(
                           (item) =>
                             item.status ===
@@ -457,14 +459,14 @@ export default function ContributionsScreen() {
                         ).length,
                       },
                       {
-                        label: 'Overdue',
+                        label: 'Overdue', description: 'Member needs attention', tone: styles.statOverdue,
                         value: cycleRecords.filter(
                           (item) =>
                             item.status === 'OVERDUE',
                         ).length,
                       },
                       {
-                        label: 'Active members',
+                        label: 'Total Members', description: 'Members in the group', tone: styles.statMembers,
                         value:
                           groupDetails?.members.length || 0,
                       },
@@ -473,12 +475,8 @@ export default function ContributionsScreen() {
                         key={item.label}
                         style={styles.stat}
                       >
-                        <Text style={styles.secondaryText}>
-                          {item.label}
-                        </Text>
-                        <Text style={styles.statValue}>
-                          {item.value}
-                        </Text>
+                        <Text style={[styles.statValue, item.tone]}>{item.value} {item.label}</Text>
+                        <Text style={styles.secondaryText}>{item.description}</Text>
                       </View>
                     ))}
                   </View>
@@ -512,6 +510,8 @@ export default function ContributionsScreen() {
                   </View>
                 )}
                 {activeTab === 'Contributions' && (
+                  <>
+                  <Text style={styles.sectionTitle}>Contributions history</Text>
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -543,33 +543,17 @@ export default function ContributionsScreen() {
                         <Text style={styles.bodyText}>
                           {value === 'All'
                             ? 'All'
-                            : labels[value]}
+                            : value === 'PENDING_REVIEW' ? 'Pending' : value === 'ISSUE' ? 'Issue' : labels[value]}
                         </Text>
                       </Pressable>
                     ))}
                   </ScrollView>
+                </>
                 )}
                 {activeTab === 'Contributions' &&
                   (visibleHistory.length ? (
                     <>
-                      <Text style={styles.sectionTitle}>
-                        Contribution History
-                      </Text>
                       <View style={styles.historyCard}>
-                        <View style={styles.tableHeader}>
-                          <Text style={styles.amountColumn}>
-                            Amount
-                          </Text>
-                          <Text style={styles.dateColumn}>
-                            Date
-                          </Text>
-                          <Text style={styles.statusColumn}>
-                            Status
-                          </Text>
-                          <View
-                            style={styles.chevronSpace}
-                          />
-                        </View>
                         {visibleHistory.map((item) => (
                           <Pressable
                             key={item._id}
@@ -605,7 +589,7 @@ export default function ContributionsScreen() {
                                     ? styles.confirmed
                                     : item.status ===
                                         'PENDING_REVIEW'
-                                      ? styles.pending
+                                      ? styles.underReview
                                       : item.status ===
                                             'OVERDUE' ||
                                           item.status ===
@@ -721,7 +705,7 @@ function ContributionSkeleton() {
         </View>
       </View>
       <View style={styles.stats}>
-        {[0, 1, 2].map((key) => (
+        {[0, 1, 2, 3].map((key) => (
           <View key={key} style={styles.stat}>
             <View style={styles.skeletonShort} />
             <View style={styles.skeletonLine} />

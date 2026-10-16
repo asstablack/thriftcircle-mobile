@@ -9,23 +9,48 @@ export const dashboardProgressStyle = (
 });
 
 export const organizerDashboardStyles = StyleSheet.create({
+  dashboardHeader: { minHeight: 80, justifyContent: 'center', paddingHorizontal: 20, backgroundColor: colors.background },
+  dashboardTitle: { fontFamily: fonts.semiBold, fontSize: 24, lineHeight: 32, color: colors.textPrimary },
+  greetingName: { fontFamily: fonts.semiBold, fontSize: 24, lineHeight: 32, color: colors.textPrimary, marginBottom: 4 },
+  loadingBanner: { backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 12 },
+  loadingGreeting: { fontFamily: fonts.semiBold, fontSize: 14, lineHeight: 20, color: colors.white },
+  loadingWelcomeText: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.white },
+  skeletonStats: { flexDirection: 'row', gap: 12, marginTop: 12 },
+  skeletonStat: { flex: 1, height: 40, borderRadius: 4, backgroundColor: colors.border },
+  progressRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 12 },
+  dashboardSectionCard: {
+    marginHorizontal: 18,
+    marginTop: 16,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  cardSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  quickActionLabel: { flex: 1, marginLeft: 12 },
   confirmedText: {
     color: colors.primary,
   },
   pendingText: {
-    color: '#8B581C',
+    color: colors.warningText,
   },
   overdueText: {
-    color: '#AD3045',
+    color: colors.errorText,
   },
   membersText: {
-    color: '#2458B5',
+    color: colors.infoText,
   },
   attentionHeader: {
     marginHorizontal: 18,
     marginBottom: 0,
     padding: 10,
-    backgroundColor: '#FFFAE8',
+    backgroundColor: colors.warningSurface,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
@@ -149,7 +174,7 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   greeting: {
     fontSize: 16,
-    fontFamily: fonts.semiBold,
+    fontFamily: fonts.regular,
     color: colors.textPrimary,
     marginBottom: 4,
   },
@@ -207,7 +232,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   summaryCard: {
     marginHorizontal: 18,
     backgroundColor: colors.white,
-    borderRadius: 14,
+    borderRadius: 8,
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
@@ -246,11 +271,11 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   progressTrack: {
-    height: 7,
+    height: 8,
+    flex: 1,
     backgroundColor: colors.subtleBackground,
     borderRadius: 5,
-    marginTop: 12,
-    overflow: 'hidden',
+overflow: 'hidden',
   },
 
   progressFill: {
@@ -264,8 +289,7 @@ export const organizerDashboardStyles = StyleSheet.create({
     fontSize: 11,
     color: colors.textSecondary,
     textAlign: 'right',
-    marginTop: 4,
-  },
+},
 
   summaryStats: {
     flexDirection: 'row',
@@ -282,13 +306,13 @@ export const organizerDashboardStyles = StyleSheet.create({
     backgroundColor: colors.primaryLight,
   },
   pendingStat: {
-    backgroundColor: '#FFFAE8',
+    backgroundColor: colors.warningSurface,
   },
   overdueStat: {
-    backgroundColor: '#FFF0F2',
+    backgroundColor: colors.errorSurface,
   },
   membersStat: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.infoSurface,
   },
 
   summaryStatValue: {
@@ -367,7 +391,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   listCard: {
     marginHorizontal: 18,
     backgroundColor: colors.white,
-    borderRadius: 10,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
@@ -388,14 +412,14 @@ export const organizerDashboardStyles = StyleSheet.create({
   },
 
   listTitle: {
-    fontSize: 11,
+    fontSize: 14,
     fontFamily: fonts.semiBold,
     color: colors.textPrimary,
   },
 
   listSubtitle: {
     fontFamily: fonts.regular,
-    fontSize: 9,
+    fontSize: 14,
     color: colors.textSecondary,
     marginTop: 3,
   },
@@ -410,7 +434,7 @@ export const organizerDashboardStyles = StyleSheet.create({
   emptyListText: {
     padding: 16,
     fontFamily: fonts.regular,
-    fontSize: 10,
+    fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
   },
@@ -501,7 +525,7 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   noCycleCard: {
     marginHorizontal: 20,
-    marginTop: 80,
+    marginTop: 48,
     padding: 20,
     backgroundColor: colors.white,
     borderRadius: 10,
@@ -533,8 +557,8 @@ export const organizerDashboardStyles = StyleSheet.create({
 
   noCycleText: {
     fontFamily: fonts.regular,
-    fontSize: 10,
-    lineHeight: 15,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 15,

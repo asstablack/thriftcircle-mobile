@@ -12,7 +12,7 @@ export function GroupScreenHeader({
   variant = 'brand',
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   disabled?: boolean;
   variant?: 'brand' | 'plain';
 }) {
@@ -61,7 +61,7 @@ export function GroupScreenHeader({
         {variant === 'brand' && (
           <Text style={styles.title}>{title}</Text>
         )}
-        <Text style={styles.subtitle}>{subtitle}</Text>
+        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
     </>
   );

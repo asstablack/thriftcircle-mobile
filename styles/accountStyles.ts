@@ -1,27 +1,27 @@
+import { typography } from '@/constants/design';
 import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 import { fonts } from '@/constants/fonts';
 
 export const accountStyles = StyleSheet.create({
   notice: {
-    fontFamily: fonts.regular,
-    fontSize: 14,
-    lineHeight: 21,
-    color: colors.primary,
-    backgroundColor: colors.primaryLight,
+    ...typography.body,
+    lineHeight: 20,
+    color: colors.successText,
+    backgroundColor: colors.successSurface,
     borderWidth: 1,
     borderColor: colors.primaryLight,
     borderRadius: 8,
-    padding: 14,
+    padding: 16,
   },
   info: {
     fontFamily: fonts.regular,
     fontSize: 14,
-    lineHeight: 21,
-    color: '#315B8B',
-    backgroundColor: '#EFF6FF',
+    lineHeight: 20,
+    color: colors.infoText,
+    backgroundColor: colors.infoSurface,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: colors.info,
     borderRadius: 8,
     padding: 14,
   },
@@ -89,37 +89,35 @@ export const accountStyles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    fontFamily: fonts.semiBold,
-    fontSize: 20,
+    ...typography.h3,
     color: colors.textPrimary,
   },
   body: {
     fontFamily: fonts.regular,
     fontSize: 14,
-    lineHeight: 21,
+    lineHeight: 20,
     color: colors.textSecondary,
   },
   label: {
-    fontFamily: fonts.semiBold,
-    fontSize: 14,
+    ...typography.label,
     color: colors.textPrimary,
   },
   input: {
-    fontFamily: fonts.regular,
-    fontSize: 14.5,
+    ...typography.body,
     color: colors.textPrimary,
     backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderDefault,
     borderRadius: 8,
     padding: 12,
     minHeight: 44,
   },
   button: {
     backgroundColor: colors.primary,
-    padding: 15,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     minHeight: 48,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -140,8 +138,8 @@ export const accountStyles = StyleSheet.create({
   error: {
     fontFamily: fonts.regular,
     fontSize: 14,
-    lineHeight: 22,
-    color: '#A32626',
+    lineHeight: 20,
+    color: colors.errorText,
   },
   checkbox: {
     flexDirection: 'row',
@@ -153,7 +151,7 @@ export const accountStyles = StyleSheet.create({
     flex: 1,
     fontFamily: fonts.regular,
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 20,
     color: colors.textPrimary,
   },
 });

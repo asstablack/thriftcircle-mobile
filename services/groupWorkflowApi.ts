@@ -1,3 +1,4 @@
+import type { PaymentDetails } from './paymentDetails';
 import { workflowRequest } from './workflowRequest';
 
 export type GroupRules = {
@@ -156,6 +157,7 @@ export function savePayoutOrder(
 export type WorkflowGroup = {
   callerRole: 'organizer' | 'member';
   group: {
+    paymentDetails?: PaymentDetails;
     _id: string;
     groupName: string;
     contributionAmount: number;

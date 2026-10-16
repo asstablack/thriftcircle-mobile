@@ -98,7 +98,8 @@ export default function LoginScreen() {
             accessibilityLabel="Back"
             onPress={() => goBackOrReplace('/welcome')}
           >
-            <FigmaIcon name="back" size="medium" />
+            <FigmaIcon name="back" size="small" />
+            <Text style={styles.backText}>Back</Text>
           </Pressable>
 
           <Image
@@ -114,12 +115,12 @@ export default function LoginScreen() {
           </Text>
 
           <View style={styles.form}>
-            <Text style={styles.label}>Email Address</Text>
+            <Text style={styles.label}>Email Address / Phone Number</Text>
 
             <TextInput
               style={styles.input}
               placeholder="Enter your email or phone number"
-              placeholderTextColor={colors.textSecondary}
+              placeholderTextColor={colors.textDisabled}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -132,8 +133,8 @@ export default function LoginScreen() {
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.passwordInput}
-                placeholder="Enter your password"
-                placeholderTextColor={colors.textSecondary}
+                placeholder="Enter password"
+                placeholderTextColor={colors.textDisabled}
                 secureTextEntry={!passwordVisible}
                 value={password}
                 onChangeText={setPassword}
@@ -150,14 +151,15 @@ export default function LoginScreen() {
               >
                 <Feather
                   name={passwordVisible ? 'eye-off' : 'eye'}
-                  size={19}
-                  color={colors.textSecondary}
+                  size={20}
+                  color={colors.primary}
                 />
               </Pressable>
             </View>
 
             <Pressable
               style={styles.forgotButton}
+              accessibilityRole="button"
               onPress={() =>
                 router.push('/forgot-password')
               }
@@ -172,6 +174,7 @@ export default function LoginScreen() {
                 styles.loginButton,
                 loading && styles.loginButtonDisabled,
               ]}
+              accessibilityRole="button"
               onPress={handleLogin}
               disabled={loading}
             >
@@ -187,6 +190,7 @@ export default function LoginScreen() {
             </Text>
 
             <Pressable
+              accessibilityRole="button"
               onPress={() => router.replace('/register')}
             >
               <Text style={styles.registerLink}>

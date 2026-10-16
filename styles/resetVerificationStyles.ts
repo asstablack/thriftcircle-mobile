@@ -16,12 +16,14 @@ export const resetVerificationStyles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 24,
     paddingBottom: 28,
-    justifyContent: 'center',
-  },
+},
 
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     minHeight: 44,
     minWidth: 44,
     justifyContent: 'center',
@@ -34,15 +36,15 @@ export const resetVerificationStyles = StyleSheet.create({
   },
 
   logo: {
-    width: 115,
-    height: 96,
+    width: 116,
+    height: 116,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
   },
 
   title: {
-    fontSize: 33,
-    fontFamily: fonts.bold,
+    fontSize: 32,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     textAlign: 'center',
     lineHeight: 40,
@@ -50,8 +52,8 @@ export const resetVerificationStyles = StyleSheet.create({
 
   subtitle: {
     fontFamily: fonts.regular,
-    fontSize: 14.5,
-    lineHeight: 21,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 8,
@@ -63,7 +65,8 @@ export const resetVerificationStyles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 13.5,
+    fontSize: 12,
+    lineHeight: 16,
     fontFamily: fonts.medium,
     color: colors.textPrimary,
     marginBottom: 8,
@@ -75,9 +78,9 @@ export const resetVerificationStyles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
-    paddingHorizontal: 13,
+    paddingHorizontal: 12,
     fontFamily: fonts.regular,
-    fontSize: 14.5,
+    fontSize: 14,
     color: colors.textPrimary,
     textAlign: 'center',
     letterSpacing: 4,
@@ -85,7 +88,8 @@ export const resetVerificationStyles = StyleSheet.create({
   },
 
   verifyButton: {
-    height: 48,
+    minHeight: 48,
+    paddingVertical: 12,
     backgroundColor: colors.primary,
     borderRadius: 8,
     alignItems: 'center',
@@ -93,8 +97,8 @@ export const resetVerificationStyles = StyleSheet.create({
   },
 
   verifyButtonText: {
-    fontSize: 14.5,
-    fontFamily: fonts.bold,
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
     color: colors.white,
   },
 
@@ -113,7 +117,7 @@ export const resetVerificationStyles = StyleSheet.create({
 
   resendLink: {
     fontSize: 12,
-    fontFamily: fonts.bold,
+    fontFamily: fonts.semiBold,
     color: colors.primary,
     marginLeft: 5,
   },

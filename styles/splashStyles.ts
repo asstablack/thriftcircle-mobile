@@ -4,7 +4,7 @@ import { colors } from '@/constants/color';
 export const splashStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
   },

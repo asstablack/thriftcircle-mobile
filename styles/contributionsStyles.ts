@@ -3,12 +3,20 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const contributionsStyles = StyleSheet.create({
+  statConfirmed: { color: colors.successText },
+  statPending: { color: colors.warningText },
+  statOverdue: { color: colors.errorText },
+  statMembers: { color: colors.infoText },
+  emptyCycle: { minHeight: 500, padding: 24, alignItems: 'center', justifyContent: 'center', gap: 16 },
+  cycleTitle: { fontFamily: fonts.semiBold, fontSize: 14, lineHeight: 20, color: colors.textPrimary },
+  underReview: { backgroundColor: colors.infoSurface, color: colors.infoText },
   cycleStrip: {
-    marginHorizontal: 20,
-    padding: 16,
-    backgroundColor: colors.primaryLight,
-    borderRadius: 8,
-    gap: 4,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: colors.infoSurface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     marginTop: 16,
   },
   filters: {
@@ -162,7 +170,7 @@ export const contributionsStyles = StyleSheet.create({
     marginBottom: 5,
   },
   sectionTitle: {
-    fontSize: 17.5,
+    fontSize: 14,
     fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     marginHorizontal: 20,
@@ -184,7 +192,7 @@ export const contributionsStyles = StyleSheet.create({
   historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 56,
+    minHeight: 44,
     gap: 3,
     paddingVertical: 8,
     borderWidth: 1,
@@ -228,12 +236,12 @@ export const contributionsStyles = StyleSheet.create({
     color: colors.primary,
   },
   pending: {
-    backgroundColor: '#FFFAE8',
-    color: '#8B581C',
+    backgroundColor: colors.warningSurface,
+    color: colors.warningText,
   },
   issue: {
-    backgroundColor: '#FFF0F2',
-    color: '#AD3045',
+    backgroundColor: colors.errorSurface,
+    color: colors.errorText,
   },
   due: {
     backgroundColor: colors.subtleBackground,

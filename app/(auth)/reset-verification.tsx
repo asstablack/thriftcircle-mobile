@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { resetVerificationStyles as styles } from '@/styles/resetVerificationStyles';
+import { forgotPassword } from '@/services/authApi';
 import { colors } from '@/constants/color';
 
 export default function ResetVerification() {
@@ -26,6 +27,18 @@ export default function ResetVerification() {
 
   const [verificationCode, setVerificationCode] =
     useState('');
+
+  const [resending, setResending] = useState(false);
+  const handleResend = async () => {
+    if (!identifier || resending) return;
+    try {
+      setResending(true);
+      await forgotPassword(identifier.includes('@') ? { email: identifier } : { phoneNumber: identifier });
+      Alert.alert('Code sent', 'A new verification code has been sent.');
+    } catch (error) {
+      Alert.alert('Unable to resend', error instanceof Error ? error.message : 'Please try again.');
+    } finally { setResending(false); }
+  };
 
   const handleVerify = () => {
     if (!identifier) {
@@ -82,7 +95,8 @@ export default function ResetVerification() {
               goBackOrReplace('/forgot-password')
             }
           >
-            <FigmaIcon name="back" size="medium" />
+            <FigmaIcon name="back" size="small" />
+            <Text style={styles.backText}>Back</Text>
           </Pressable>
 
           <Image
@@ -91,7 +105,7 @@ export default function ResetVerification() {
             contentFit="contain"
           />
 
-          <Text style={styles.title}>Check your email</Text>
+          <Text style={styles.title}>{identifier?.includes('@') ? 'Check your email' : 'Check your messages'}</Text>
 
           <Text style={styles.subtitle}>
             Enter the verification code sent to your email
@@ -106,7 +120,7 @@ export default function ResetVerification() {
             <TextInput
               style={styles.input}
               placeholder="Enter verification code"
-              placeholderTextColor={colors.textSecondary}
+              placeholderTextColor={colors.textDisabled}
               keyboardType="number-pad"
               maxLength={6}
               value={verificationCode}
@@ -115,6 +129,7 @@ export default function ResetVerification() {
 
             <Pressable
               style={styles.verifyButton}
+              accessibilityRole="button"
               onPress={handleVerify}
             >
               <Text style={styles.verifyButtonText}>
@@ -128,8 +143,8 @@ export default function ResetVerification() {
               Didn&apos;t receive the code?
             </Text>
 
-            <Pressable>
-              <Text style={styles.resendLink}>Resend</Text>
+            <Pressable accessibilityRole="button" disabled={resending || !identifier} onPress={handleResend}>
+              <Text style={styles.resendLink}>{resending ? 'Sending...' : 'Resend Code'}</Text>
             </Pressable>
           </View>
         </ScrollView>

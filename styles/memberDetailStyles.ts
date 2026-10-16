@@ -7,6 +7,15 @@ export const progressWidth = (
   width: `${Math.max(0, Math.min(100, value))}%`,
 });
 export const memberDetailStyles = StyleSheet.create({
+  primaryButton:{minHeight:44,backgroundColor:colors.primary,borderRadius:8,alignItems:'center',justifyContent:'center',padding:12},
+  primaryButtonText:{fontFamily:fonts.medium,fontSize:14,color:colors.white},
+  progressHeading:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
+  percentage:{fontFamily:fonts.semiBold,fontSize:14,color:colors.primary},
+  statusOption:{flexDirection:'row',gap:16,padding:16,borderRadius:8,borderWidth:1,borderColor:colors.border,alignItems:'center'},
+  activeOption:{backgroundColor:colors.primaryLight},inactiveOption:{backgroundColor:colors.subtleBackground},selectedOption:{borderColor:colors.primary},
+  inactiveBadge:{backgroundColor:colors.subtleBackground,color:colors.textSecondary},
+  infoBadge:{backgroundColor:colors.infoSurface,color:colors.infoText},
+  infoBox:{backgroundColor:colors.infoSurface,padding:16,borderRadius:8,gap:8},
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -25,7 +34,7 @@ export const memberDetailStyles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: 8,
     gap: 12,
   },
   profileRow: {
@@ -44,17 +53,17 @@ export const memberDetailStyles = StyleSheet.create({
   },
   initials: {
     fontFamily: fonts.semiBold,
-    fontSize: 20,
+    fontSize: 16,
     color: colors.primary,
   },
   name: {
     fontFamily: fonts.bold,
-    fontSize: 17.5,
+    fontSize: 14,
     color: colors.textPrimary,
   },
   body: {
     fontFamily: fonts.regular,
-    fontSize: 13.5,
+    fontSize: 12,
     lineHeight: 20,
     color: colors.textSecondary,
   },

@@ -1,3 +1,6 @@
+import { PaymentDetailsFields } from '@/components/payment-details';
+import { emptyPaymentDetails, cleanPaymentDetails, paymentDetailsError } from '@/services/paymentDetails';
+import * as Clipboard from 'expo-clipboard';
 import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -29,9 +32,9 @@ const titles = [
   'Review Group Setup',
 ];
 const descriptions = [
-  'Let’s set up your savings group.',
-  'Define how and when members will contribute.',
-  'Create clear rules so everyone understands how the group works.',
+  'Start a savings group and achieve your goals together.',
+  'Set the contribution amount, frequency and start date for your group.',
+  'Define how your group will work. These rules help everyone stay aligned.',
   'Choose how payout turns will be arranged and recorded.',
   'Please review your group details before creating it. You can edit any section below.',
 ];
@@ -78,6 +81,9 @@ function WizardButton({
 }
 
 export default function CreateGroupScreen() {
+  const [frequencyOpen, setFrequencyOpen] = useState(false);
+  const [copyMessage, setCopyMessage] = useState('');
+  const [paymentDetails, setPaymentDetails] = useState({...emptyPaymentDetails});
   const [step, setStep] = useState(0);
   const [groupName, setGroupName] = useState('');
   const [limit, setLimit] = useState('');
@@ -95,6 +101,7 @@ export default function CreateGroupScreen() {
   const [created, setCreated] = useState<{
     _id: string;
     groupName: string;
+    inviteCode?: string;
   } | null>(null);
   const [uncertain, setUncertain] = useState(false);
   const [done, setDone] = useState(false);
@@ -128,6 +135,7 @@ export default function CreateGroupScreen() {
       (!validDate(startDate) || !validDate(deadline))
     )
       return 'Choose valid start and deadline dates (YYYY-MM-DD).';
+    if (section === 1 && paymentDetailsError(paymentDetails, true)) return paymentDetailsError(paymentDetails, true);
     if (section === 1 && deadline < startDate)
       return 'The deadline must be on or after the start date.';
     if (
@@ -166,6 +174,7 @@ export default function CreateGroupScreen() {
           frequency,
           startDate,
           contributionDeadline: deadline,
+          ...(Object.values(cleanPaymentDetails(paymentDetails)).some(Boolean) ? {paymentDetails:cleanPaymentDetails(paymentDetails)} : {}),
         });
         if (!result?._id)
           throw new Error(
@@ -174,6 +183,7 @@ export default function CreateGroupScreen() {
         saved = {
           _id: result._id,
           groupName: result.groupName,
+          inviteCode: result.inviteCode,
         };
         setCreated(saved);
         useAuthStore.getState().setSelectedGroup({
@@ -216,7 +226,7 @@ export default function CreateGroupScreen() {
         accessibilityLabel={label}
         style={styles.input}
         value={value}
-        onChangeText={onChange}
+        onChangeText={(value) => { onChange(value); setError(''); }}
         keyboardType={numeric ? 'decimal-pad' : 'default'}
         placeholder={placeholder}
         placeholderTextColor={colors.textSecondary}
@@ -230,24 +240,9 @@ export default function CreateGroupScreen() {
     icon: 'users' | 'shield' | 'clock' | 'list',
   ) => (
     <View style={styles.reviewCard}>
-      <View style={styles.reviewHeading}>
-        <Feather
-          name={icon}
-          size={22}
-          color={colors.primary}
-        />
-        <Text style={styles.reviewTitle}>{title}</Text>
-        {!created && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={'Edit ' + title}
-            onPress={() => changeStep(section)}
-          >
-            <Text style={styles.editLink}>Edit</Text>
-          </Pressable>
-        )}
-      </View>
-      <Text style={styles.helper}>{text}</Text>
+      <View style={styles.iconTile}><Feather name={icon} size={24} color={colors.primary}/></View>
+      <View style={styles.cardContent}><Text style={styles.reviewTitle}>{title}</Text><Text style={styles.helper}>{text}</Text></View>
+      {!created && <Pressable accessibilityRole="button" accessibilityLabel={'Edit '+title} onPress={()=>changeStep(section)}><Text style={styles.editLink}>Edit</Text></Pressable>}
     </View>
   );
   return (
@@ -268,7 +263,7 @@ export default function CreateGroupScreen() {
           <View style={styles.saving}>
             <ActivityIndicator
               size="large"
-              color={colors.white}
+              color={colors.primary}
             />
             <Text style={styles.savingTitle}>
               Creating your group…
@@ -298,14 +293,20 @@ export default function CreateGroupScreen() {
             <Text
               style={[styles.helper, styles.successMessage]}
             >
-              Your savings group and rules have been saved.
+              Your savings group has been created. Now invite members to get started!
             </Text>
+            <View style={styles.reviewCard}><View style={styles.iconTile}><Feather name="users" size={24} color={colors.primary}/></View><View style={styles.cardContent}><Text style={styles.reviewTitle}>{created?.groupName}</Text><Text style={styles.helper}>{limit ? 'Member limit: '+limit : 'No member limit'}</Text></View></View>
+            <Text style={styles.label}>Invite Members</Text>
+            <Text style={styles.helper}>Share the group code so others can request to join your savings group.</Text>
+            {created?.inviteCode && <Pressable accessibilityRole="button" accessibilityLabel="Copy invite code" style={styles.dateButton} onPress={async()=>{try {await Clipboard.setStringAsync(created.inviteCode!);setCopyMessage('Invite code copied.');}catch{setCopyMessage('Unable to copy. Please use Invite Members.');}}}><Text selectable style={styles.dateInputText}>{created.inviteCode}</Text><Feather name="copy" size={20} color={colors.primary}/></Pressable>}
+            {!!copyMessage && <Text accessibilityLiveRegion="polite" style={styles.helper}>{copyMessage}</Text>}
             <WizardButton
               label="Invite Members"
               onPress={() =>
                 router.replace('/invite-members')
               }
             />
+            <WizardButton label="Done" onPress={()=>router.replace('/organizer-dashboard')}/>
             <WizardButton
               label="View Group"
               onPress={() =>
@@ -345,9 +346,6 @@ export default function CreateGroupScreen() {
               <Text style={styles.helper}>
                 {descriptions[step]}
               </Text>
-              <Text style={styles.stepCount}>
-                Step {step + 1} of 5
-              </Text>
               {step === 0 && (
                 <View style={styles.form}>
                   {field(
@@ -358,7 +356,7 @@ export default function CreateGroupScreen() {
                     'e.g. Family Savings Circle',
                   )}
                   {field(
-                    'Maximum Members (optional)',
+                    'Member Count (optional)',
                     limit,
                     setLimit,
                     true,
@@ -382,7 +380,8 @@ export default function CreateGroupScreen() {
                   <Text style={styles.label}>
                     Contribution Frequency
                   </Text>
-                  <View style={styles.frequencyRow}>
+                  <Pressable accessibilityRole="button" accessibilityLabel="Contribution frequency" accessibilityState={{expanded:frequencyOpen}} style={styles.dateButton} onPress={()=>setFrequencyOpen(!frequencyOpen)}><Text style={styles.dateInputText}>{frequency.charAt(0).toUpperCase()+frequency.slice(1)}</Text><Feather name="chevron-down" size={18} color={colors.textSecondary}/></Pressable>
+                  {frequencyOpen && <View style={styles.frequencyRow}>
                     {['daily', 'weekly', 'monthly'].map(
                       (value) => (
                         <Pressable
@@ -397,7 +396,7 @@ export default function CreateGroupScreen() {
                               styles.frequencyButtonActive,
                           ]}
                           onPress={() =>
-                            setFrequency(value)
+                            { setFrequency(value); setFrequencyOpen(false); }
                           }
                         >
                           <Text
@@ -413,7 +412,7 @@ export default function CreateGroupScreen() {
                         </Pressable>
                       ),
                     )}
-                  </View>
+                  </View>}
                   {Platform.OS === 'web' ? (
                     <>
                       {field(
@@ -493,12 +492,14 @@ export default function CreateGroupScreen() {
                       )}
                     </>
                   )}
+                  {Number(amount.replace(/,/g,''))>0 && <View style={styles.ruleRow}><Feather name="info" size={20} color={colors.primary}/><Text style={[styles.helper,styles.cardContent]}>Each member will contribute ₦{Number(amount.replace(/,/g,'')).toLocaleString('en-NG')} {frequency}{startDate ? ' starting '+startDate : ''}.</Text></View>}
                 </View>
               )}
+              {step === 1 && <><Text style={styles.helper}>Payment details are optional now. If added, complete all three bank fields. You can also add them later in Group details.</Text><PaymentDetailsFields value={paymentDetails} onChange={value=>{setPaymentDetails(value);setError('');}}/></>}
               {step === 2 && (
                 <View style={styles.form}>
                   {field(
-                    'Late Payment Grace Period (days)',
+                    'Grace Period (days)',
                     grace,
                     setGrace,
                     true,
@@ -522,9 +523,9 @@ export default function CreateGroupScreen() {
                       onValueChange={setLate}
                     />
                   </View>
-                  <View style={styles.reviewCard}>
+                  <View style={styles.infoCard}>
                     <Text style={styles.reviewTitle}>
-                      Joining the group
+                      Require organizer approval
                     </Text>
                     <Text style={styles.helper}>
                       All new members require organizer
@@ -546,7 +547,7 @@ export default function CreateGroupScreen() {
                       color={colors.primary}
                     />
                     <Text style={styles.reviewTitle}>
-                      Organizer assigns after members join
+                      By organiser
                     </Text>
                   </View>
                   <Text style={styles.helper}>
@@ -554,7 +555,7 @@ export default function CreateGroupScreen() {
                     order after approving their requests.
                   </Text>
                   <Text style={styles.label}>
-                    Payout approval
+                    Payout review
                   </Text>
                   <View style={styles.reviewCard}>
                     <Text style={styles.helper}>
@@ -581,6 +582,7 @@ export default function CreateGroupScreen() {
                     1,
                     'shield',
                   )}
+                  {summary('Payment Details', Object.values(cleanPaymentDetails(paymentDetails)).some(Boolean) ? [paymentDetails.bankName,paymentDetails.accountName,paymentDetails.accountNumber,paymentDetails.referenceNote].filter(Boolean).join('\n') : 'Not added yet', 1, 'list')}
                   {summary(
                     'Group Rules',
                     `${grace} grace days\nLate evidence: ${late ? 'Allowed' : 'Not allowed when overdue'}\nOrganizer approval required`,

@@ -16,7 +16,7 @@ export const welcomeStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingTop: 36,
+    paddingTop: 24,
     paddingBottom: 32,
   },
 
@@ -47,7 +47,7 @@ export const welcomeStyles = StyleSheet.create({
     color: colors.accent,
     textAlign: 'center',
     lineHeight: 44,
-    marginBottom: 16,
+    marginBottom: 8,
   },
 
   description: {
@@ -56,33 +56,40 @@ export const welcomeStyles = StyleSheet.create({
     lineHeight: 24,
     color: colors.textSecondary,
     textAlign: 'center',
-    maxWidth: 310,
-    marginBottom: 28,
+    maxWidth: 362,
+    marginBottom: 24,
   },
 
   actions: {
     width: '100%',
-    gap: 9,
+    gap: 16,
   },
 
   primaryButton: {
     width: '100%',
-    height: 48,
+    minHeight: 48,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: colors.primary,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
+  primaryButtonPressed: { backgroundColor: colors.primaryDark },
+
   primaryButtonText: {
     color: colors.white,
-    fontSize: 14.5,
-    fontFamily: fonts.bold,
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: fonts.medium,
   },
 
   secondaryButton: {
     width: '100%',
-    height: 48,
+    minHeight: 48,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: colors.primary,
     borderRadius: 8,
@@ -91,9 +98,12 @@ export const welcomeStyles = StyleSheet.create({
     backgroundColor: colors.background,
   },
 
+  secondaryButtonPressed: { backgroundColor: colors.primaryLight },
+
   secondaryButtonText: {
     color: colors.primary,
-    fontSize: 14.5,
-    fontFamily: fonts.bold,
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: fonts.medium,
   },
 });

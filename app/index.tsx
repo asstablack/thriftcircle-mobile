@@ -22,7 +22,7 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Image
         source={require('@/assets/figma/ec34e.png')}
         style={styles.logo}

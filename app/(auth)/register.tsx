@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Modal,
   Pressable,
   ScrollView,
   Text,
@@ -19,9 +20,12 @@ import { useState } from 'react';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { registerStyles as styles } from '@/styles/registerStyles';
+import { useAuthStore } from '@/store/authStore';
 import { signup } from '@/services/authApi';
 
 export default function RegisterScreen() {
+  const selectedRole = useAuthStore((state) => state.selectedRole);
+  const [completed, setCompleted] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -79,16 +83,7 @@ export default function RegisterScreen() {
         confirmPassword,
       });
 
-      Alert.alert(
-        'Account Created',
-        'Your account has been created successfully.',
-        [
-          {
-            text: 'Continue',
-            onPress: () => router.replace('/login'),
-          },
-        ],
-      );
+      setCompleted(true);
     } catch (error) {
       const message =
         error instanceof Error
@@ -122,7 +117,8 @@ export default function RegisterScreen() {
               goBackOrReplace('/role-selection')
             }
           >
-            <FigmaIcon name="back" size="medium" />
+            <FigmaIcon name="back" size="small" />
+            <Text style={styles.backText}>Back</Text>
           </Pressable>
 
           <Image
@@ -153,11 +149,11 @@ export default function RegisterScreen() {
               autoCapitalize="words"
             />
 
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>Email Address</Text>
 
             <TextInput
               style={styles.input}
-              placeholder="Enter your email"
+              placeholder="Enter your email address"
               placeholderTextColor={
                 styles.placeholder.color
               }
@@ -186,7 +182,7 @@ export default function RegisterScreen() {
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.passwordInput}
-                placeholder="Create a password"
+                placeholder="Enter password"
                 placeholderTextColor={
                   styles.placeholder.color
                 }
@@ -206,8 +202,8 @@ export default function RegisterScreen() {
               >
                 <Feather
                   name={passwordVisible ? 'eye-off' : 'eye'}
-                  size={19}
-                  color={colors.textSecondary}
+                  size={20}
+                  color={colors.primary}
                 />
               </Pressable>
             </View>
@@ -219,7 +215,7 @@ export default function RegisterScreen() {
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.passwordInput}
-                placeholder="Confirm your password"
+                placeholder="Confirm password"
                 placeholderTextColor={
                   styles.placeholder.color
                 }
@@ -245,14 +241,16 @@ export default function RegisterScreen() {
                       ? 'eye-off'
                       : 'eye'
                   }
-                  size={19}
-                  color={colors.textSecondary}
+                  size={20}
+                  color={colors.primary}
                 />
               </Pressable>
             </View>
 
             <Pressable
               style={styles.termsRow}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: acceptedTerms }}
               onPress={() =>
                 setAcceptedTerms(!acceptedTerms)
               }
@@ -285,6 +283,7 @@ export default function RegisterScreen() {
                 styles.registerButton,
                 loading && styles.registerButtonDisabled,
               ]}
+              accessibilityRole="button"
               onPress={handleSignup}
               disabled={loading}
             >
@@ -302,6 +301,7 @@ export default function RegisterScreen() {
             </Text>
 
             <Pressable
+              accessibilityRole="button"
               onPress={() => router.replace('/login')}
             >
               <Text style={styles.loginLink}>Log In</Text>
@@ -309,6 +309,32 @@ export default function RegisterScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <Modal
+        visible={completed}
+        transparent
+        animationType="fade"
+        onRequestClose={() => router.replace('/login')}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.successCard} accessibilityViewIsModal>
+            <Text style={styles.successTitle}>Account created successfully</Text>
+            <Text style={styles.successMessage}>
+              {selectedRole === 'organizer'
+                ? 'You can now create and manage your savings group.'
+                : selectedRole === 'member'
+                  ? 'You can now join a savings group and start contributing.'
+                  : 'Your account has been created successfully.'}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              style={styles.registerButton}
+              onPress={() => router.replace('/login')}
+            >
+              <Text style={styles.registerButtonText}>Continue</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

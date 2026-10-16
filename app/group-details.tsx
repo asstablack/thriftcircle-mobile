@@ -1,3 +1,5 @@
+import { PaymentDetailsCard, PaymentDetailsEditor } from '@/components/payment-details';
+import { savePaymentDetails } from '@/services/paymentDetails';
 import { useCallback, useState } from 'react';
 import { Redirect, router } from 'expo-router';
 import {
@@ -244,6 +246,11 @@ export default function GroupDetailsScreen() {
               </Pressable>
             </View>
           )}
+          <PaymentDetailsCard details={data.details.group.paymentDetails}/>
+          {data.details.callerRole === 'organizer' && <PaymentDetailsEditor
+            key={JSON.stringify(data.details.group.paymentDetails)} initial={data.details.group.paymentDetails}
+            disabled={state.busy || state.needsRefresh}
+            onSave={value=>void state.save(()=>savePaymentDetails(group.id,value),'Payment details saved.')}/>}
           <View style={styles.card}>
             <Text style={styles.title}>Current rules</Text>
             <Text style={styles.body}>

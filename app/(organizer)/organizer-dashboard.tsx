@@ -10,7 +10,6 @@ import {
 } from '@/styles/organizerDashboardStyles';
 import { router, useFocusEffect } from 'expo-router';
 import {
-  OrganizerHeader,
   OrganizerBottomNavigation,
 } from '@/components/organizer-chrome';
 import { Feather } from '@expo/vector-icons';
@@ -164,11 +163,11 @@ export default function OrganizerDashboard() {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <OrganizerHeader />
+        <View style={styles.dashboardHeader}><Text style={styles.dashboardTitle}>Organizer Dashboard</Text></View>
 
-        <View style={styles.welcomeBanner}>
-          <View style={styles.skeletonWelcomeLine} />
-          <View style={styles.skeletonWelcomeSmall} />
+        <View style={styles.loadingBanner}>
+          <Text style={styles.loadingGreeting}>Good morning, {user?.fullName?.split(' ')[0] || 'Organizer'}</Text>
+          <Text style={styles.loadingWelcomeText}>Here is what’s happening with your savings group.</Text>
         </View>
 
         <ScrollView
@@ -185,6 +184,7 @@ export default function OrganizerDashboard() {
             <View style={styles.skeletonLine} />
             <View style={styles.skeletonShortLine} />
             <View style={styles.skeletonLine} />
+            <View style={styles.skeletonStats}>{[0, 1, 2, 3].map((key) => <View key={key} style={styles.skeletonStat} />)}</View>
             <View style={styles.skeletonButton} />
           </View>
           {[0, 1].map((key) => (
@@ -328,14 +328,14 @@ export default function OrganizerDashboard() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <OrganizerHeader />
+      <View style={styles.dashboardHeader}><Text style={styles.dashboardTitle}>Organizer Dashboard</Text></View>
       {/* Welcome */}
       <View style={styles.welcomeBanner}>
         <Text style={styles.greeting}>
-          Good morning,{' '}
-          {user?.fullName?.split(' ')[0] || 'Organizer'}
+          Good morning,
         </Text>
 
+        <Text style={styles.greetingName}>{user?.fullName?.split(' ')[0] || 'Organizer'}</Text>
         <Text style={styles.welcomeText}>
           Here is what’s happening with your savings group.
         </Text>
@@ -397,6 +397,7 @@ export default function OrganizerDashboard() {
                 Confirmed contributions
               </Text>
 
+              <View style={styles.progressRow}>
               <View style={styles.progressTrack}>
                 <View
                   style={[
@@ -409,6 +410,7 @@ export default function OrganizerDashboard() {
               <Text style={styles.progressText}>
                 {Math.round(progress)}%
               </Text>
+              </View>
 
               <View style={styles.summaryStats}>
                 <View
@@ -539,11 +541,7 @@ export default function OrganizerDashboard() {
                           : styles.statusIconPending,
                       ]}
                     >
-                      <Text style={styles.statusIconText}>
-                        {item.type === 'overdue'
-                          ? '!'
-                          : '✓'}
-                      </Text>
+                      <Feather name={item.type === 'overdue' ? 'alert-circle' : 'calendar'} size={16} color={item.type === 'overdue' ? colors.errorText : colors.infoText} />
                     </View>
 
                     <View style={styles.listInfo}>
@@ -579,7 +577,8 @@ export default function OrganizerDashboard() {
             </View>
 
             {/* Upcoming Deadlines */}
-            <View style={styles.sectionHeader}>
+            <View style={styles.dashboardSectionCard}>
+            <View style={styles.cardSectionHeader}>
               <Text style={styles.sectionHeaderTitle}>
                 Upcoming Deadlines
               </Text>
@@ -595,7 +594,7 @@ export default function OrganizerDashboard() {
               </Pressable>
             </View>
 
-            <View style={styles.listCard}>
+            <View>
               {upcomingDeadlines.length === 0 ? (
                 <Text style={styles.emptyListText}>
                   No upcoming deadlines.
@@ -643,8 +642,10 @@ export default function OrganizerDashboard() {
               )}
             </View>
 
+            </View>
             {/* Recent Activities */}
-            <View style={styles.sectionHeader}>
+            <View style={styles.dashboardSectionCard}>
+            <View style={styles.cardSectionHeader}>
               <Text style={styles.sectionHeaderTitle}>
                 Recent Activities
               </Text>
@@ -660,7 +661,7 @@ export default function OrganizerDashboard() {
               </Pressable>
             </View>
 
-            <View style={styles.listCard}>
+            <View>
               {recentActivities.length === 0 ? (
                 <Text style={styles.emptyListText}>
                   No recent activities.
@@ -689,6 +690,7 @@ export default function OrganizerDashboard() {
                   </View>
                 ))
               )}
+            </View>
             </View>
           </>
         ) : (
@@ -725,22 +727,21 @@ export default function OrganizerDashboard() {
             </View>
 
             {/* Quick Actions */}
-            <View style={styles.sectionHeader}>
+            <View style={styles.dashboardSectionCard}>
+            <View style={styles.cardSectionHeader}>
               <Text style={styles.sectionHeaderTitle}>
                 Quick Actions
               </Text>
             </View>
 
-            <View style={styles.listCard}>
+            <View>
               <Pressable
                 style={styles.listRow}
                 onPress={() => router.push('/members')}
               >
-                <Text style={styles.quickActionIcon}>
-                  ♙
-                </Text>
+                <Feather name="users" size={20} color={colors.infoText} />
 
-                <Text style={styles.listTitle}>
+                <Text style={[styles.listTitle, styles.quickActionLabel]}>
                   Manage Members
                 </Text>
 
@@ -753,11 +754,9 @@ export default function OrganizerDashboard() {
                   router.push('/group-selection')
                 }
               >
-                <Text style={styles.quickActionIcon}>
-                  ▦
-                </Text>
+                <Feather name="users" size={20} color={colors.infoText} />
 
-                <Text style={styles.listTitle}>
+                <Text style={[styles.listTitle, styles.quickActionLabel]}>
                   View Groups
                 </Text>
 
@@ -771,16 +770,15 @@ export default function OrganizerDashboard() {
                   router.push('/group-details')
                 }
               >
-                <Text style={styles.quickActionIcon}>
-                  ⚙
-                </Text>
+                <Feather name="settings" size={20} color={colors.infoText} />
 
-                <Text style={styles.listTitle}>
+                <Text style={[styles.listTitle, styles.quickActionLabel]}>
                   Group Settings
                 </Text>
 
                 <Text style={styles.rowArrow}>›</Text>
               </Pressable>
+            </View>
             </View>
           </>
         )}

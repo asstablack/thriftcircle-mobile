@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "thriftcircle-mobile",
+    "name": "ThriftCircle",
     "slug": "thriftcircle-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +17,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.thriftcircle.mobile"
     },
     "web": {
       "output": "static",
@@ -28,13 +29,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/thrift-circle-logo-stacked.png",
+          "image": "./assets/figma/ec34e.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#0F5A43",
+          "backgroundColor": "#FCFBF8",
           "dark": {
-            "image": "./assets/images/thrift-circle-logo-stacked.png",
-            "backgroundColor": "#0F5A43"
+            "image": "./assets/figma/ec34e.png",
+            "backgroundColor": "#FCFBF8"
           }
         }
       ],
@@ -48,6 +49,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5728882a-b022-48b7-96cc-a00a2cdc1037"
+      }
     }
   }
 }

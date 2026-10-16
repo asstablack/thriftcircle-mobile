@@ -1,3 +1,4 @@
+import { File, UploadType } from 'expo-file-system';
 import type { DocumentPickerAsset } from 'expo-document-picker';
 import { Platform } from 'react-native';
 import { API_ROOT_URL } from '@/config/api';
@@ -28,44 +29,101 @@ export function validateEvidence(file: DocumentPickerAsset) {
   }
 }
 
+export class EvidenceFileError extends Error {}
+
+export async function checkEvidenceFile(file: DocumentPickerAsset) {
+  validateEvidence(file);
+  if (Platform.OS === 'web') return;
+  try {
+    const localFile = new File(file.uri);
+    if (!localFile.exists) throw new Error('Missing file');
+    validateEvidence({ ...file, size: localFile.size });
+    // Verify actual read access before presenting the file as ready to submit.
+    await localFile.bytes();
+  } catch {
+    throw new EvidenceFileError('This file cannot be read. Select a downloaded JPEG, PNG or PDF no larger than 5 MB again.');
+  }
+}
+
 export async function submitPaymentEvidence(
   contributionId: string,
   file: DocumentPickerAsset,
   note: string,
 ) {
-  validateEvidence(file);
+  await checkEvidenceFile(file);
+
   const { accessToken } = await getTokens();
-  if (!accessToken) throw new Error('You are not logged in.');
-  const body = new FormData();
-  if (Platform.OS === 'web') {
-    if (!file.file)
-      throw new Error('Please select the file again.');
-    body.append('file', file.file, file.name);
-  } else {
-    // React Native FormData accepts a local file descriptor.
-    body.append('file', {
-      uri: file.uri,
-      name: file.name,
-      type: file.mimeType,
-    } as unknown as Blob);
+  if (!accessToken) {
+    throw new Error('You are not logged in.');
   }
-  if (note.trim()) body.append('note', note.trim());
-  const response = await fetch(
-    API_ROOT_URL +
-      '/contributions/' +
-      encodeURIComponent(contributionId) +
-      '/evidence',
-    {
+
+  const url =
+    `${API_ROOT_URL}/contributions/` +
+    `${encodeURIComponent(contributionId)}/evidence`;
+
+  // Web uses the browser's native File and FormData support.
+  if (Platform.OS === 'web') {
+    if (!file.file) {
+      throw new Error('Please select the file again.');
+    }
+
+    const body = new FormData();
+    body.append('file', file.file, file.name);
+
+    if (note.trim()) {
+      body.append('note', note.trim());
+    }
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: { Authorization: 'Bearer ' + accessToken },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
       body,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || 'Evidence upload failed.',
+      );
+    }
+
+    return result;
+  }
+
+  // Android/iOS: let Expo construct the multipart request.
+  const response = await new File(file.uri).upload(url,
+    {
+      httpMethod: 'POST',
+      uploadType: UploadType.MULTIPART,
+      fieldName: 'file',
+      mimeType: file.mimeType ?? 'application/octet-stream',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      parameters: note.trim()
+        ? { note: note.trim() }
+        : {},
     },
   );
-  const result = await response.json();
-  if (!response.ok)
+
+  let result: { message?: string; [key: string]: unknown };
+
+  try {
+    result = JSON.parse(response.body);
+  } catch {
     throw new Error(
-      result.message ||
-        'Evidence upload failed. Please try again.',
+      `Upload returned an unreadable response (HTTP ${response.status}).`,
     );
+  }
+
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(
+      result.message || `Evidence upload failed (HTTP ${response.status}).`,
+    );
+  }
+
   return result;
 }

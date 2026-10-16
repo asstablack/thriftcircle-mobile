@@ -5,6 +5,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Modal,
   Pressable,
   Text,
   TextInput,
@@ -36,6 +37,7 @@ export default function NewPassword() {
     confirmPasswordVisible,
     setConfirmPasswordVisible,
   ] = useState(false);
+  const [completed, setCompleted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleResetPassword = async () => {
@@ -90,16 +92,7 @@ export default function NewPassword() {
             },
       );
 
-      Alert.alert(
-        'Password updated',
-        'Your password has been updated successfully.',
-        [
-          {
-            text: 'Log In',
-            onPress: () => router.replace('/login'),
-          },
-        ],
-      );
+      setCompleted(true);
     } catch (error) {
       const message =
         error instanceof Error
@@ -133,7 +126,8 @@ export default function NewPassword() {
               goBackOrReplace('/forgot-password')
             }
           >
-            <FigmaIcon name="back" size="medium" />
+            <FigmaIcon name="back" size="small" />
+            <Text style={styles.backText}>Back</Text>
           </Pressable>
 
           <Image
@@ -152,11 +146,11 @@ export default function NewPassword() {
           <View style={styles.form}>
             <Text style={styles.label}>New Password</Text>
 
-            <View style={styles.passwordContainer}>
+            <View style={[styles.passwordContainer, styles.firstPasswordContainer]}>
               <TextInput
                 style={styles.passwordInput}
                 placeholder="Enter your new password"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.textDisabled}
                 secureTextEntry={!passwordVisible}
                 value={password}
                 onChangeText={setPassword}
@@ -173,17 +167,13 @@ export default function NewPassword() {
               >
                 <Feather
                   name={passwordVisible ? 'eye-off' : 'eye'}
-                  size={19}
-                  color={colors.textSecondary}
+                  size={20}
+                  color={colors.primary}
                 />
               </Pressable>
             </View>
 
-            <Text style={styles.helperText}>
-              Use at least 8 characters
-            </Text>
-
-            <Text style={styles.label}>
+<Text style={styles.label}>
               Confirm New Password
             </Text>
 
@@ -191,7 +181,7 @@ export default function NewPassword() {
               <TextInput
                 style={styles.passwordInput}
                 placeholder="Confirm your new password"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.textDisabled}
                 secureTextEntry={!confirmPasswordVisible}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -214,17 +204,20 @@ export default function NewPassword() {
                       ? 'eye-off'
                       : 'eye'
                   }
-                  size={19}
-                  color={colors.textSecondary}
+                  size={20}
+                  color={colors.primary}
                 />
               </Pressable>
             </View>
+            <Text style={styles.helperText}>Use at least 8 characters</Text>
+
 
             <Pressable
               style={[
                 styles.resetButton,
                 loading && styles.resetButtonDisabled,
               ]}
+              accessibilityRole="button"
               onPress={handleResetPassword}
               disabled={loading}
             >
@@ -237,6 +230,17 @@ export default function NewPassword() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <Modal visible={completed} transparent animationType="fade" onRequestClose={() => router.replace('/login')}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.successCard} accessibilityViewIsModal>
+            <Text style={styles.successTitle}>Password updated</Text>
+            <Text style={styles.successMessage}>Your password has been reset successfully.</Text>
+            <Pressable accessibilityRole="button" style={styles.resetButton} onPress={() => router.replace('/login')}>
+              <Text style={styles.resetButtonText}>Back to Log In</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

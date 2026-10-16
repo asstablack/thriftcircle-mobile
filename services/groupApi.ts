@@ -1,3 +1,4 @@
+import type { PaymentDetails } from './paymentDetails';
 import { API_ROOT_URL } from '../config/api';
 import { getTokens } from './authStorage';
 
@@ -28,6 +29,7 @@ export async function getMyGroups() {
 }
 
 export async function createGroup(data: {
+  paymentDetails?: PaymentDetails;
   groupName: string;
   contributionAmount: number;
   frequency: string;

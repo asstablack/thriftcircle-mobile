@@ -39,7 +39,8 @@ export default function RoleSelectionScreen() {
           accessibilityLabel="Back"
           onPress={() => goBackOrReplace('/welcome')}
         >
-          <FigmaIcon name="back" size="medium" />
+          <FigmaIcon name="back" size="small" />
+          <Text style={styles.backText}>Back</Text>
         </Pressable>
 
         <Image
@@ -137,10 +138,12 @@ export default function RoleSelectionScreen() {
             styles.continueButton,
             !selectedRole && styles.continueButtonDisabled,
           ]}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !selectedRole }}
           onPress={handleContinue}
           disabled={!selectedRole}
         >
-          <Text style={styles.continueText}>Continue</Text>
+          <Text style={[styles.continueText, !selectedRole && styles.continueTextDisabled]}>Continue</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

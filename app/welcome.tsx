@@ -1,5 +1,6 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
+import { StatusBar } from 'expo-status-bar';
 import {
   Pressable,
   ScrollView,
@@ -12,6 +13,7 @@ import { welcomeStyles as styles } from '@/styles/welcomeStyles';
 export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -41,7 +43,8 @@ export default function WelcomeScreen() {
 
         <View style={styles.actions}>
           <Pressable
-            style={styles.primaryButton}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
             onPress={() => router.push('/role-selection')}
           >
             <Text style={styles.primaryButtonText}>
@@ -50,7 +53,8 @@ export default function WelcomeScreen() {
           </Pressable>
 
           <Pressable
-            style={styles.secondaryButton}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.secondaryButton, pressed && styles.secondaryButtonPressed]}
             onPress={() => router.push('/login')}
           >
             <Text style={styles.secondaryButtonText}>

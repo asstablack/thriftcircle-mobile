@@ -3,6 +3,10 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const newPasswordStyles = StyleSheet.create({
+  modalOverlay: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.35)' },
+  successCard: { width: '100%', maxWidth: 368, alignSelf: 'center', backgroundColor: colors.primaryLight, borderRadius: 16, padding: 24, gap: 16 },
+  successTitle: { fontFamily: fonts.semiBold, fontSize: 20, lineHeight: 28, color: colors.textPrimary, textAlign: 'center' },
+  successMessage: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, textAlign: 'center' },
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -20,7 +24,10 @@ export const newPasswordStyles = StyleSheet.create({
 
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     minHeight: 44,
     minWidth: 44,
     justifyContent: 'center',
@@ -33,15 +40,15 @@ export const newPasswordStyles = StyleSheet.create({
   },
 
   logo: {
-    width: 115,
-    height: 96,
+    width: 116,
+    height: 116,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
   },
 
   title: {
-    fontSize: 33,
-    fontFamily: fonts.bold,
+    fontSize: 32,
+    fontFamily: fonts.semiBold,
     color: colors.textPrimary,
     textAlign: 'center',
     lineHeight: 40,
@@ -49,8 +56,8 @@ export const newPasswordStyles = StyleSheet.create({
 
   subtitle: {
     fontFamily: fonts.regular,
-    fontSize: 14.5,
-    lineHeight: 21,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 8,
@@ -62,12 +69,14 @@ export const newPasswordStyles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 13.5,
+    fontSize: 12,
+    lineHeight: 16,
     fontFamily: fonts.medium,
     color: colors.textPrimary,
     marginBottom: 8,
   },
 
+  firstPasswordContainer: { marginBottom: 24 },
   passwordContainer: {
     position: 'relative',
     marginBottom: 6,
@@ -79,10 +88,10 @@ export const newPasswordStyles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     backgroundColor: colors.white,
-    paddingHorizontal: 13,
+    paddingHorizontal: 12,
     paddingRight: 60,
     fontFamily: fonts.regular,
-    fontSize: 14.5,
+    fontSize: 14,
     color: colors.textPrimary,
   },
 
@@ -95,21 +104,22 @@ export const newPasswordStyles = StyleSheet.create({
   },
 
   eyeText: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontFamily: fonts.semiBold,
     color: colors.primary,
   },
 
   helperText: {
     fontFamily: fonts.regular,
-    fontSize: 14.5,
-    lineHeight: 21,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.textSecondary,
     marginBottom: 16,
   },
 
   resetButton: {
-    height: 48,
+    minHeight: 48,
+    paddingVertical: 12,
     backgroundColor: colors.primary,
     borderRadius: 8,
     alignItems: 'center',
@@ -122,8 +132,8 @@ export const newPasswordStyles = StyleSheet.create({
   },
 
   resetButtonText: {
-    fontSize: 14.5,
-    fontFamily: fonts.bold,
+    fontSize: 14,
+    fontFamily: fonts.semiBold,
     color: colors.white,
   },
 });

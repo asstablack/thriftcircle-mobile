@@ -3,6 +3,9 @@ import { StyleSheet } from 'react-native';
 import { colors } from '@/constants/color';
 
 export const createGroupStyles = StyleSheet.create({
+  cardContent: {flex:1,gap:6},
+  iconTile: {padding:12,borderRadius:8,backgroundColor:colors.primaryLight},
+  infoCard: {padding:16,borderRadius:8,backgroundColor:colors.successSurface,gap:8,marginTop:12},
   stepHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -28,6 +31,8 @@ export const createGroupStyles = StyleSheet.create({
     color: colors.textSecondary,
   },
   reviewCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
@@ -91,7 +96,7 @@ export const createGroupStyles = StyleSheet.create({
   },
   saving: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.background,
     padding: 32,
     justifyContent: 'center',
     gap: 24,
@@ -99,21 +104,21 @@ export const createGroupStyles = StyleSheet.create({
   savingTitle: {
     fontFamily: fonts.semiBold,
     fontSize: 24,
-    color: colors.white,
+    color: colors.textPrimary,
   },
   savingText: {
     fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 26,
-    color: colors.white,
+    color: colors.textSecondary,
   },
   successIcon: { alignSelf: 'center' },
   successMessage: { textAlign: 'center' },
   success: {
     flexGrow: 1,
     padding: 28,
-    justifyContent: 'center',
-    gap: 20,
+    justifyContent: 'flex-start',
+    gap: 8,
   },
   successTitle: {
     textAlign: 'center',
@@ -163,7 +168,7 @@ export const createGroupStyles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 16,
+    fontSize: 13,
     fontFamily: fonts.medium,
     color: colors.textDark,
     marginTop: 16,
@@ -214,7 +219,8 @@ export const createGroupStyles = StyleSheet.create({
   },
 
   createButton: {
-    height: 48,
+    minHeight: 48,
+    paddingVertical: 12,
     borderRadius: 10,
     backgroundColor: colors.primary,
     alignItems: 'center',

@@ -147,12 +147,7 @@ export default function MemberDetailScreen() {
     <SafeAreaView style={styles.container}>
       <GroupScreenHeader
         variant="plain"
-        title={
-          view === 'status'
-            ? 'Member Status'
-            : 'Member Details'
-        }
-        subtitle="Membership and contribution history"
+        title="Member Details"
       />
       <ScrollView contentContainerStyle={styles.content}>
         {loading ? (
@@ -201,22 +196,14 @@ export default function MemberDetailScreen() {
                         ? 'Position ' + member.payoutOrder
                         : 'Position not assigned'}
                     </Text>
-                    <Text style={styles.activeBadge}>
-                      {member.status === 'active'
-                        ? 'Active member'
-                        : member.status}
-                    </Text>
+                    {member.joinedAt && <Text style={styles.caption}>Member since {date(member.joinedAt)}</Text>}
                   </View>
+                  <Text style={[styles.activeBadge,member.status !== 'active' && styles.inactiveBadge]}>{member.status === 'active' ? 'Active' : member.status}</Text>
                 </View>
-                {member.joinedAt && (
-                  <Text style={styles.body}>
-                    Member since {date(member.joinedAt)}
-                  </Text>
-                )}
                 <View style={styles.contact}>
                   <Feather
                     name="phone"
-                    size={20}
+                    size={16}
                     color={colors.textSecondary}
                   />
                   <Text style={styles.contactText}>
@@ -238,16 +225,10 @@ export default function MemberDetailScreen() {
               </View>
               {view === 'status' ? (
                 <View style={styles.card}>
-                  <Text style={styles.name}>
-                    Membership Status
-                  </Text>
-                  <Text style={styles.body}>
-                    {member.status}
-                  </Text>
-                  <Text style={styles.body}>
-                    Membership status changes are not
-                    available yet.
-                  </Text>
+                  <Text style={styles.label}>Membership Status</Text>
+                  <Text style={styles.body}>View this member’s current status in the group.</Text>
+                  {['active','inactive'].map(status=><View key={status} style={[styles.statusOption,status==='active'?styles.activeOption:styles.inactiveOption,member.status===status && styles.selectedOption]}><Feather name={member.status===status?'check-circle':'circle'} size={20} color={member.status===status?colors.primary:colors.textSecondary}/><View style={styles.profileInfo}><Text style={styles.label}>{status==='active'?'Active':'Inactive'}</Text><Text style={styles.caption}>{status==='active'?'The member can continue to make contributions and participate in the group.':'The member is currently inactive in this group.'}</Text></View></View>)}
+                  <View style={styles.infoBox}><Feather name="info" size={18} color={colors.infoText}/><Text style={styles.body}>Membership status changes are not available yet. This status is read-only.</Text></View>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() =>
@@ -265,6 +246,7 @@ export default function MemberDetailScreen() {
               ) : (
                 <>
                   <Pressable
+                    style={styles.primaryButton}
                     accessibilityRole="button"
                     onPress={() =>
                       router.push({
@@ -276,14 +258,12 @@ export default function MemberDetailScreen() {
                       })
                     }
                   >
-                    <Text style={styles.link}>
-                      Manage Member
+                    <Text style={styles.primaryButtonText}>
+                      View Member Status
                     </Text>
                   </Pressable>
                   <View style={styles.card}>
-                    <Text style={styles.label}>
-                      Contribution progress
-                    </Text>
+                    <View style={styles.progressHeading}><Text style={styles.label}>Contribution Progress</Text><Text style={styles.percentage}>{Math.round(progress)}%</Text></View>
                     <View
                       style={styles.progressTrack}
                       accessibilityRole="progressbar"
@@ -307,12 +287,13 @@ export default function MemberDetailScreen() {
                   </View>
                   <View style={styles.card}>
                     <Text style={styles.name}>
-                      Contribution History
+                      Contributions history
                     </Text>
                     <View style={styles.tableHeader}>
                       <Text style={styles.cell}>
-                        Amount / Due date
+                        Amount
                       </Text>
+                      <Text style={styles.cell}>Date</Text>
                       <Text style={styles.caption}>
                         Status
                       </Text>
@@ -343,17 +324,8 @@ export default function MemberDetailScreen() {
                           })
                         }
                       >
-                        <View style={styles.cell}>
-                          <Text style={styles.label}>
-                            ₦
-                            {item.amount.toLocaleString(
-                              'en-NG',
-                            )}
-                          </Text>
-                          <Text style={styles.caption}>
-                            {date(item.dueDate)}
-                          </Text>
-                        </View>
+                        <Text style={styles.cell}>₦{item.amount.toLocaleString('en-NG')}</Text>
+                        <Text style={styles.cell}>{date(item.dueDate)}</Text>
                         <Text
                           style={[
                             styles.badge,
@@ -362,7 +334,7 @@ export default function MemberDetailScreen() {
                               : item.status === 'ISSUE' ||
                                   item.status === 'OVERDUE'
                                 ? styles.issue
-                                : styles.pending,
+                                : item.status === 'PENDING_REVIEW' ? styles.infoBadge : styles.pending,
                           ]}
                         >
                           {labels[item.status] ||
